@@ -4,28 +4,33 @@ import sqlite3
 
 
 class UseSqlite3:
-    def __init__(self):
+    def __init__(self, mode='github'):
         self.conn = sqlite3.connect('sent_msg.db')
         self.c = self.conn.cursor()
-        self.c.execute('''
-        CREATE TABLE IF NOT EXISTS sent_msg (
-        "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-        "url" text,
-        "update_time" datetime
-        )''')
+
+        if mode == 'naver':
+            self.c.execute('''
+            CREATE TABLE IF NOT EXISTS sent_msg_naver (
+            "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+            "news" text,
+            "update_time" datetime
+            )''')
+        else:  # github
+            self.c.execute('''
+            CREATE TABLE IF NOT EXISTS sent_msg_github (
+            "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+            "url" text,
+            "update_time" datetime
+            )''')
+
         self.conn.commit()
 
-        self.max_insert_id = 0
-        self.c.execute('SELECT MAX(id) FROM sent_msg')
-        data = self.c.fetchone()
-        if data[0] is not None:
-            self.max_insert_id = int(data[0])
-
-    def already_sent(self, url):
-        if url is None:
+    def already_sent_naver(self, news):
+        if news is None:
             return True  # ignore
 
-        query = 'SELECT * FROM sent_msg WHERE url="%s"' % url
+        news = news.replace("\"", "'")
+        query = 'SELECT * FROM sent_msg_naver WHERE news="%s"' % news
         self.c.execute(query)
         data = self.c.fetchone()
         if data is None:
@@ -33,11 +38,28 @@ class UseSqlite3:
         else:
             return True
 
-    def insert_url(self, url):
+    def already_sent_github(self, url):
+        if url is None:
+            return True  # ignore
 
-        self.max_insert_id += 1
-        query = 'INSERT INTO sent_msg VALUES (%d, "%s", CURRENT_TIMESTAMP)' % (
-                self.max_insert_id, url)
+        query = 'SELECT * FROM sent_msg_github WHERE url="%s"' % url
+        self.c.execute(query)
+        data = self.c.fetchone()
+        if data is None:
+            return False
+        else:
+            return True
+
+    def insert_news(self, news):
+        news = news.replace("\"", "'")
+        query = '''INSERT INTO sent_msg_naver VALUES
+        (NULL, "%s", CURRENT_TIMESTAMP)''' % news
+        self.c.execute(query)
+        self.conn.commit()
+
+    def insert_url(self, url):
+        query = '''INSERT INTO sent_msg_github VALUES
+        (NULL, "%s", CURRENT_TIMESTAMP)''' % url
         self.c.execute(query)
         self.conn.commit()
 

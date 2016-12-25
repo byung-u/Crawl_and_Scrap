@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 import configparser
 import time
-
 from twython import Twython
 
 from ft_github import UseGithub
+from ft_naver import UseNaver
 
 
 class FTbot:  # Find the Treasure 보물찾기 봇
@@ -67,6 +67,9 @@ def main():
 
     g = UseGithub(ft)
     github_post_tweet(ft, g)
+
+    n = UseNaver(ft)
+    ft_post_tweet(ft, n.search_today_information_and_technology())
 
 
 if __name__ == '__main__':
