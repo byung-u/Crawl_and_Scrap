@@ -35,14 +35,15 @@ class FTbot:  # Find the Treasure 보물찾기 봇
 
     def post_tweet(self, post_msg):
         if post_msg is not None:
+            # TODO: print -> logger
+            print('Tweet: ', post_msg)
             self.twitter.update_status(status=post_msg)
         else:
             raise 'no messeage for posting'
 
 
-def ft_post_tweet(ft, msg):
+def ft_post_tweet_array(ft, msg):
     for i in range(len(msg)):
-        print('Tweet: ', msg[i])
         time.sleep(2)
         ft.post_tweet(msg[i])
 
@@ -51,15 +52,15 @@ def github_post_tweet(ft, g):
 
     msg = g.get_github_great_repo('hot', 'python', 200)
     if len(msg) > 0:
-        ft_post_tweet(ft, msg)
+        ft_post_tweet_array(ft, msg)
 
     msg = g.get_github_great_repo('new', 'python', 0)
     if len(msg) > 0:
-        ft_post_tweet(ft, msg)
+        ft_post_tweet_array(ft, msg)
 
     msg = g.get_github_great_repo('new', None, 3)  # None -> all language
     if len(msg) > 0:
-        ft_post_tweet(ft, msg)
+        ft_post_tweet_array(ft, msg)
 
 
 def main():
@@ -69,7 +70,9 @@ def main():
     github_post_tweet(ft, g)
 
     n = UseNaver(ft)
-    ft_post_tweet(ft, n.search_today_information_and_technology())
+    news = n.search_today_information_and_technology(ft)
+    for i in range(len(news)):
+        ft.post_tweet(news[i])
 
 
 if __name__ == '__main__':
