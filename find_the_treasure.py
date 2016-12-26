@@ -6,7 +6,7 @@ from twython import Twython
 
 from ft_github import UseGithub
 from ft_naver import UseNaver
-from ft_etc import get_coex_exhibition
+from ft_etc import get_coex_exhibition, search_stackoverflow
 
 
 class FTbot:  # Find the Treasure 보물찾기 봇
@@ -77,6 +77,8 @@ def main():
 
     exhibition = get_coex_exhibition(ft)
     ft_post_tweet_array(ft, exhibition)
+    so = search_stackoverflow(ft)
+    ft_post_tweet_array(ft, so)
 
 
 if __name__ == '__main__':
