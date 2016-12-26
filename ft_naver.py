@@ -63,40 +63,60 @@ class UseNaver:
         return do_match
 
     def get_today_information_and_technology(self, soup):
-        news = []
+        it_news = {}
+        url = 'http://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=105'
         for w in soup.find_all(self.match_find_all(["main_content"], 'id')):
             for r in soup.find_all(self.match_find_all(["_rcount"])):
-                res = r.text.splitlines()
-                for i in range(len(res)):
-                    if len(res[i]) < 15:
+                for a in soup.find_all('a', href=True):
+                    if a['href'].startswith(url) is False:
                         continue
-                    news.append(res[i])
+                    if len(a.text) < 20:
+                        continue
+                    it_news[a['href']] = a.text
+        return it_news
 
-        return news
-
-    def remove_duplicated_it_news(self, news):
+    def get_today_it_news(self, ft, news):
         s = UseSqlite3('naver')
 
         send_msg = []
-        for i in range(len(news)):
-            ret = s.already_sent_naver(news[i])
+        for news_url, news_desc in news.items():
+            ret = s.already_sent_naver(news_url)
             if ret:
-                print('already exist: ', news[i])
+                print('already exist: ', news_url)
                 continue
             else:
-                s.insert_news(news[i])
-                news_encode = news[i].encode('utf-8')
-                if len(news_encode) > MAX_TWEET_MSG:
-                    # Long message just drop.
-                    continue
-                send_msg.append(news[i])
+                s.insert_news(news_url)
+                news_encode = news_desc.encode('utf-8')
+                short_news_url = self.naver_shortener_url(ft, news_url)
+                if len(news_encode) + len(short_news_url) > MAX_TWEET_MSG:
+                    continue  # Long message just drop.
+
+                send = '%s\n%s' % (news_desc.strip(), short_news_url.strip())
+                send_msg.append(send)
         return send_msg
 
-    def search_today_information_and_technology(self):
+    def search_today_information_and_technology(self, ft):
         url = 'http://news.naver.com/main/main.nhn?mode=LSD&mid=shm&sid1=105'
         r = get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
 
         news = self.get_today_information_and_technology(soup)
 
-        return self.remove_duplicated_it_news(news)
+        return self.get_today_it_news(ft, news)
+
+    def naver_shortener_url(self, ft, news_url):
+        encText = urllib.parse.quote(news_url)
+        data = "url=" + encText
+        short_url = "https://openapi.naver.com/v1/util/shorturl"
+        request = urllib.request.Request(short_url)
+        request.add_header("X-Naver-Client-Id", ft.naver_client_id)
+        request.add_header("X-Naver-Client-Secret", ft.naver_secret)
+        response = urllib.request.urlopen(request, data=data.encode("utf-8"))
+        rescode = response.getcode()
+        if rescode == 200:
+            response_body = response.read()
+            res = json.loads(response_body.decode('utf-8'))
+            return res['result']['url']
+        else:
+            print("Error Code:" + rescode)
+            return None
