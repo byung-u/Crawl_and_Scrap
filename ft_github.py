@@ -43,7 +43,7 @@ class UseGithub:
         return repos
 
     def sqlite_repo_process(self, mode, repos):
-        s = UseSqlite3()
+        s = UseSqlite3('github')
         send_msg = []
         for repo in repos:
             lang = repo.get_languages()
