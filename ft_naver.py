@@ -104,8 +104,8 @@ class UseNaver:
 
         return self.get_today_it_news(ft, news)
 
-    def naver_shortener_url(self, ft, news_url):
-        encText = urllib.parse.quote(news_url)
+    def naver_shortener_url(self, ft, input_url):
+        encText = urllib.parse.quote(input_url)
         data = "url=" + encText
         short_url = "https://openapi.naver.com/v1/util/shorturl"
         request = urllib.request.Request(short_url)
