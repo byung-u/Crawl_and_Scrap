@@ -8,6 +8,7 @@ from ft_naver import UseNaver
 from ft_sqlite3 import UseSqlite3
 
 MAX_TWEET_MSG = 140
+STACK_EXCHANGE_API_URL = "https://api.stackexchange.com"
 
 
 def check_duplicate(etc_type, etc_info):
@@ -60,4 +61,45 @@ def get_coex_exhibition(ft):
                 continue
         result_msg.append(result)
 
+    return result_msg
+
+"""
+sort :
+    activity – last_activity_date
+    creation – creation_date
+    votes – score
+    relevance – matches the relevance tab on the site itself
+
+intitle : search keyword (ex. quick sort)
+"""
+
+
+def search_stackoverflow(ft, sort='activity', intitle='python'):
+    n = UseNaver(ft)
+
+    r = get(STACK_EXCHANGE_API_URL + "/search", {
+        "order": "desc",
+        "sort": sort,
+        "tagged": "python",
+        "site": "stackoverflow",
+        "intitle": "python",
+    }).json()
+    result_msg = []
+    for i in range(len(r["items"])):
+        if r["items"][i]["score"] <= 0:
+            continue
+
+        short_url = n.naver_shortener_url(ft, r["items"][i]["link"])
+        if check_duplicate('stackoverflow', short_url) is False:
+            continue
+
+        result = '[SO Star:%s]\n%s\n%s\n' % (
+                r["items"][i]["score"],
+                r["items"][i]["title"],
+                short_url)
+
+        so_encode = result.encode('utf-8')
+        if len(so_encode) > MAX_TWEET_MSG:
+            continue
+        result_msg.append(result)
     return result_msg
