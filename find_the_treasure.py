@@ -73,6 +73,39 @@ def github_post_tweet(ft, g):
         ft_post_tweet_array(ft, msg)
 
 
+def send_gmail(ft, subject, body):
+    import smtplib
+    from email.mime.multipart import MIMEMultipart
+    from email.mime.text import MIMEText
+
+    if type(body) is list:
+        send_msg = '\n'.join(body)
+    else:
+        send_msg = body
+
+    gmail_user = ft.google_id
+    gmail_pwd = ft.google_p
+    FROM = ft.gmail_from_addr
+    TO = ft.gmail_to_addr
+
+    msg = MIMEMultipart('alternative')
+    msg['From'] = gmail_user
+    msg['To'] = 'iam.byungwoo@gmail.com'
+    msg['Subject'] = subject
+    msg.attach(MIMEText(send_msg, 'plain', 'utf-8'))  # encoding
+
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.ehlo()
+        server.starttls()
+        server.login(gmail_user, gmail_pwd)
+        server.sendmail(FROM, TO, msg.as_string())
+        server.quit()
+        print('successfully sent the mail')
+    except BaseException as e:
+        print("failed to send mail", str(e))
+
+
 def main():
     ft = FTbot()
 
