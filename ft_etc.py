@@ -8,7 +8,6 @@ from ft_naver import UseNaver
 from ft_sqlite3 import UseSqlite3
 
 MAX_TWEET_MSG = 140
-STACK_EXCHANGE_API_URL = "https://api.stackexchange.com"
 
 
 def check_duplicate(etc_type, etc_info):
@@ -77,6 +76,7 @@ intitle : search keyword (ex. quick sort)
 def search_stackoverflow(ft, sort='activity', intitle='python'):
     n = UseNaver(ft)
 
+    STACK_EXCHANGE_API_URL = "https://api.stackexchange.com"
     r = get(STACK_EXCHANGE_API_URL + "/search", {
         "order": "desc",
         "sort": sort,
