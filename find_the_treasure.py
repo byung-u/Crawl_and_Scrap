@@ -27,12 +27,12 @@ class FTbot:  # Find the Treasure 보물찾기 봇
         )
 
         self.github_id = self.config.get('GITHUB', 'id')
-        self.github_pw = self.config.get('GITHUB', 'pw')
+        self.github_pw = self.config.get('GITHUB', 'p_w')
         self.github_client_id = self.config.get('GITHUB', 'client_id')
         self.github_client_secret = self.config.get('GITHUB', 'client_secret')
 
         self.naver_client_id = self.config.get('NAVER', 'client_id')
-        self.naver_secret = self.config.get('NAVER', 'secret')
+        self.naver_secret = self.config.get('NAVER', 'client_secret')
 
         self.daum_client_id = self.config.get('DAUM', 'client_id')
         self.daum_secret = self.config.get('DAUM', 'client_secret')
