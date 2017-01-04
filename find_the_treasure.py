@@ -34,6 +34,15 @@ class FTbot:  # Find the Treasure 보물찾기 봇
         self.naver_client_id = self.config.get('NAVER', 'client_id')
         self.naver_secret = self.config.get('NAVER', 'secret')
 
+        self.daum_client_id = self.config.get('DAUM', 'client_id')
+        self.daum_secret = self.config.get('DAUM', 'client_secret')
+        self.daum_app_key = self.config.get('DAUM', 'app_key')
+
+        self.google_id = self.config.get('GOOGLE', 'id')
+        self.google_p = self.config.get('GOOGLE', 'p_w')
+        self.gmail_from_addr = self.config.get('GOOGLE', 'from_addr')
+        self.gmail_to_addr = self.config.get('GOOGLE', 'to_addr')
+
     def post_tweet(self, post_msg):
         if post_msg is not None:
             # TODO: print -> logger
