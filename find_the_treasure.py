@@ -27,7 +27,7 @@ class FTbot:  # Find the Treasure 보물찾기 봇
         )
 
         self.github_id = self.config.get('GITHUB', 'id')
-        self.github_pw = self.config.get('GITHUB', 'p_w')
+        self.github_p = self.config.get('GITHUB', 'p_w')
         self.github_client_id = self.config.get('GITHUB', 'client_id')
         self.github_client_secret = self.config.get('GITHUB', 'client_secret')
 
