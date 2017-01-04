@@ -3,6 +3,7 @@
 
 from bs4 import BeautifulSoup
 from requests import get
+from time import gmtime, strftime
 
 from ft_naver import UseNaver
 from ft_sqlite3 import UseSqlite3
@@ -62,6 +63,7 @@ def get_coex_exhibition(ft):
 
     return result_msg
 
+
 """
 sort :
     activity – last_activity_date
@@ -102,4 +104,37 @@ def search_stackoverflow(ft, sort='activity', intitle='python'):
         if len(so_encode) > MAX_TWEET_MSG:
             continue
         result_msg.append(result)
+    return result_msg
+
+
+def search_nate_ranking_news(ft):
+    url = 'http://news.nate.com/rank/interest?sc=its&p=day&date=%s' % (
+            strftime("%Y%m%d", gmtime()))
+
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+
+    result_msg = []
+    # Rank 1~5
+    for news_rank in soup.find_all(ft.match_soup_class(['mduSubjectList'])):
+        result = '%s\n%s\n%s\n\n' % (
+            news_rank.em.text,
+            news_rank.strong.text,
+            news_rank.a['href'],
+            )
+
+        result_msg.append(result)
+
+    # Rank 6~30
+    i = 6
+    for news_rank in soup.find_all(
+            ft.match_soup_class(['mduSubject', 'mduRankSubject'])):
+        for news in news_rank.find_all('a'):
+            result = '%d위\n%s\n%s\n' % (
+                i,
+                news.text,
+                news['href'],
+                )
+            i += 1
+            result_msg.append(result)
     return result_msg
