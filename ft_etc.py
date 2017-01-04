@@ -88,7 +88,7 @@ def search_stackoverflow(ft, sort='activity', intitle='python'):
     }).json()
     result_msg = []
     for i in range(len(r["items"])):
-        if r["items"][i]["score"] <= 0:
+        if r["items"][i]["score"] <= 1:
             continue
 
         short_url = n.naver_shortener_url(ft, r["items"][i]["link"])
