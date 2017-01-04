@@ -110,7 +110,7 @@ def send_gmail(ft, subject, body):
         server.login(gmail_user, gmail_pwd)
         server.sendmail(FROM, TO, msg.as_string())
         server.quit()
-        print('successfully sent the mail')
+        print('[%s] successfully sent the mail' % subject)
     except BaseException as e:
         print("failed to send mail", str(e))
 
@@ -121,11 +121,6 @@ def main():
     g = UseGithub(ft)
     github_post_tweet(ft, g)
 
-    n = UseNaver(ft)
-    news = n.search_today_information_and_technology(ft)
-    for i in range(len(news)):
-        ft.post_tweet(news[i])
-
     exhibition = get_coex_exhibition(ft)
     ft_post_tweet_array(ft, exhibition)
     so = search_stackoverflow(ft)
@@ -134,6 +129,10 @@ def main():
     # Send email
     nate_rank_news = search_nate_ranking_news(ft)
     send_gmail(ft, 'NATE IT news rank', nate_rank_news)
+
+    n = UseNaver(ft)
+    naver_news = n.search_today_information_and_technology(ft)
+    send_gmail(ft, 'NAVER IT news', naver_news)
 
 
 if __name__ == '__main__':

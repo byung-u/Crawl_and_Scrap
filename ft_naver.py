@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import urllib.request
 from requests import get
 
-from ft_sqlite3 import UseSqlite3
+# from ft_sqlite3 import UseSqlite3
 
 MAX_TWEET_MSG = 140
 
@@ -75,34 +75,18 @@ class UseNaver:
                     it_news[a['href']] = a.text
         return it_news
 
-    def get_today_it_news(self, ft, news):
-        s = UseSqlite3('naver')
-
-        send_msg = []
-        for news_url, news_desc in news.items():
-            ret = s.already_sent_naver(news_url)
-            if ret:
-                print('already exist: ', news_url)
-                continue
-            else:
-                s.insert_news(news_url)
-                news_encode = news_desc.encode('utf-8')
-                short_news_url = self.naver_shortener_url(ft, news_url)
-                if len(news_encode) + len(short_news_url) > MAX_TWEET_MSG:
-                    continue  # Long message just drop.
-
-                send = '%s\n%s' % (news_desc.strip(), short_news_url.strip())
-                send_msg.append(send)
-        return send_msg
-
     def search_today_information_and_technology(self, ft):
         url = 'http://news.naver.com/main/main.nhn?mode=LSD&mid=shm&sid1=105'
         r = get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        news = self.get_today_information_and_technology(soup)
-
-        return self.get_today_it_news(ft, news)
+        dict_news = self.get_today_information_and_technology(soup)
+        news = []
+        # dict to list
+        for key, value in dict_news.items():
+            temp = [key, value]
+            news.append('\n'.join(temp))
+        return news
 
     def naver_shortener_url(self, ft, input_url):
         encText = urllib.parse.quote(input_url)
