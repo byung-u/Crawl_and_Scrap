@@ -14,12 +14,6 @@ class UseDaum:
     def __init__(self, ft):
         pass
 
-    def match_soup_find_all(self, target, mode='class'):
-        def do_match(tag):
-            classes = tag.get(mode, [])
-            return all(c in classes for c in target)
-        return do_match
-
     def read_other_blog_link(self, url):
         result = []
 
@@ -27,7 +21,7 @@ class UseDaum:
         soup = BeautifulSoup(r.text, 'html.parser')
         # print(soup)
         print('\n\n', url)
-        for a in soup.find_all(self.match_soup_find_all(['view'])):
+        for a in soup.find_all(ft.match_soup_class(['view'])):
             for p in soup.find_all('p'):
                 if len(p.text.strip()) == 0:
                     continue
@@ -43,7 +37,7 @@ class UseDaum:
         soup = BeautifulSoup(r.text, 'html.parser')
         # print(soup)
         # print('\n\n', url)
-        for a in soup.find_all(self.match_soup_find_all(['article'])):
+        for a in soup.find_all(ft.match_soup_class(['article'])):
             for p in soup.find_all('p'):
                 if len(p.text.strip()) == 0:
                     continue
@@ -51,7 +45,7 @@ class UseDaum:
                     continue
                 result.append(p.text.strip())
 
-        for a in soup.find_all(self.match_soup_find_all(['area_view'])):
+        for a in soup.find_all(ft.match_soup_class(['area_view'])):
             for p in soup.find_all('p'):
                 if len(p.text.strip()) == 0:
                     continue
