@@ -13,7 +13,7 @@ class UseGithub:
         self.github_no_login = Github()
 
     def login(self, ft):
-        return Github(ft.github_id, ft.github_pw)
+        return Github(ft.github_id, ft.github_p)
 
     def get_check_options(self, past, stars):
         check_date = datetime.datetime.now() - datetime.timedelta(days=past)
