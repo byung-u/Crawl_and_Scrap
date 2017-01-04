@@ -6,7 +6,10 @@ from twython import Twython
 
 from ft_github import UseGithub
 from ft_naver import UseNaver
-from ft_etc import get_coex_exhibition, search_stackoverflow
+from ft_etc import (get_coex_exhibition,
+                    search_stackoverflow,
+                    search_nate_ranking_news,
+                    )
 
 
 class FTbot:  # Find the Treasure 보물찾기 봇
@@ -50,6 +53,12 @@ class FTbot:  # Find the Treasure 보물찾기 봇
             self.twitter.update_status(status=post_msg)
         else:
             raise 'no messeage for posting'
+
+    def match_soup_class(self, target, mode='class'):
+        def do_match(tag):
+            classes = tag.get(mode, [])
+            return all(c in classes for c in target)
+        return do_match
 
 
 def ft_post_tweet_array(ft, msg):
@@ -121,6 +130,10 @@ def main():
     ft_post_tweet_array(ft, exhibition)
     so = search_stackoverflow(ft)
     ft_post_tweet_array(ft, so)
+
+    # Send email
+    nate_rank_news = search_nate_ranking_news(ft)
+    send_gmail(ft, 'NATE IT news rank', nate_rank_news)
 
 
 if __name__ == '__main__':
