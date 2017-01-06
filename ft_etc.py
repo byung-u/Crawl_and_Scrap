@@ -95,7 +95,7 @@ def search_stackoverflow(ft, sort='activity', intitle='python'):
         if check_duplicate('stackoverflow', short_url) is False:
             continue
 
-        result = '[SO Star:%s]\n%s\n%s\n' % (
+        result = '[votes:%s]\n%s\n%s\n' % (
                 r["items"][i]["score"],
                 r["items"][i]["title"],
                 short_url)
