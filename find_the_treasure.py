@@ -69,7 +69,7 @@ def ft_post_tweet_array(ft, msg):
 
 def github_post_tweet(ft, g):
 
-    msg = g.get_github_great_repo('hot', 'python', 200)
+    msg = g.get_github_great_repo('hot', 'python', 10)
     if len(msg) > 0:
         ft_post_tweet_array(ft, msg)
 
