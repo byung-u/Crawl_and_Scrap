@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import sqlite3
+from datetime import datetime
 
 
 class UseSqlite3:
@@ -30,8 +31,33 @@ class UseSqlite3:
             "etc_info" text,
             "update_time" datetime
             )''')
-
+        self.delete_expired_tuple(mode)
         self.conn.commit()
+
+    def delete_expired_tuple(self, mode):
+        now = datetime.now()
+        # 2016-12-26 05:01:26
+        time_str = '%4d-%02d-%02d %02d:%02d:%02d' % (
+                now.year, now.month, now.day, now.hour, now.minute, now.second)
+        if now.month < 3:
+            time_str = '%4d-%02d-%02d %02d:%02d:%02d' % (
+                    now.year-1, now.month+10, now.day,
+                    now.hour, now.minute, now.second)
+        else:
+            time_str = '%4d-%02d-%02d %02d:%02d:%02d' % (
+                    now.year, now.month-2, now.day,
+                    now.hour, now.minute, now.second)
+        if mode == 'naver':
+            delete_query = """
+            DELETE FROM sent_msg_naver WHERE update_time < '%s'""" % time_str
+        elif mode == 'github':
+            delete_query = """
+            DELETE FROM sent_msg_github WHERE update_time < '%s'""" % time_str
+        else:  # etc
+            delete_query = """
+            DELETE FROM sent_msg_etc WHERE update_time < '%s'""" % time_str
+        print(delete_query)
+        self.c.execute(delete_query)
 
     def already_sent_naver(self, news):
         if news is None:
