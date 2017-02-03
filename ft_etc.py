@@ -12,7 +12,7 @@ MAX_TWEET_MSG = 140
 
 
 def check_duplicate(etc_type, etc_info):
-    s = UseSqlite3()
+    s = UseSqlite3()  # TODO: move to caller
 
     ret = s.already_sent_etc(etc_type, etc_info)
     if ret:
@@ -75,16 +75,16 @@ intitle : search keyword (ex. quick sort)
 """
 
 
-def search_stackoverflow(ft, sort='activity', intitle='python'):
+def search_stackoverflow(ft, sort='activity', lang='python'):
     n = UseNaver(ft)
 
     STACK_EXCHANGE_API_URL = "https://api.stackexchange.com"
     r = get(STACK_EXCHANGE_API_URL + "/search", {
         "order": "desc",
         "sort": sort,
-        "tagged": "python",
+        "tagged": lang,
         "site": "stackoverflow",
-        "intitle": "python",
+        "intitle": lang,
     }).json()
     result_msg = []
     for i in range(len(r["items"])):
@@ -95,7 +95,7 @@ def search_stackoverflow(ft, sort='activity', intitle='python'):
         if check_duplicate('stackoverflow', short_url) is False:
             continue
 
-        result = '[votes:%s]\n%s\n%s\n' % (
+        result = '[▲ %s]\n%s\n%s\n' % (
                 r["items"][i]["score"],
                 r["items"][i]["title"],
                 short_url)
