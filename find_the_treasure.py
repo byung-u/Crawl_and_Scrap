@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import configparser
+import cgitb
 import time
 from twython import Twython
 
@@ -10,6 +11,8 @@ from ft_etc import (get_coex_exhibition,
                     search_stackoverflow,
                     search_nate_ranking_news,
                     )
+
+cgitb.enable(format='text')
 
 
 class FTbot:  # Find the Treasure 보물찾기 봇
