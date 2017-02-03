@@ -54,7 +54,8 @@ class UseGithub:
             else:
                 # https://developer.github.com/v3/repos/
                 s.insert_url(repo.html_url)
-                msg = '[GITHUB(%s) %s]\nstar:%s\n\n%s\n%s' % (
+                print(lang.keys(), list(lang.keys())[0])
+                msg = '[GITHUB(%s) %s]\n★ %s\n\n%s\n%s' % (
                         mode,
                         list(lang.keys())[0],
                         repo.stargazers_count,
