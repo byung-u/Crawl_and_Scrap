@@ -126,7 +126,10 @@ def main():
 
     exhibition = get_coex_exhibition(ft)
     ft_post_tweet_array(ft, exhibition)
-    so = search_stackoverflow(ft)
+
+    so = search_stackoverflow(ft)  # python
+    ft_post_tweet_array(ft, so)
+    so = search_stackoverflow(ft, "activity", "racket")
     ft_post_tweet_array(ft, so)
 
     # Send email
