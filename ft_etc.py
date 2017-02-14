@@ -107,7 +107,13 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
     return result_msg
 
 
-def search_nate_ranking_news(ft):
+def search_nate_ranking_news(ft, category='it'):
+    if (category == 'it'):
+        search_nate_ranking_news_it(ft)
+    else:
+        print('Not supported category:%s' % category)
+
+def search_nate_ranking_news_it(ft):
     url = 'http://news.nate.com/rank/interest?sc=its&p=day&date=%s' % (
             strftime("%Y%m%d", gmtime()))
 
