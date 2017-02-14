@@ -6,7 +6,10 @@ import time
 from twython import Twython
 
 from ft_github import UseGithub
+from ft_data_go_kr import (UseDataKorea)
 from ft_naver import UseNaver
+from ft_sqlite3 import UseSqlite3
+
 from ft_etc import (get_coex_exhibition,
                     search_stackoverflow,
                     search_nate_ranking_news,
@@ -132,6 +135,10 @@ def main():
     so = search_stackoverflow(ft, "activity", "racket")
     ft_post_tweet_array(ft, so)
 
+    dg = UseDataKorea()
+    trade_msg = dg.ft_search_my_interesting_realstate()
+    ft_post_tweet_array(ft, trade_msg)
+
     # Send email
     nate_rank_news = search_nate_ranking_news(ft)
     send_gmail(ft, 'NATE IT news rank', nate_rank_news)
@@ -139,6 +146,9 @@ def main():
     n = UseNaver(ft)
     naver_news = n.search_today_information_and_technology(ft)
     send_gmail(ft, 'NAVER IT news', naver_news)
+
+    sqlite3 = UseSqlite3()
+    sqlite3.delete_expired_tuple()
 
 
 if __name__ == '__main__':
