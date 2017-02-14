@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 class UseSqlite3:
-    def __init__(self, mode='etc'):
+    def __init__(self, mode=None):
         self.conn = sqlite3.connect('sent_msg.db')
         self.c = self.conn.cursor()
 
@@ -23,7 +23,14 @@ class UseSqlite3:
             "url" text,
             "update_time" datetime
             )''')
-        else:  # etc
+        elif mode == 'korea':
+            self.c.execute('''
+            CREATE TABLE IF NOT EXISTS sent_msg_korea (
+            "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+            "real_state_rental_msg" text,
+            "update_time" datetime
+            )''')
+        elif mode == 'etc':
             self.c.execute('''
             CREATE TABLE IF NOT EXISTS sent_msg_etc (
             "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -31,10 +38,12 @@ class UseSqlite3:
             "etc_info" text,
             "update_time" datetime
             )''')
-        self.delete_expired_tuple(mode)
+        else:  # None
+            pass
+
         self.conn.commit()
 
-    def delete_expired_tuple(self, mode):
+    def delete_expired_tuple(self, mode='all'):
         now = datetime.now()
         # 2016-12-26 05:01:26
         time_str = '%4d-%02d-%02d %02d:%02d:%02d' % (
@@ -53,10 +62,30 @@ class UseSqlite3:
         elif mode == 'github':
             delete_query = """
             DELETE FROM sent_msg_github WHERE update_time < '%s'""" % time_str
-        else:  # etc
+        elif mode == 'korea':
+            delete_query = """
+            DELETE FROM sent_msg_korea WHERE update_time < '%s'""" % time_str
+        elif mode == 'etc':
             delete_query = """
             DELETE FROM sent_msg_etc WHERE update_time < '%s'""" % time_str
-        print(delete_query)
+        else:  # all
+            # naver
+            delete_query = """
+            DELETE FROM sent_msg_naver WHERE update_time < '%s'""" % time_str
+            self.c.execute(delete_query)
+            # github
+            delete_query = """
+            DELETE FROM sent_msg_github WHERE update_time < '%s'""" % time_str
+            self.c.execute(delete_query)
+            # korea
+            delete_query = """
+            DELETE FROM sent_msg_korea WHERE update_time < '%s'""" % time_str
+            self.c.execute(delete_query)
+            # etc
+            delete_query = """
+            DELETE FROM sent_msg_etc WHERE update_time < '%s'""" % time_str
+            self.c.execute(delete_query)
+
         self.c.execute(delete_query)
 
     def already_sent_naver(self, news):
@@ -99,6 +128,20 @@ class UseSqlite3:
         else:
             return True
 
+    def already_sent_korea(self, trade_msg):
+        if trade_msg is None:
+            return False  # ignore
+
+        query = '''
+        SELECT * FROM sent_msg_korea WHERE real_state_rental_msg="%s"''' % (
+                trade_msg)
+        self.c.execute(query)
+        data = self.c.fetchone()
+        if data is None:
+            return False
+        else:
+            return True
+
     def insert_news(self, news):
         news = news.replace("\"", "'")
         query = '''INSERT INTO sent_msg_naver VALUES
@@ -115,6 +158,12 @@ class UseSqlite3:
     def insert_etc(self, etc_type, etc_info):
         query = '''INSERT INTO sent_msg_etc VALUES
         (NULL, "%s", "%s", CURRENT_TIMESTAMP)''' % (etc_type, etc_info)
+        self.c.execute(query)
+        self.conn.commit()
+
+    def insert_trade_info(self, trade_info):
+        query = '''INSERT INTO sent_msg_korea VALUES
+        (NULL, "%s", CURRENT_TIMESTAMP)''' % trade_info
         self.c.execute(query)
         self.conn.commit()
 
