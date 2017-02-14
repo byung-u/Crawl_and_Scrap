@@ -47,6 +47,8 @@ class UseGithub:
         send_msg = []
         for repo in repos:
             lang = repo.get_languages()
+            if len(lang) == 0:
+                continue
             ret = s.already_sent_github(repo.html_url)
             if ret:
                 print('Already sent: ', repo.html_url)
