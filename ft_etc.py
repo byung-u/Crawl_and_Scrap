@@ -13,7 +13,7 @@ MAX_TWEET_MSG = 140
 
 
 def check_duplicate(etc_type, etc_info):
-    s = UseSqlite3()  # TODO: move to caller
+    s = UseSqlite3()
 
     ret = s.already_sent_etc(etc_type, etc_info)
     if ret:
