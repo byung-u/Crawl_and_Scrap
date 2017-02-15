@@ -53,6 +53,13 @@ class FTbot:  # Find the Treasure 보물찾기 봇
         self.gmail_from_addr = self.config.get('GOOGLE', 'from_addr')
         self.gmail_to_addr = self.config.get('GOOGLE', 'to_addr')
 
+        self.apt_trade_url = self.config.get('DATA_GO_KR', 'apt_trade_url')
+        self.apt_trade_svc_key = self.config.get('DATA_GO_KR', 'apt_rent_key', raw=True)
+        self.apt_trade_dong = self.config.get('DATA_GO_KR', 'dong')
+        self.apt_trade_district_code = self.config.get('DATA_GO_KR', 'district_code')
+        self.apt_trade_apt = self.config.get('DATA_GO_KR', 'apt', raw=True)
+        self.apt_trade_size = self.config.get('DATA_GO_KR', 'size', raw=True)
+
     def post_tweet(self, post_msg):
         if post_msg is not None:
             # TODO: print -> logger
@@ -136,8 +143,8 @@ def main():
     so = search_stackoverflow(ft, "activity", "racket")
     ft_post_tweet_array(ft, so)
 
-    dg = UseDataKorea()
-    trade_msg = dg.ft_search_my_interesting_realstate()
+    dg = UseDataKorea(ft)
+    trade_msg = dg.ft_search_my_interesting_realstate(ft)
     ft_post_tweet_array(ft, trade_msg)
 
     naver_popular_news = get_naver_popular_news(ft)
