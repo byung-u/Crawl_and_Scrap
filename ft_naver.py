@@ -5,14 +5,14 @@ from bs4 import BeautifulSoup
 import urllib.request
 from requests import get
 
-# from ft_sqlite3 import UseSqlite3
+from ft_sqlite3 import UseSqlite3
 
 MAX_TWEET_MSG = 140
 
 
 class UseNaver:
     def __init__(self, ft):
-        pass
+        self.sqlite3 = UseSqlite3('naver')
 
     def request_search_data(self, req_str, mode='blog'):
         url = 'https://openapi.naver.com/v1/search/%s?query=' % mode
@@ -72,6 +72,8 @@ class UseNaver:
                         continue
                     if len(a.text) < 20:
                         continue
+                    if (self.check_naver_duplicate(a['href'])):
+                        continue  # True
                     it_news[a['href']] = a.text
         return it_news
 
@@ -104,3 +106,13 @@ class UseNaver:
         else:
             print("Error Code:" + rescode)
             return None
+
+    def check_naver_duplicate(self, news_url):
+    
+        ret = self.sqlite3.already_sent_naver(news_url)
+        if ret:
+            print('already exist: ', news_url)
+            return True
+    
+        self.sqlite3.insert_naver_news(news_url)
+        return False
