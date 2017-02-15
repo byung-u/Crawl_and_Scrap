@@ -7,6 +7,7 @@ from twython import Twython
 
 from ft_github import UseGithub
 from ft_data_go_kr import (UseDataKorea)
+from ft_daum import UseDaum
 from ft_naver import UseNaver
 from ft_sqlite3 import UseSqlite3
 
@@ -157,6 +158,10 @@ def main():
     n = UseNaver(ft)
     naver_news = n.search_today_information_and_technology(ft)
     send_gmail(ft, 'NAVER IT news', naver_news)
+
+    daum = UseDaum(ft)
+    daum_blog = daum.request_search_data(ft, req_str="마포 자이")
+    send_gmail(ft, 'Daum Blogs', daum_blog)
 
     sqlite3 = UseSqlite3()
     sqlite3.delete_expired_tuple()
