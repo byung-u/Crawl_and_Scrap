@@ -201,3 +201,23 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
             nm_result_msg.append(nm_result)
     return nm_result_msg
 
+def get_realestate_daum(ft):  # NATIONAL MUSEUM OF KOREA
+    n = UseNaver(ft)
+    url = 'http://realestate.daum.net/news'
+    r = get(url)
+    rd_result_msg = []
+    if r.status_code != codes.ok:
+        print('request error, code=%d' % r.status_code)
+        return None
+
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for f in soup.find_all(ft.match_soup_class(['link_news'])):
+        rd_url = f['href']
+        if (check_duplicate('realestate_daum', rd_url)):
+            continue
+        rd_short_url = n.naver_shortener_url(ft, rd_url)
+        rd_result = '%s\n%s' % (f.text, rd_short_url)
+        rd_result_msg.append(rd_result)
+    return rd_result_msg
+
+
