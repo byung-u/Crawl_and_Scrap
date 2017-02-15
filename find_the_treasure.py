@@ -13,6 +13,7 @@ from ft_sqlite3 import UseSqlite3
 from ft_etc import (get_coex_exhibition,
                     search_stackoverflow,
                     search_nate_ranking_news,
+                    get_naver_popular_news,
                     )
 
 cgitb.enable(format='text')
@@ -138,6 +139,9 @@ def main():
     dg = UseDataKorea()
     trade_msg = dg.ft_search_my_interesting_realstate()
     ft_post_tweet_array(ft, trade_msg)
+
+    naver_popular_news = get_naver_popular_news(ft)
+    ft_post_tweet_array(ft, naver_popular_news)
 
     # Send email
     nate_rank_news = search_nate_ranking_news(ft)
