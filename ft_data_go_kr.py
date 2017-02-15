@@ -46,7 +46,7 @@ class UseDataKorea:  # www.data.go.kr
                 continue
             # if info[5].find(ft.apt_trade_apt) == -1:
             #     continue
-            ret_msg = '%s\n %s(%sm²) %s층\n %s만원\n 준공:%s 거래:%s년%s월%s일' % (
+            ret_msg = '%s %s(%sm²) %s층 %s만원 준공:%s 거래:%s년%s월%s일' % (
                         info[4], info[5], info[8], info[11], info[1],
                         info[2], info[3], info[6], info[7])
 
