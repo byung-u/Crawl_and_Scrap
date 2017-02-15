@@ -18,10 +18,10 @@ def check_duplicate(etc_type, etc_info):
     ret = s.already_sent_etc(etc_type, etc_info)
     if ret:
         print('already exist: ', etc_type, etc_info)
-        return False
+        return True
 
     s.insert_etc(etc_type, etc_info)
-    return True
+    return False
 
 
 def get_coex_exhibition(ft):
@@ -40,7 +40,7 @@ def get_coex_exhibition(ft):
             continue
 
         short_url = n.naver_shortener_url(ft, a['href'])
-        if check_duplicate('coex', short_url) is False:
+        if (check_duplicate('coex', short_url)):
             continue
 
         exhibition = a.text.splitlines()
@@ -93,7 +93,7 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
             continue
 
         short_url = n.naver_shortener_url(ft, r["items"][i]["link"])
-        if check_duplicate('stackoverflow', short_url) is False:
+        if (check_duplicate('stackoverflow', short_url)):
             continue
 
         result = '[▲ %s]\n%s\n%s\n' % (
@@ -108,14 +108,7 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
     return result_msg
 
 
-def search_nate_ranking_news(ft, category='it'):
-    if (category == 'it'):
-        search_nate_ranking_news_it(ft)
-    else:
-        print('Not supported category:%s' % category)
-
-
-def search_nate_ranking_news_it(ft):
+def search_nate_ranking_news(ft):
     url = 'http://news.nate.com/rank/interest?sc=its&p=day&date=%s' % (
             strftime("%Y%m%d", gmtime()))
 
@@ -168,7 +161,7 @@ def get_naver_popular_news(ft):
                     li.a.text.find('자이') != -1 or
                     li.a.text.find('부동산') != -1 or
                     li.a.text.find('분양') != -1):
-                if check_duplicate('naver', li.a.text) is False:
+                if (check_duplicate('naver', li.a.text)):
                     continue
                 short_url = n.naver_shortener_url(ft, li.a['href'])
                 result = '%s\n%s' % (li.a.text, short_url)
