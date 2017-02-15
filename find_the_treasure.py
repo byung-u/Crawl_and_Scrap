@@ -165,6 +165,7 @@ def main():
 
     sqlite3 = UseSqlite3()
     sqlite3.delete_expired_tuple()
+    sqlite3.close()
 
 
 if __name__ == '__main__':
