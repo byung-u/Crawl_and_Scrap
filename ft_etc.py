@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-from requests import get
+from datetime import datetime
+from requests import get, codes
 from time import gmtime, strftime
 
 from ft_naver import UseNaver
@@ -113,6 +114,7 @@ def search_nate_ranking_news(ft, category='it'):
     else:
         print('Not supported category:%s' % category)
 
+
 def search_nate_ranking_news_it(ft):
     url = 'http://news.nate.com/rank/interest?sc=its&p=day&date=%s' % (
             strftime("%Y%m%d", gmtime()))
@@ -142,5 +144,39 @@ def search_nate_ranking_news_it(ft):
                 news['href'],
                 )
             i += 1
+            result_msg.append(result)
+    return result_msg
+
+
+def get_naver_popular_news(ft):
+    now = datetime.now()
+    date = '%4d%02d%02d' % (now.year, now.month, now.day)
+
+    url = 'http://news.naver.com/main/list.nhn?sid1=001&mid=sec&mode=LSD&date=%s' % date
+    r = get(url)
+    if r.status_code != codes.ok:
+        print('request error, code=%d' % r.status_code)
+        return
+
+    n = UseNaver(ft)
+    result_msg = []
+
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for f in soup.find_all(ft.match_soup_class(['type02'])):
+        for li in f.find_all('li'):
+            if (li.a.text.find('마포') != -1 or
+                    li.a.text.find('자이') != -1 or
+                    li.a.text.find('부동산') != -1 or
+                    li.a.text.find('분양') != -1):
+                if check_duplicate('naver', li.a.text) is False:
+                    continue
+                short_url = n.naver_shortener_url(ft, li.a['href'])
+                result = '%s\n%s' % (li.a.text, short_url)
+            else:
+                continue
+
+            n_encode = result.encode('utf-8')
+            if len(n_encode) > MAX_TWEET_MSG:
+                result = short_url
             result_msg.append(result)
     return result_msg
