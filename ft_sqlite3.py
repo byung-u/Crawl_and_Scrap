@@ -16,6 +16,13 @@ class UseSqlite3:
             "news" text,
             "update_time" datetime
             )''')
+        elif mode == 'daum':
+            self.c.execute('''
+            CREATE TABLE IF NOT EXISTS sent_msg_daum (
+            "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+            "url" text,
+            "update_time" datetime
+            )''')
         elif mode == 'github':
             self.c.execute('''
             CREATE TABLE IF NOT EXISTS sent_msg_github (
@@ -59,6 +66,9 @@ class UseSqlite3:
         if mode == 'naver':
             delete_query = """
             DELETE FROM sent_msg_naver WHERE update_time < '%s'""" % time_str
+        elif mode == 'daum':
+            delete_query = """
+            DELETE FROM sent_msg_daum WHERE update_time < '%s'""" % time_str
         elif mode == 'github':
             delete_query = """
             DELETE FROM sent_msg_github WHERE update_time < '%s'""" % time_str
@@ -72,6 +82,10 @@ class UseSqlite3:
             # naver
             delete_query = """
             DELETE FROM sent_msg_naver WHERE update_time < '%s'""" % time_str
+            self.c.execute(delete_query)
+            # daum
+            delete_query = """
+            DELETE FROM sent_msg_daum WHERE update_time < '%s'""" % time_str
             self.c.execute(delete_query)
             # github
             delete_query = """
@@ -94,6 +108,19 @@ class UseSqlite3:
 
         news = news.replace("\"", "'")
         query = 'SELECT * FROM sent_msg_naver WHERE news="%s"' % news
+        self.c.execute(query)
+        data = self.c.fetchone()
+        if data is None:
+            return False
+        else:
+            return True
+
+    def already_sent_daum(self, news):
+        if news is None:
+            return False  # ignore
+
+        news = news.replace("\"", "'")
+        query = 'SELECT * FROM sent_msg_daum WHERE url="%s"' % news
         self.c.execute(query)
         data = self.c.fetchone()
         if data is None:
@@ -142,10 +169,16 @@ class UseSqlite3:
         else:
             return True
 
-    def insert_news(self, news):
+    def insert_naver_news(self, news):
         news = news.replace("\"", "'")
         query = '''INSERT INTO sent_msg_naver VALUES
         (NULL, "%s", CURRENT_TIMESTAMP)''' % news
+        self.c.execute(query)
+        self.conn.commit()
+
+    def insert_daum_blog(self, url):
+        query = '''INSERT INTO sent_msg_daum VALUES
+        (NULL, "%s", CURRENT_TIMESTAMP)''' % url
         self.c.execute(query)
         self.conn.commit()
 
