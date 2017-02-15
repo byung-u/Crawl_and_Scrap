@@ -201,14 +201,14 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
             nm_result_msg.append(nm_result)
     return nm_result_msg
 
-def get_realestate_daum(ft):  # NATIONAL MUSEUM OF KOREA
+def get_realestate_daum(ft):  
     n = UseNaver(ft)
     url = 'http://realestate.daum.net/news'
     r = get(url)
-    rd_result_msg = []
     if r.status_code != codes.ok:
         print('request error, code=%d' % r.status_code)
         return None
+    rd_result_msg = []
 
     soup = BeautifulSoup(r.text, 'html.parser')
     for f in soup.find_all(ft.match_soup_class(['link_news'])):
@@ -220,4 +220,24 @@ def get_realestate_daum(ft):  # NATIONAL MUSEUM OF KOREA
         rd_result_msg.append(rd_result)
     return rd_result_msg
 
+def get_realestate_mk(ft):  # maekyung (MBN)
+    n = UseNaver(ft)
+    url = 'http://news.mk.co.kr/newsList.php?sc=30000020'
+    r = get(url)
+    if r.status_code != codes.ok:
+        print('request error, code=%d' % r.status_code)
+        return None
+    rmk_result_msg = []
+
+    # 아, 인코딩이 너무 다르다..
+    soup = BeautifulSoup(r.content.decode('euc-kr','replace'))
+    for f in soup.find_all(ft.match_soup_class(['art_list'])):
+        rmk_url = f.a['href']
+        if (check_duplicate('realestate_mk', rmk_url)):
+            continue
+
+        rmk_short_url = n.naver_shortener_url(ft, rmk_url)
+        rmk_result = '%s\n%s' % (f.a['title'], rmk_short_url)
+        rmk_result_msg.append(rmk_result)
+    return rmk_result_msg
 

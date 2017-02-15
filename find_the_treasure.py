@@ -17,6 +17,7 @@ from ft_etc import (get_coex_exhibition,
                     get_naver_popular_news,
                     get_national_museum_exhibition,
                     get_realestate_daum,
+                    get_realestate_mk,
                     )
 
 cgitb.enable(format='text')
@@ -159,6 +160,9 @@ def main():
     rd = get_realestate_daum(ft)
     ft_post_tweet_array(ft, rd)
     
+    rmk = get_realestate_mk(ft)
+    ft_post_tweet_array(ft, rmk)
+
     # Send email
     nate_rank_news = search_nate_ranking_news(ft)
     send_gmail(ft, 'NATE IT news rank', nate_rank_news)
