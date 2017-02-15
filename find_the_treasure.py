@@ -15,6 +15,7 @@ from ft_etc import (get_coex_exhibition,
                     search_stackoverflow,
                     search_nate_ranking_news,
                     get_naver_popular_news,
+                    get_national_museum_exhibition,
                     )
 
 cgitb.enable(format='text')
@@ -150,6 +151,9 @@ def main():
 
     naver_popular_news = get_naver_popular_news(ft)
     ft_post_tweet_array(ft, naver_popular_news)
+
+    nm = get_national_museum_exhibition(ft)
+    ft_post_tweet_array(ft, nm)
 
     # Send email
     nate_rank_news = search_nate_ranking_news(ft)
