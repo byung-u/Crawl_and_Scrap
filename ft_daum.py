@@ -7,20 +7,20 @@ import re
 from bs4 import BeautifulSoup
 from requests import get
 
-# from ft_sqlite3 import UseSqlite3
+from ft_sqlite3 import UseSqlite3
 
 
 class UseDaum:
     def __init__(self, ft):
-        pass
+        self.sqlite3 = UseSqlite3('daum')
 
-    def read_other_blog_link(self, url):
+    def read_other_blog_link(self, ft, url):
         result = []
 
         r = get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
         # print(soup)
-        print('\n\n', url)
+        # print('\n\n', url)
         for a in soup.find_all(ft.match_soup_class(['view'])):
             for p in soup.find_all('p'):
                 if len(p.text.strip()) == 0:
@@ -30,7 +30,7 @@ class UseDaum:
         #    print([i], result[i].strip())
         return result
 
-    def read_daum_blog_link(self, url):
+    def read_daum_blog_link(self, ft, url):
         result = []
 
         r = get(url)
@@ -75,50 +75,28 @@ class UseDaum:
 
             for i in range(len(res['channel']['item'])):
                 # title = res["channel"]['item'][i]['title']
+                if (self.check_daum_duplicate(res["channel"]['item'][i]['link'])):
+                    continue  # True
                 m = p.match(res["channel"]['item'][i]['link'])
                 if m is None:  # other
-                    msg = self.read_other_blog_link(
-                            res["channel"]['item'][i]['link'])
+                    msg = self.read_other_blog_link(ft, res["channel"]['item'][i]['link'])
                 else:  # tistory blog
-                    msg = self.read_daum_blog_link(
-                            res["channel"]['item'][i]['link'])
+                    msg = self.read_daum_blog_link(ft, res["channel"]['item'][i]['link'])
 
                 send_msg_list.append(res["channel"]['item'][i]['link'])
                 send_msg_list.append("\n".join(msg))
 
             send_msg = "\n".join(send_msg_list)
-            send_msg = ''' %s ''' % send_msg
-            self.send_gmail(ft, req_str, send_msg)
+            return send_msg
         else:
             print("Error Code:" + rescode)
             return None
 
-    def send_gmail(self, ft, title, body):
-        import smtplib
-        from email.mime.multipart import MIMEMultipart
-        from email.mime.text import MIMEText
+    def check_daum_duplicate(self, blog_url):
+        ret = self.sqlite3.already_sent_daum(blog_url)
+        if ret:
+            print('already exist: ', blog_url)
+            return True
 
-        gmail_user = ft.google_id
-        gmail_pwd = ft.google_p
-        FROM = ft.google_from_addr
-        TO = ft.google_to_addr
-
-        msg = MIMEMultipart('alternative')
-        msg['From'] = gmail_user
-        msg['To'] = ft.google_to_addr
-        msg['Subject'] = title
-        msg.attach(MIMEText(body, 'plain', 'utf-8'))
-
-        try:
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.ehlo()
-            server.starttls()
-            server.login(gmail_user, gmail_pwd)
-            server.sendmail(FROM, TO, msg.as_string())
-            server.quit()
-            print('successfully sent the mail')
-        except BaseException as e:
-            print("failed to send mail", str(e))
-
-        # request_search_data(self.ft, "신촌그랑자이", 'blog')
-        # request_search_data(self.ft, "유아전집 4살", 'blog')
+        self.sqlite3.insert_daum_blog(blog_url)
+        return False
