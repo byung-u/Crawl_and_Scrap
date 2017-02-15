@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import configparser
 import urllib.request
 import re
 
@@ -10,22 +9,19 @@ from ft_sqlite3 import UseSqlite3
 
 
 class UseDataKorea:  # www.data.go.kr
-    def __init__(self):
-        config = configparser.ConfigParser()
-        config.readfp(open('./ft.ini'))
-        self.url = config.get('DATA_GO_KR', 'apt_trade_url')
-        self.svc_key = config.get('DATA_GO_KR', 'apt_rent_key', raw=True)
-        self.dong = config.get('DATA_GO_KR', 'dong')
-        self.district_code = config.get('DATA_GO_KR', 'district_code')
-        self.apt = config.get('DATA_GO_KR', 'apt', raw=True)
+    def __init__(self, ft):
+        pass
 
-    def ft_search_my_interesting_realstate(self):
+    def ft_search_my_interesting_realstate(self, ft):
         s = UseSqlite3('korea')
         now = datetime.now()
         time_str = '%4d%02d' % (now.year, now.month)
 
         request_url = '%s?LAWD_CD=%s&DEAL_YMD=%s&serviceKey=%s' % (
-                self.url, self.district_code, time_str, self.svc_key)
+                ft.apt_trade_url,
+                ft.apt_trade_district_code,
+                time_str,
+                ft.apt_trade_svc_key)
 
         req = urllib.request.Request(request_url)
         try:
@@ -46,9 +42,9 @@ class UseDataKorea:  # www.data.go.kr
             item = item.text
             item = re.sub('<.*?>', '|', item)
             info = item.split('|')
-            if info[4] != self.dong:
+            if info[4] != ft.apt_trade_dong:
                 continue
-            # if info[5].find(self.apt) == -1:
+            # if info[5].find(ft.apt_trade_apt) == -1:
             #     continue
             ret_msg = '%s\n %s(%sm²) %s층\n %s만원\n 준공:%s 거래:%s년%s월%s일' % (
                         info[4], info[5], info[8], info[11], info[1],
