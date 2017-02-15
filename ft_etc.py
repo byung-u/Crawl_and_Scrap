@@ -173,3 +173,29 @@ def get_naver_popular_news(ft):
                 result = short_url
             result_msg.append(result)
     return result_msg
+
+def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
+    n = UseNaver(ft)
+    MUSEUM_URL = 'https://www.museum.go.kr'
+    nm_result_msg = []
+
+    url = 'https://www.museum.go.kr/site/korm/exhiSpecialTheme/list/current?listType=list'
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for f in soup.find_all(ft.match_soup_class(['list_sty01'])):
+        for li in f.find_all('li'):
+            title = li.a
+            ex_url = '%s%s' % (MUSEUM_URL, title['href'])
+            exhibition = None
+            for img in li.find_all('img', alt=True):
+                exhibition = img['alt']
+            if exhibition is None:
+                continue
+
+            if (check_duplicate('national_museum', ex_url)):
+                continue
+            nm_short_url = n.naver_shortener_url(ft, ex_url)
+            nm_result = '%s\n%s' % (exhibition, nm_short_url)
+            nm_result_msg.append(nm_result)
+    return nm_result_msg
+
