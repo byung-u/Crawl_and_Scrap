@@ -184,6 +184,8 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
     soup = BeautifulSoup(r.text, 'html.parser')
     for f in soup.find_all(ft.match_soup_class(['list_sty01'])):
         for li in f.find_all('li'):
+            p = li.p.text.split()
+            period = ''.join(p[:3])
             title = li.a
             ex_url = '%s%s' % (MUSEUM_URL, title['href'])
             exhibition = None
@@ -195,7 +197,7 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
             if (check_duplicate('national_museum', ex_url)):
                 continue
             nm_short_url = n.naver_shortener_url(ft, ex_url)
-            nm_result = '%s\n%s' % (exhibition, nm_short_url)
+            nm_result = '%s\n%s\n%s' % (period, exhibition, nm_short_url)
             nm_result_msg.append(nm_result)
     return nm_result_msg
 
