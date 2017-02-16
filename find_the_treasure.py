@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 import configparser
 import cgitb
+import json
 import time
 from twython import Twython
 
 from ft_github import UseGithub
 from ft_data_go_kr import (UseDataKorea)
 from ft_daum import UseDaum
+from ft_defaults import MAX_TWEET_MSG
 from ft_naver import UseNaver
 from ft_sqlite3 import UseSqlite3
 
@@ -133,20 +135,41 @@ def send_gmail(ft, subject, body):
         print("failed to send mail", str(e))
 
 
-def main():
-    ft = FTbot()
+def ft_post_with_raw_timeline(ft, timeline):
+    dump_tl = json.dumps(timeline)  # dict -> json
+    tl = json.loads(dump_tl)
+    for i in tl['statuses']:
+        result = 'By @%s, %s' % (i['user']['screen_name'], i['text'])
+        if len(result.encode('utf-8')) > MAX_TWEET_MSG:
+                continue
+        ft.post_tweet(result)
 
+
+def finding_about_software(ft):
     g = UseGithub(ft)
     github_post_tweet(ft, g)
-
-    exhibition = get_coex_exhibition(ft)
-    ft_post_tweet_array(ft, exhibition)
 
     so = search_stackoverflow(ft)  # python
     ft_post_tweet_array(ft, so)
     so = search_stackoverflow(ft, "activity", "racket")
     ft_post_tweet_array(ft, so)
 
+    timeline_pop = ft.twitter.search(q='python', result_type='popular')
+    ft_post_with_raw_timeline(ft, timeline_pop)
+
+    timeline_new = ft.twitter.search(q='python', result_type='recent')
+    ft_post_with_raw_timeline(ft, timeline_new)
+
+
+def finding_about_exhibition(ft):
+    exhibition = get_coex_exhibition(ft)
+    ft_post_tweet_array(ft, exhibition)
+
+    nm = get_national_museum_exhibition(ft)
+    ft_post_tweet_array(ft, nm)
+
+
+def finding_about_realestate(ft):
     dg = UseDataKorea(ft)
     trade_msg = dg.ft_search_my_interesting_realstate(ft)
     ft_post_tweet_array(ft, trade_msg)
@@ -154,15 +177,19 @@ def main():
     naver_popular_news = get_naver_popular_news(ft)
     ft_post_tweet_array(ft, naver_popular_news)
 
-    nm = get_national_museum_exhibition(ft)
-    ft_post_tweet_array(ft, nm)
-
     rd = get_realestate_daum(ft)
     ft_post_tweet_array(ft, rd)
-    
+
     rmk = get_realestate_mk(ft)
     ft_post_tweet_array(ft, rmk)
 
+    daum = UseDaum(ft)
+    daum_blog = daum.request_search_data(ft, req_str="마포 자이")
+    if len(daum_blog) > 0:
+        send_gmail(ft, 'Daum Blogs', daum_blog)
+
+
+def finding_about_news(ft):
     # Send email
     nate_rank_news = search_nate_ranking_news(ft)
     if len(nate_rank_news) > 0:
@@ -173,10 +200,18 @@ def main():
     if len(naver_news) > 0:
         send_gmail(ft, 'NAVER IT news', naver_news)
 
-    daum = UseDaum(ft)
-    daum_blog = daum.request_search_data(ft, req_str="마포 자이")
-    if len(daum_blog) > 0:
-        send_gmail(ft, 'Daum Blogs', daum_blog)
+
+def main():
+    ft = FTbot()
+
+    # Github, Stackoverflow, Twitter
+    finding_about_software(ft)
+    # Coex, National Museum
+    finding_about_exhibition(ft)
+    # Data.go.kr, MBN, Naver. Daum
+    finding_about_realestate(ft)
+    # Nate, Daum
+    finding_about_news(ft)
 
     sqlite3 = UseSqlite3()
     sqlite3.delete_expired_tuple()
