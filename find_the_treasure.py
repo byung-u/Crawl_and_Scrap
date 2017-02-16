@@ -165,15 +165,18 @@ def main():
 
     # Send email
     nate_rank_news = search_nate_ranking_news(ft)
-    send_gmail(ft, 'NATE IT news rank', nate_rank_news)
+    if len(nate_rank_news) > 0:
+        send_gmail(ft, 'NATE IT news rank', nate_rank_news)
 
     n = UseNaver(ft)
     naver_news = n.search_today_information_and_technology(ft)
-    send_gmail(ft, 'NAVER IT news', naver_news)
+    if len(naver_news) > 0:
+        send_gmail(ft, 'NAVER IT news', naver_news)
 
     daum = UseDaum(ft)
     daum_blog = daum.request_search_data(ft, req_str="마포 자이")
-    send_gmail(ft, 'Daum Blogs', daum_blog)
+    if len(daum_blog) > 0:
+        send_gmail(ft, 'Daum Blogs', daum_blog)
 
     sqlite3 = UseSqlite3()
     sqlite3.delete_expired_tuple()
