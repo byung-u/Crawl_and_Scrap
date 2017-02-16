@@ -154,10 +154,10 @@ def finding_about_software(ft):
     so = search_stackoverflow(ft, "activity", "racket")
     ft_post_tweet_array(ft, so)
 
-    timeline_pop = ft.twitter.search(q='python', result_type='popular')
+    timeline_pop = ft.twitter.search(q='python', result_type='popular', count=5)
     ft_post_with_raw_timeline(ft, timeline_pop)
 
-    timeline_new = ft.twitter.search(q='python', result_type='recent')
+    timeline_new = ft.twitter.search(q='python', result_type='recent', count=5)
     ft_post_with_raw_timeline(ft, timeline_new)
 
 
