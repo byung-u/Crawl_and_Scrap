@@ -4,8 +4,7 @@ import datetime
 
 from github import Github
 from ft_sqlite3 import UseSqlite3
-
-MAX_TWEET_MSG = 140
+from ft_defaults import MAX_TWEET_MSG
 
 
 class UseGithub:
