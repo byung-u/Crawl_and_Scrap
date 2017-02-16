@@ -24,6 +24,20 @@ def check_duplicate(etc_type, etc_info):
     return False
 
 
+def is_exist_interesting_keyword(keyword):
+    if (keyword.find('마포') >= 0 or
+            keyword.find('자이') >= 0 or
+            keyword.find('대출') >= 0 or
+            keyword.find('부동산') >= 0 or
+            keyword.find('규제') >= 0 or
+            keyword.find('분양') >= 0):
+        # print('Got it!:', keyword)
+        return True
+    else:
+        # print('Nope:', keyword)
+        return False
+
+
 def get_coex_exhibition(ft):
     n = UseNaver(ft)
     url = 'http://www.coex.co.kr/blog/event_exhibition?list_type=list'
@@ -157,22 +171,20 @@ def get_naver_popular_news(ft):
     soup = BeautifulSoup(r.text, 'html.parser')
     for f in soup.find_all(ft.match_soup_class(['type02'])):
         for li in f.find_all('li'):
-            if (li.a.text.find('마포') != -1 or
-                    li.a.text.find('자이') != -1 or
-                    li.a.text.find('부동산') != -1 or
-                    li.a.text.find('분양') != -1):
-                if (check_duplicate('naver', li.a.text)):
-                    continue
-                short_url = n.naver_shortener_url(ft, li.a['href'])
-                result = '%s\n%s' % (li.a.text, short_url)
-            else:
+
+            if is_exist_interesting_keyword(li.a.text) is False:
                 continue
+            if (check_duplicate('naver', li.a.text)):
+                continue
+            short_url = n.naver_shortener_url(ft, li.a['href'])
+            result = '%s\n%s' % (li.a.text, short_url)
 
             n_encode = result.encode('utf-8')
             if len(n_encode) > MAX_TWEET_MSG:
                 result = short_url
             result_msg.append(result)
     return result_msg
+
 
 def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
     n = UseNaver(ft)
@@ -201,7 +213,8 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
             nm_result_msg.append(nm_result)
     return nm_result_msg
 
-def get_realestate_daum(ft):  
+
+def get_realestate_daum(ft):
     n = UseNaver(ft)
     url = 'http://realestate.daum.net/news'
     r = get(url)
@@ -212,13 +225,16 @@ def get_realestate_daum(ft):
 
     soup = BeautifulSoup(r.text, 'html.parser')
     for f in soup.find_all(ft.match_soup_class(['link_news'])):
+        if is_exist_interesting_keyword(f.text) is False:
+            continue
         rd_url = f['href']
-        if (check_duplicate('realestate_daum', rd_url)):
+        if (check_duplicate('realestate_daum', f.text)):
             continue
         rd_short_url = n.naver_shortener_url(ft, rd_url)
         rd_result = '%s\n%s' % (f.text, rd_short_url)
         rd_result_msg.append(rd_result)
     return rd_result_msg
+
 
 def get_realestate_mk(ft):  # maekyung (MBN)
     n = UseNaver(ft)
@@ -230,14 +246,17 @@ def get_realestate_mk(ft):  # maekyung (MBN)
     rmk_result_msg = []
 
     # 아, 인코딩이 너무 다르다..
-    soup = BeautifulSoup(r.content.decode('euc-kr','replace'))
+    soup = BeautifulSoup(r.content.decode('euc-kr', 'replace'))
     for f in soup.find_all(ft.match_soup_class(['art_list'])):
+        mk_title = f.a['title']
+
+        if is_exist_interesting_keyword(mk_title) is False:
+            continue
         rmk_url = f.a['href']
-        if (check_duplicate('realestate_mk', rmk_url)):
+        if (check_duplicate('realestate_mk', mk_title)):
             continue
 
         rmk_short_url = n.naver_shortener_url(ft, rmk_url)
         rmk_result = '%s\n%s' % (f.a['title'], rmk_short_url)
         rmk_result_msg.append(rmk_result)
     return rmk_result_msg
-
