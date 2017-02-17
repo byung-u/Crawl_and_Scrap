@@ -253,7 +253,7 @@ def get_realestate_mk(ft):  # maekyung (MBN)
         if is_exist_interesting_keyword(mk_title) is False:
             continue
         rmk_url = f.a['href']
-        if (check_duplicate('realestate_mk', mk_title)):
+        if (check_duplicate('realestate_mk', rmk_url)):
             continue
 
         rmk_short_url = n.naver_shortener_url(ft, rmk_url)
