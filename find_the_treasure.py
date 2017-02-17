@@ -4,7 +4,7 @@ import configparser
 import cgitb
 import json
 import time
-from twython import Twython
+from twython import Twython, TwythonError
 
 from ft_github import UseGithub
 from ft_data_go_kr import (UseDataKorea)
@@ -20,6 +20,7 @@ from ft_etc import (get_coex_exhibition,
                     get_national_museum_exhibition,
                     get_realestate_daum,
                     get_realestate_mk,
+                    get_rate_of_process_sgx,
                     )
 
 cgitb.enable(format='text')
@@ -66,11 +67,18 @@ class FTbot:  # Find the Treasure 보물찾기 봇
         self.apt_trade_apt = self.config.get('DATA_GO_KR', 'apt', raw=True)
         self.apt_trade_size = self.config.get('DATA_GO_KR', 'size', raw=True)
 
+        self.rate_of_process_key = self.config.get('DATA_GO_KR', 'rate_of_process_key', raw=True)
+        self.area_dcd = self.config.get('DATA_GO_KR', 'area_dcd', raw=True)
+        self.keyword = self.config.get('DATA_GO_KR', 'keyword', raw=True)
+
     def post_tweet(self, post_msg):
         if post_msg is not None:
             # TODO: print -> logger
             print('Tweet: ', post_msg)
-            self.twitter.update_status(status=post_msg)
+            try:
+                self.twitter.update_status(status=post_msg)
+            except TwythonError as e:
+                print(e)
         else:
             raise 'no messeage for posting'
 
@@ -154,11 +162,17 @@ def finding_about_software(ft):
     so = search_stackoverflow(ft, "activity", "racket")
     ft_post_tweet_array(ft, so)
 
-    timeline_pop = ft.twitter.search(q='python', result_type='popular', count=5)
-    ft_post_with_raw_timeline(ft, timeline_pop)
+    try:
+        timeline_pop = ft.twitter.search(q='python', result_type='popular', count=5)
+        ft_post_with_raw_timeline(ft, timeline_pop)
+    except TwythonError as e:
+        print(e)
 
-    timeline_new = ft.twitter.search(q='python', result_type='recent', count=5)
-    ft_post_with_raw_timeline(ft, timeline_new)
+    try:
+        timeline_new = ft.twitter.search(q='python', result_type='recent', count=5)
+        ft_post_with_raw_timeline(ft, timeline_new)
+    except TwythonError as e:
+        print(e)
 
 
 def finding_about_exhibition(ft):
@@ -188,6 +202,9 @@ def finding_about_realestate(ft):
     if len(daum_blog) > 0:
         send_gmail(ft, 'Daum Blogs', daum_blog)
 
+    sgx = get_rate_of_process_sgx(ft)
+    print('--------->', sgx)
+    ft.post_tweet(sgx)
 
 def finding_about_news(ft):
     # Send email
@@ -203,6 +220,7 @@ def finding_about_news(ft):
 
 def main():
     ft = FTbot()
+    sqlite3 = UseSqlite3()
 
     # Github, Stackoverflow, Twitter
     finding_about_software(ft)
@@ -213,7 +231,6 @@ def main():
     # Nate, Daum
     finding_about_news(ft)
 
-    sqlite3 = UseSqlite3()
     sqlite3.delete_expired_tuple()
     sqlite3.close()
 
