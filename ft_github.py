@@ -45,30 +45,33 @@ class UseGithub:
         s = UseSqlite3('github')
         send_msg = []
         for repo in repos:
-            lang = repo.get_languages()
-            if len(lang) == 0:
-                continue
-            ret = s.already_sent_github(repo.html_url)
-            if ret:
-                print('Already sent: ', repo.html_url)
-                continue
-            else:
-                # https://developer.github.com/v3/repos/
-                s.insert_url(repo.html_url)
-                print(lang.keys(), list(lang.keys())[0])
-                msg = '[%s(%s)]\n★ %s\n\n%s\n%s' % (
-                        list(lang.keys())[0],
-                        mode,
-                        repo.stargazers_count,
-                        repo.html_url,
-                        repo.description
-                )
-                msg_encode = msg.encode('utf-8')
-                msg_encode_len = len(msg_encode)
-                if msg_encode_len > MAX_TWEET_MSG:
-                    over_len = msg_encode_len - MAX_TWEET_MSG
-                    msg = '%s...' % msg[0:(len(msg)-over_len)]
-                send_msg.append(msg)
+            try:
+                lang = repo.get_languages()
+                if len(lang) == 0:
+                    continue
+                ret = s.already_sent_github(repo.html_url)
+                if ret:
+                    print('Already sent: ', repo.html_url)
+                    continue
+                else:
+                    # https://developer.github.com/v3/repos/
+                    s.insert_url(repo.html_url)
+                    print(lang.keys(), list(lang.keys())[0])
+                    msg = '[%s(%s)]\n★ %s\n\n%s\n%s' % (
+                            list(lang.keys())[0],
+                            mode,
+                            repo.stargazers_count,
+                            repo.html_url,
+                            repo.description
+                    )
+                    msg_encode = msg.encode('utf-8')
+                    msg_encode_len = len(msg_encode)
+                    if msg_encode_len > MAX_TWEET_MSG:
+                        over_len = msg_encode_len - MAX_TWEET_MSG
+                        msg = '%s...' % msg[0:(len(msg)-over_len)]
+                    send_msg.append(msg)
+            except:
+                print('[GITHUB] get_languages failed')
         s.close()
         return send_msg
 
