@@ -6,10 +6,9 @@ from datetime import datetime
 from requests import get, codes
 from time import gmtime, strftime
 
+from ft_defaults import MAX_TWEET_MSG
 from ft_naver import UseNaver
 from ft_sqlite3 import UseSqlite3
-
-MAX_TWEET_MSG = 140
 
 
 def check_duplicate(etc_type, etc_info):
@@ -265,7 +264,7 @@ def get_realestate_mk(ft):  # maekyung (MBN)
 
 def get_rate_of_process_sgx(ft):
     url = 'http://www.khug.or.kr/rateOfBuildingDistributionApt.do?API_KEY=%s&AREA_DCD=%s' % (
-            ft.rate_of_process_key, ft.area_dcd)    
+            ft.rate_of_process_key, ft.area_dcd)
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
     for item in soup.find_all('item'):
