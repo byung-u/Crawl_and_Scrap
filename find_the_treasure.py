@@ -21,6 +21,7 @@ from ft_etc import (get_coex_exhibition,
                     get_realestate_daum,
                     get_realestate_mk,
                     get_rate_of_process_sgx,
+                    get_hacker_news,
                     )
 
 cgitb.enable(format='text')
@@ -174,6 +175,9 @@ def finding_about_software(ft):
     except TwythonError as e:
         print(e)
 
+    hn = get_hacker_news(ft)
+    ft_post_tweet_array(ft, hn)
+
 
 def finding_about_exhibition(ft):
     exhibition = get_coex_exhibition(ft)
@@ -203,8 +207,8 @@ def finding_about_realestate(ft):
         send_gmail(ft, 'Daum Blogs', daum_blog)
 
     sgx = get_rate_of_process_sgx(ft)
-    print('--------->', sgx)
     ft.post_tweet(sgx)
+
 
 def finding_about_news(ft):
     # Send email
