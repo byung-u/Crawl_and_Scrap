@@ -13,8 +13,9 @@ MAX_TWEET_MSG = 140
 
 
 def check_duplicate(etc_type, etc_info):
-    s = UseSqlite3()
+    s = UseSqlite3('etc')
 
+    etc_info = etc_info.replace('\"', '\'')  # for query failed
     ret = s.already_sent_etc(etc_type, etc_info)
     if ret:
         print('already exist: ', etc_type, etc_info)
@@ -260,3 +261,14 @@ def get_realestate_mk(ft):  # maekyung (MBN)
         rmk_result = '%s\n%s' % (f.a['title'], rmk_short_url)
         rmk_result_msg.append(rmk_result)
     return rmk_result_msg
+
+
+def get_rate_of_process_sgx(ft):
+    url = 'http://www.khug.or.kr/rateOfBuildingDistributionApt.do?API_KEY=%s&AREA_DCD=%s' % (
+            ft.rate_of_process_key, ft.area_dcd)    
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for item in soup.find_all('item'):
+        if item.addr.text.find(ft.keyword) >= 0:
+            msg = '%s(%s)\n%s' % (item.addr.text, item.tpow_rt.text, item.bsu_nm.text)
+            return msg
