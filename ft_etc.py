@@ -271,3 +271,28 @@ def get_rate_of_process_sgx(ft):
         if item.addr.text.find(ft.keyword) >= 0:
             msg = '%s(%s)\n%s' % (item.addr.text, item.tpow_rt.text, item.bsu_nm.text)
             return msg
+
+
+def get_hacker_news(ft):  # not popular rank 61~90
+    n = UseNaver(ft)
+    hn_result_msg = []
+
+    url = 'https://news.ycombinator.com/news?p=3'
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for f in soup.find_all(ft.match_soup_class(['athing'])):
+        hn_text = f.text.strip()
+        for s in f.find_all(ft.match_soup_class(['storylink'])):
+            hn_url = s['href']
+            hn_short_url = n.naver_shortener_url(ft, hn_url)
+            break
+        hn_result = '%s\n%s' % (f.text, hn_short_url)
+        if len(hn_result) > MAX_TWEET_MSG:
+            remain_text_len = MAX_TWEET_MSG - len(hn_short_url) - 5
+            hn_text = '%s...' % hn_text[:remain_text_len]
+            hn_result = '%s\n%s' % (hn_text, hn_short_url)
+
+        if (check_duplicate('hacker_news', hn_short_url)):
+            continue
+        hn_result_msg.append(hn_result)
+    return hn_result_msg
