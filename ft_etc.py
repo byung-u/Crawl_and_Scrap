@@ -4,7 +4,7 @@
 from bs4 import BeautifulSoup
 from datetime import datetime
 from requests import get, codes
-from time import gmtime, strftime
+from time import gmtime, strftime, time
 
 from ft_defaults import MAX_TWEET_MSG
 from ft_naver import UseNaver
@@ -281,7 +281,9 @@ def get_rate_of_process_sgx(ft):
     soup = BeautifulSoup(r.text, 'html.parser')
     for item in soup.find_all('item'):
         if item.addr.text.find(ft.keyword) >= 0:
-            msg = '%s(%s)\n%s' % (item.addr.text, item.tpow_rt.text, item.bsu_nm.text)
+            msg = '%s(%s)\n%s\n%d' % (
+                    item.addr.text, item.tpow_rt.text, item.bsu_nm.text,
+                    int(time()))
             return msg
 
 
