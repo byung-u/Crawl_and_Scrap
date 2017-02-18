@@ -54,6 +54,8 @@ def get_coex_exhibition(ft):
             continue
 
         short_url = n.naver_shortener_url(ft, a['href'])
+        if short_url is None:
+            short_url = a['href']
         if (check_duplicate('coex', short_url)):
             continue
 
@@ -107,6 +109,8 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
             continue
 
         short_url = n.naver_shortener_url(ft, r["items"][i]["link"])
+        if short_url is None:
+            short_url = r["items"][i]["link"]
         if (check_duplicate('stackoverflow', short_url)):
             continue
 
@@ -177,6 +181,8 @@ def get_naver_popular_news(ft):
             if (check_duplicate('naver', li.a.text)):
                 continue
             short_url = n.naver_shortener_url(ft, li.a['href'])
+            if short_url is None:
+                short_url = li.a['href']
             result = '%s\n%s' % (li.a.text, short_url)
 
             n_encode = result.encode('utf-8')
@@ -209,6 +215,8 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
             if (check_duplicate('national_museum', ex_url)):
                 continue
             nm_short_url = n.naver_shortener_url(ft, ex_url)
+            if nm_short_url is None:
+                nm_short_url = ex_url
             nm_result = '%s\n%s\n%s' % (period, exhibition, nm_short_url)
             nm_result_msg.append(nm_result)
     return nm_result_msg
@@ -231,6 +239,8 @@ def get_realestate_daum(ft):
         if (check_duplicate('realestate_daum', f.text)):
             continue
         rd_short_url = n.naver_shortener_url(ft, rd_url)
+        if rd_short_url is None:
+            rd_short_url = rd_url
         rd_result = '%s\n%s' % (f.text, rd_short_url)
         rd_result_msg.append(rd_result)
     return rd_result_msg
@@ -257,6 +267,8 @@ def get_realestate_mk(ft):  # maekyung (MBN)
             continue
 
         rmk_short_url = n.naver_shortener_url(ft, rmk_url)
+        if short_url is None:
+            short_url = a['href']
         rmk_result = '%s\n%s' % (f.a['title'], rmk_short_url)
         rmk_result_msg.append(rmk_result)
     return rmk_result_msg
@@ -284,7 +296,10 @@ def get_hacker_news(ft):  # not popular rank 61~90
         hn_text = f.text.strip()
         for s in f.find_all(ft.match_soup_class(['storylink'])):
             hn_url = s['href']
+            print(hn_url)
             hn_short_url = n.naver_shortener_url(ft, hn_url)
+            if hn_short_url is None:
+                hn_short_url = hn_url
             break
         hn_result = '%s\n%s' % (f.text, hn_short_url)
         if len(hn_result) > MAX_TWEET_MSG:
