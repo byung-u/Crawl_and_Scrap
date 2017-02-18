@@ -207,7 +207,6 @@ def finding_about_realestate(ft):
         send_gmail(ft, 'Daum Blogs', daum_blog)
 
     sgx = get_rate_of_process_sgx(ft)
-    time.sleep(1)
     ft.post_tweet(sgx)
 
 
