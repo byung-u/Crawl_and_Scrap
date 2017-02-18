@@ -91,6 +91,10 @@ class UseNaver:
         return news
 
     def naver_shortener_url(self, ft, input_url):
+        if input_url.find('tinyurl.com') != -1:
+            # Naver openapi not support this url
+            print('tinyurl.com could not shortner')
+            return None
         encText = urllib.parse.quote(input_url)
         data = "url=" + encText
         short_url = "https://openapi.naver.com/v1/util/shorturl"
