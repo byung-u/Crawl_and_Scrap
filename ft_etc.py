@@ -301,7 +301,7 @@ def get_hacker_news(ft):  # not popular rank 61~90
             if hn_short_url is None:
                 hn_short_url = hn_url
             break
-        hn_result = '%s\n%s' % (f.text, hn_short_url)
+        hn_result = '[HackerNews]%s\n%s' % (f.text, hn_short_url)
         if len(hn_result) > MAX_TWEET_MSG:
             # -12 -> [HackerNews]
             remain_text_len = MAX_TWEET_MSG - len(hn_short_url) - 5 - 12
