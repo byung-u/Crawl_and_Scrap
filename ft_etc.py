@@ -267,8 +267,8 @@ def get_realestate_mk(ft):  # maekyung (MBN)
             continue
 
         rmk_short_url = n.naver_shortener_url(ft, rmk_url)
-        if short_url is None:
-            short_url = a['href']
+        if rmk_short_url is None:
+            rmk_short_url = a['href']
         rmk_result = '%s\n%s' % (f.a['title'], rmk_short_url)
         rmk_result_msg.append(rmk_result)
     return rmk_result_msg
