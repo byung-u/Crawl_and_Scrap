@@ -287,11 +287,11 @@ def get_rate_of_process_sgx(ft):
             return msg
 
 
-def get_hacker_news(ft):  # not popular rank 61~90
+def get_hacker_news(ft):  # not popular rank 31~60
     n = UseNaver(ft)
     hn_result_msg = []
 
-    url = 'https://news.ycombinator.com/news?p=3'
+    url = 'https://news.ycombinator.com/news?p=2'
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
     for f in soup.find_all(ft.match_soup_class(['athing'])):
