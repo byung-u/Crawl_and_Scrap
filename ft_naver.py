@@ -14,14 +14,14 @@ class UseNaver:
     def __init__(self, ft):
         self.sqlite3 = UseSqlite3('naver')
 
-    def request_search_data(self, req_str, mode='blog'):
+    def request_search_data(self, ft, req_str, mode='blog'):
         url = 'https://openapi.naver.com/v1/search/%s?query=' % mode
         encText = urllib.parse.quote(req_str)
         options = '&display=2&sort=date'
         req_url = url + encText + options
         request = urllib.request.Request(req_url)
-        request.add_header('X-Naver-Client-Id', self.naver_client_id)
-        request.add_header('X-Naver-Client-Secret', self.naver_secret)
+        request.add_header('X-Naver-Client-Id', ft.naver_client_id)
+        request.add_header('X-Naver-Client-Secret', ft.naver_secret)
         response = urllib.request.urlopen(request)
         rescode = response.getcode()
         if (rescode == 200):
@@ -39,8 +39,8 @@ class UseNaver:
         result_url = '%s/%s' % (find_question_mark[0], find_equal_mark[-1])
         return result_url
 
-    def search(self, req_str, mode='blog'):
-        result = self.request_search_data(req_str, mode)
+    def search(self, ft, req_str, mode='blog'):
+        result = self.request_search_data(ft, req_str, mode)
         if result is None:
             return
 
