@@ -56,7 +56,6 @@ class UseGithub:
                 else:
                     # https://developer.github.com/v3/repos/
                     s.insert_url(repo.html_url)
-                    print(lang.keys(), list(lang.keys())[0])
                     msg = '[%s(%s)]\n★ %s\n\n%s\n%s' % (
                             list(lang.keys())[0],
                             mode,
