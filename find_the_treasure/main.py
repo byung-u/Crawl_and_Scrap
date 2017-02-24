@@ -74,7 +74,7 @@ class FTbot:  # Find the Treasure
         self.keyword = self.config.get('DATA_GO_KR', 'keyword', raw=True)
 
         now = datetime.now()
-        log_file = './log/ft_%4d%02d%02d' % (now.year, now.month, now.day)
+        log_file = 'ft_%4d%02d%02d.log' % (now.year, now.month, now.day)
         # Write file - DEBUG, INFO, WARN, ERROR, CRITICAL
         # Console display - ERROR, CRITICAL
         ch = logging.StreamHandler()
