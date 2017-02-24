@@ -254,7 +254,7 @@ def get_realestate_mk(ft):  # maekyung (MBN)
     rmk_result_msg = []
 
     # 아, 인코딩이 너무 다르다..
-    soup = BeautifulSoup(r.content.decode('euc-kr', 'replace'))
+    soup = BeautifulSoup(r.content.decode('euc-kr', 'replace'), 'html.parser')
     for f in soup.find_all(ft.match_soup_class(['art_list'])):
         mk_title = f.a['title']
 
