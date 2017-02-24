@@ -11,13 +11,13 @@ from find_the_treasure.ft_naver import UseNaver
 from find_the_treasure.ft_sqlite3 import UseSqlite3
 
 
-def check_duplicate(etc_type, etc_info):
+def check_duplicate(ft, etc_type, etc_info):
     s = UseSqlite3('etc')
 
     etc_info = etc_info.replace('\"', '\'')  # for query failed
     ret = s.already_sent_etc(etc_type, etc_info)
     if ret:
-        print('already exist: ', etc_type, etc_info)
+        ft.logger.info('Already exist: %s %s', etc_type, etc_info)
         return True
 
     s.insert_etc(etc_type, etc_info)
@@ -31,10 +31,8 @@ def is_exist_interesting_keyword(keyword):
             keyword.find('부동산') >= 0 or
             keyword.find('규제') >= 0 or
             keyword.find('분양') >= 0):
-        # print('Got it!:', keyword)
         return True
     else:
-        # print('Nope:', keyword)
         return False
 
 
@@ -56,7 +54,7 @@ def get_coex_exhibition(ft):
         short_url = n.naver_shortener_url(ft, a['href'])
         if short_url is None:
             short_url = a['href']
-        if (check_duplicate('coex', short_url)):
+        if (check_duplicate(ft, 'coex', short_url)):
             continue
 
         exhibition = a.text.splitlines()
@@ -74,7 +72,7 @@ def get_coex_exhibition(ft):
                     exhibition[4])
             ex_encode = result.encode('utf-8')
             if len(ex_encode) > MAX_TWEET_MSG:
-                print('over 140char: ', result)
+                ft.logging.error('[COEX] over 140char: %s', result)
                 continue
         result_msg.append(result)
 
@@ -111,7 +109,7 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
         short_url = n.naver_shortener_url(ft, r["items"][i]["link"])
         if short_url is None:
             short_url = r["items"][i]["link"]
-        if (check_duplicate('stackoverflow', short_url)):
+        if (check_duplicate(ft, 'stackoverflow', short_url)):
             continue
 
         result = '[▲ %s]\n%s\n%s\n' % (
@@ -166,7 +164,7 @@ def get_naver_popular_news(ft):
     url = 'http://news.naver.com/main/list.nhn?sid1=001&mid=sec&mode=LSD&date=%s' % date
     r = get(url)
     if r.status_code != codes.ok:
-        print('request error, code=%d' % r.status_code)
+        ft.logging.error('[NAVER NEWS] request error, code=%d', r.status_code)
         return
 
     n = UseNaver(ft)
@@ -178,7 +176,7 @@ def get_naver_popular_news(ft):
 
             if is_exist_interesting_keyword(li.a.text) is False:
                 continue
-            if (check_duplicate('naver', li.a.text)):
+            if (check_duplicate(ft, 'naver', li.a.text)):
                 continue
             short_url = n.naver_shortener_url(ft, li.a['href'])
             if short_url is None:
@@ -212,7 +210,7 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
             if exhibition is None:
                 continue
 
-            if (check_duplicate('national_museum', ex_url)):
+            if (check_duplicate(ft, 'national_museum', ex_url)):
                 continue
             nm_short_url = n.naver_shortener_url(ft, ex_url)
             if nm_short_url is None:
@@ -227,7 +225,7 @@ def get_realestate_daum(ft):
     url = 'http://realestate.daum.net/news'
     r = get(url)
     if r.status_code != codes.ok:
-        print('request error, code=%d' % r.status_code)
+        ft.logging.error('[DAUM Realstate] request error, code=%d', r.status_code)
         return None
     rd_result_msg = []
 
@@ -236,7 +234,7 @@ def get_realestate_daum(ft):
         if is_exist_interesting_keyword(f.text) is False:
             continue
         rd_url = f['href']
-        if (check_duplicate('realestate_daum', f.text)):
+        if (check_duplicate(ft, 'realestate_daum', f.text)):
             continue
         rd_short_url = n.naver_shortener_url(ft, rd_url)
         if rd_short_url is None:
@@ -251,7 +249,7 @@ def get_realestate_mk(ft):  # maekyung (MBN)
     url = 'http://news.mk.co.kr/newsList.php?sc=30000020'
     r = get(url)
     if r.status_code != codes.ok:
-        print('request error, code=%d' % r.status_code)
+        ft.logging.error('[MBN Realesate] request error, code=%d', r.status_code)
         return None
     rmk_result_msg = []
 
@@ -263,12 +261,12 @@ def get_realestate_mk(ft):  # maekyung (MBN)
         if is_exist_interesting_keyword(mk_title) is False:
             continue
         rmk_url = f.a['href']
-        if (check_duplicate('realestate_mk', rmk_url)):
+        if (check_duplicate(ft, 'realestate_mk', rmk_url)):
             continue
 
         rmk_short_url = n.naver_shortener_url(ft, rmk_url)
         if rmk_short_url is None:
-            rmk_short_url = a['href']
+            rmk_short_url = rmk_url
         rmk_result = '%s\n%s' % (f.a['title'], rmk_short_url)
         rmk_result_msg.append(rmk_result)
     return rmk_result_msg
@@ -298,7 +296,6 @@ def get_hacker_news(ft):  # not popular rank 31~60
         hn_text = f.text.strip()
         for s in f.find_all(ft.match_soup_class(['storylink'])):
             hn_url = s['href']
-            print(hn_url)
             hn_short_url = n.naver_shortener_url(ft, hn_url)
             if hn_short_url is None:
                 hn_short_url = hn_url
@@ -310,7 +307,7 @@ def get_hacker_news(ft):  # not popular rank 31~60
             hn_text = '%s...' % hn_text[:remain_text_len]
             hn_result = '[HackerNews]%s\n%s' % (hn_text, hn_short_url)
 
-        if (check_duplicate('hacker_news', hn_short_url)):
+        if (check_duplicate(ft, 'hacker_news', hn_short_url)):
             continue
         hn_result_msg.append(hn_result)
     return hn_result_msg

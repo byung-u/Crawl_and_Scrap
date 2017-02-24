@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import datetime
+import sys
 
-from find_the_treasure import defaults
+from find_the_treasure.defaults import MAX_TWEET_MSG
 from find_the_treasure.ft_sqlite3 import UseSqlite3
 from github import Github
 
@@ -41,7 +42,7 @@ class UseGithub:
             )
         return repos
 
-    def sqlite_repo_process(self, mode, repos):
+    def sqlite_repo_process(self, ft, mode, repos):
         s = UseSqlite3('github')
         send_msg = []
         for repo in repos:
@@ -51,7 +52,7 @@ class UseGithub:
                     continue
                 ret = s.already_sent_github(repo.html_url)
                 if ret:
-                    print('Already sent: ', repo.html_url)
+                    ft.logger.info('Already sent: %s', repo.html_url)
                     continue
                 else:
                     # https://developer.github.com/v3/repos/
@@ -70,13 +71,14 @@ class UseGithub:
                         msg = '%s...' % msg[0:(len(msg)-over_len)]
                     send_msg.append(msg)
             except:
-                print('[GITHUB] get_languages failed')
+                ft.logger.error(
+                        '[GITHUB] repo_process failed: %s %s', repo, sys.exc_info()[0])
         s.close()
         return send_msg
 
     # Search range yesterday & today just 2 days.
     # If use over 2days, then occur rate-limiting.
-    def get_github_great_repo(self, mode='new', lang=None, min_star=0, past=1):
+    def get_github_great_repo(self, ft, mode='new', lang=None, min_star=0, past=1):
 
         date_range, star_range = self.get_check_options(past, stars=min_star)
 
@@ -84,7 +86,7 @@ class UseGithub:
         # https://developer.github.com/v3/#rate-limiting
         repos = self.get_github_repos(mode, date_range, star_range, lang)
         if repos is None:
-            print('no repos')
+            ft.logging.error('[GITHUB]no repos')
             return []
 
-        return self.sqlite_repo_process(mode, repos)
+        return self.sqlite_repo_process(ft, mode, repos)

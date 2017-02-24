@@ -6,7 +6,6 @@ import urllib.request
 from requests import get
 
 from find_the_treasure.ft_sqlite3 import UseSqlite3
-from find_the_treasure import defaults
 
 
 class UseNaver:
@@ -26,10 +25,10 @@ class UseNaver:
         if (rescode == 200):
             response_body = response.read()
             data = response_body.decode('utf-8')
-            print(data)
+            ft.logging.debug('[NAVER Search] %s', data)
             return json.loads(data)
         else:
-            print("Error Code:" + rescode)
+            ft.logging.error('[NAVER Search] Error Code: %d', rescode)
             return None
 
     def search_url_parse(self, need_parse_url):
@@ -61,7 +60,7 @@ class UseNaver:
             return all(c in classes for c in target)
         return do_match
 
-    def get_today_information_and_technology(self, soup):
+    def get_today_information_and_technology(self, ft, soup):
         it_news = {}
         url = 'http://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=105'
         for w in soup.find_all(self.match_find_all(["main_content"], 'id')):
@@ -71,7 +70,7 @@ class UseNaver:
                         continue
                     if len(a.text) < 20:
                         continue
-                    if (self.check_naver_duplicate(a['href'])):
+                    if (self.check_naver_duplicate(ft, a['href'])):
                         continue  # True
                     it_news[a['href']] = a.text
         return it_news
@@ -81,7 +80,7 @@ class UseNaver:
         r = get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
 
-        dict_news = self.get_today_information_and_technology(soup)
+        dict_news = self.get_today_information_and_technology(ft, soup)
         news = []
         # dict to list
         for key, value in dict_news.items():
@@ -92,7 +91,7 @@ class UseNaver:
     def naver_shortener_url(self, ft, input_url):
         if input_url.find('tinyurl.com') != -1:
             # Naver openapi not support this url
-            print('tinyurl.com could not shortner')
+            ft.logging.error('[NAVER] tinyurl.com could not shortner')
             return None
         encText = urllib.parse.quote(input_url)
         data = "url=" + encText
@@ -107,15 +106,15 @@ class UseNaver:
             res = json.loads(response_body.decode('utf-8'))
             return res['result']['url']
         else:
-            print("Error Code:" + rescode)
+            ft.logging.error('[NAVER] Error Code: %d', rescode)
             return None
 
-    def check_naver_duplicate(self, news_url):
-    
+    def check_naver_duplicate(self, ft, news_url):
+
         ret = self.sqlite3.already_sent_naver(news_url)
         if ret:
-            print('already exist: ', news_url)
+            ft.logger.info('Already exist: %s', news_url)
             return True
-    
+
         self.sqlite3.insert_naver_news(news_url)
         return False

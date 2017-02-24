@@ -19,15 +19,11 @@ class UseDaum:
 
         r = get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
-        # print(soup)
-        # print('\n\n', url)
         for a in soup.find_all(ft.match_soup_class(['view'])):
             for p in soup.find_all('p'):
                 if len(p.text.strip()) == 0:
                     continue
                 result.append(p.text.replace('\n', ' ').strip())
-        # for i in range(len(result)):
-        #    print([i], result[i].strip())
         return result
 
     def read_daum_blog_link(self, ft, url):
@@ -35,8 +31,6 @@ class UseDaum:
 
         r = get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
-        # print(soup)
-        # print('\n\n', url)
         for a in soup.find_all(ft.match_soup_class(['article'])):
             for p in soup.find_all('p'):
                 if len(p.text.strip()) == 0:
@@ -75,7 +69,7 @@ class UseDaum:
 
             for i in range(len(res['channel']['item'])):
                 # title = res["channel"]['item'][i]['title']
-                if (self.check_daum_duplicate(res["channel"]['item'][i]['link'])):
+                if (self.check_daum_duplicate(ft, res["channel"]['item'][i]['link'])):
                     continue  # True
                 m = p.match(res["channel"]['item'][i]['link'])
                 if m is None:  # other
@@ -89,13 +83,13 @@ class UseDaum:
             send_msg = "\n".join(send_msg_list)
             return send_msg
         else:
-            print("Error Code:" + rescode)
+            ft.logging.error("[DAUM] Error Code: %s" + rescode)
             return None
 
-    def check_daum_duplicate(self, blog_url):
+    def check_daum_duplicate(self, ft, blog_url):
         ret = self.sqlite3.already_sent_daum(blog_url)
         if ret:
-            print('already exist: ', blog_url)
+            ft.logger.info('Already exist: %s', blog_url)
             return True
 
         self.sqlite3.insert_daum_blog(blog_url)

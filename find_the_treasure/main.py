@@ -3,7 +3,8 @@
 import configparser
 import cgitb
 import json
-import time
+import logging
+from datetime import datetime
 from twython import Twython, TwythonError
 
 from find_the_treasure.ft_github import UseGithub
@@ -27,7 +28,7 @@ from find_the_treasure.ft_etc import (get_coex_exhibition,
 cgitb.enable(format='text')
 
 
-class FTbot:  # Find the Treasure 
+class FTbot:  # Find the Treasure
     def __init__(self):
         self.config = configparser.ConfigParser()
         self.config.readfp(open(defaults.CONFIG_FILE))
@@ -65,12 +66,27 @@ class FTbot:  # Find the Treasure
         self.apt_trade_svc_key = self.config.get('DATA_GO_KR', 'apt_rent_key', raw=True)
         self.apt_trade_dong = self.config.get('DATA_GO_KR', 'dong')
         self.apt_trade_district_code = self.config.get('DATA_GO_KR', 'district_code')
-        #self.apt_trade_apt = self.config.get('DATA_GO_KR', 'apt', raw=True)
-        #self.apt_trade_size = self.config.get('DATA_GO_KR', 'size', raw=True)
+        # self.apt_trade_apt = self.config.get('DATA_GO_KR', 'apt', raw=True)
+        # self.apt_trade_size = self.config.get('DATA_GO_KR', 'size', raw=True)
 
         self.rate_of_process_key = self.config.get('DATA_GO_KR', 'rate_of_process_key', raw=True)
         self.area_dcd = self.config.get('DATA_GO_KR', 'area_dcd', raw=True)
         self.keyword = self.config.get('DATA_GO_KR', 'keyword', raw=True)
+
+        now = datetime.now()
+        log_file = './log/ft_%4d%02d%02d' % (now.year, now.month, now.day)
+        # Write file - DEBUG, INFO, WARN, ERROR, CRITICAL
+        # Console display - ERROR, CRITICAL
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.ERROR)
+        formatter = logging.Formatter('[%(levelname)8s] %(message)s')
+        ch.setFormatter(formatter)
+        logging.basicConfig(filename=log_file,
+                            format='[%(asctime)s] (%(levelname)8s) %(message)s',
+                            datefmt='%I:%M:%S',
+                            level=logging.INFO)
+        self.logger = logging.getLogger('ft_logger')
+        self.logger.addHandler(ch)
 
     def post_tweet(self, post_msg):
         if post_msg is not None:
@@ -92,21 +108,20 @@ class FTbot:  # Find the Treasure
 
 def ft_post_tweet_array(ft, msg):
     for i in range(len(msg)):
-        time.sleep(1)
         ft.post_tweet(msg[i])
 
 
 def github_post_tweet(ft, g):
 
-    msg = g.get_github_great_repo('hot', 'python', 10)
+    msg = g.get_github_great_repo(ft, 'hot', 'python', 10)
     if len(msg) > 0:
         ft_post_tweet_array(ft, msg)
 
-    msg = g.get_github_great_repo('new', 'python', 0)
+    msg = g.get_github_great_repo(ft, 'new', 'python', 0)
     if len(msg) > 0:
         ft_post_tweet_array(ft, msg)
 
-    msg = g.get_github_great_repo('new', None, 3)  # None -> all language
+    msg = g.get_github_great_repo(ft, 'new', None, 3)  # None -> all language
     if len(msg) > 0:
         ft_post_tweet_array(ft, msg)
 

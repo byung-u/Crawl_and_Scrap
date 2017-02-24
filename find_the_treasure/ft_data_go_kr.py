@@ -27,13 +27,13 @@ class UseDataKorea:  # www.data.go.kr
         try:
             res = urllib.request.urlopen(req)
         except UnicodeEncodeError:
-            print('[ERR] UnicodeEncodeError')
+            ft.logging.error('[OpenAPI] UnicodeEncodeError')
             return -1
 
         data = res.read().decode('utf-8')
         soup = BeautifulSoup(data, 'html.parser')
         if (soup.resultcode.string != '00'):
-            print('[ERR]', soup.resultmsg.string)
+            ft.logging.error('[OpenAPI] %s', soup.resultmsg.string)
             return -1
 
         trade_info = []
@@ -51,7 +51,7 @@ class UseDataKorea:  # www.data.go.kr
                         info[2], info[3], info[6], info[7])
 
             if (s.already_sent_korea(ret_msg)):
-                print('Already sent: ', ret_msg)
+                ft.logger.info('Already sent: %s', ret_msg)
                 continue
             s.insert_trade_info(ret_msg)
             trade_info.append(ret_msg)
