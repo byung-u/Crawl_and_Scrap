@@ -86,7 +86,7 @@ class UseGithub:
         # https://developer.github.com/v3/#rate-limiting
         repos = self.get_github_repos(mode, date_range, star_range, lang)
         if repos is None:
-            ft.logging.error('[GITHUB]no repos')
+            ft.logger.error('[GITHUB]no repos')
             return []
 
         return self.sqlite_repo_process(ft, mode, repos)

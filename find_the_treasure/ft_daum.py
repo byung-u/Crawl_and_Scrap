@@ -83,7 +83,7 @@ class UseDaum:
             send_msg = "\n".join(send_msg_list)
             return send_msg
         else:
-            ft.logging.error("[DAUM] Error Code: %s" + rescode)
+            ft.logger.error("[DAUM] Error Code: %s" + rescode)
             return None
 
     def check_daum_duplicate(self, ft, blog_url):

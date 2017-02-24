@@ -27,13 +27,13 @@ class UseDataKorea:  # www.data.go.kr
         try:
             res = urllib.request.urlopen(req)
         except UnicodeEncodeError:
-            ft.logging.error('[OpenAPI] UnicodeEncodeError')
+            ft.logger.error('[OpenAPI] UnicodeEncodeError')
             return -1
 
         data = res.read().decode('utf-8')
         soup = BeautifulSoup(data, 'html.parser')
         if (soup.resultcode.string != '00'):
-            ft.logging.error('[OpenAPI] %s', soup.resultmsg.string)
+            ft.logger.error('[OpenAPI] %s', soup.resultmsg.string)
             return -1
 
         trade_info = []

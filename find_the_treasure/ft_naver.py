@@ -27,10 +27,10 @@ class UseNaver:
         if (rescode == 200):
             response_body = response.read()
             data = response_body.decode('utf-8')
-            ft.logging.debug('[NAVER Search] %s', data)
+            ft.logger.debug('[NAVER Search] %s', data)
             return json.loads(data)
         else:
-            ft.logging.error('[NAVER Search] Error Code: %d', rescode)
+            ft.logger.error('[NAVER Search] Error Code: %d', rescode)
             return None
 
     def search_url_parse(self, need_parse_url):
@@ -93,7 +93,7 @@ class UseNaver:
     def naver_shortener_url(self, ft, input_url):
         if input_url.find('tinyurl.com') != -1:
             # Naver openapi not support this url
-            ft.logging.error('[NAVER] tinyurl.com could not shortner')
+            ft.logger.error('[NAVER] tinyurl.com could not shortner')
             return None
         encText = urllib.parse.quote(input_url)
         data = "url=" + encText
@@ -114,7 +114,7 @@ class UseNaver:
             res = json.loads(response_body.decode('utf-8'))
             return res['result']['url']
         else:
-            ft.logging.error('[NAVER] Error Code: %d', rescode)
+            ft.logger.error('[NAVER] Error Code: %d', rescode)
             return None
 
     def check_naver_duplicate(self, ft, news_url):
