@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import json
-from bs4 import BeautifulSoup
+import sys
 import urllib.request
+
+from bs4 import BeautifulSoup
 from requests import get
 
 from find_the_treasure.ft_sqlite3 import UseSqlite3
@@ -99,7 +101,13 @@ class UseNaver:
         request = urllib.request.Request(short_url)
         request.add_header("X-Naver-Client-Id", ft.naver_client_id)
         request.add_header("X-Naver-Client-Secret", ft.naver_secret)
-        response = urllib.request.urlopen(request, data=data.encode("utf-8"))
+        try:
+            response = urllib.request.urlopen(request, data=data.encode("utf-8"))
+        except:
+            ft.logger.error(
+                    '[NAVER]url shortner failed: %s %s', input_url, sys.exc_info()[0])
+            return None
+
         rescode = response.getcode()
         if rescode == 200:
             response_body = response.read()
