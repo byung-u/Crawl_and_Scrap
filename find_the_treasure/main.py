@@ -97,7 +97,8 @@ class FTbot:  # Find the Treasure
             except TwythonError as e:
                 print(e)
         else:
-            raise 'no messeage for posting'
+            print('no messeage for posting')
+            return
 
     def match_soup_class(self, target, mode='class'):
         def do_match(tag):
@@ -107,6 +108,13 @@ class FTbot:  # Find the Treasure
 
 
 def ft_post_tweet_array(ft, msg):
+    if type(msg) is not list:
+        ft.logger.error('ft_post_tweet_array failed, %s', msg)
+        return
+    if len(msg) <= 0:
+        ft.logger.error('ft_post_tweet_array failed, no message')
+        return
+
     for i in range(len(msg)):
         ft.post_tweet(msg[i])
 
@@ -114,16 +122,13 @@ def ft_post_tweet_array(ft, msg):
 def github_post_tweet(ft, g):
 
     msg = g.get_github_great_repo(ft, 'hot', 'python', 10)
-    if len(msg) > 0:
-        ft_post_tweet_array(ft, msg)
+    ft_post_tweet_array(ft, msg)
 
     msg = g.get_github_great_repo(ft, 'new', 'python', 0)
-    if len(msg) > 0:
-        ft_post_tweet_array(ft, msg)
+    ft_post_tweet_array(ft, msg)
 
     msg = g.get_github_great_repo(ft, 'new', None, 3)  # None -> all language
-    if len(msg) > 0:
-        ft_post_tweet_array(ft, msg)
+    ft_post_tweet_array(ft, msg)
 
 
 def send_gmail(ft, subject, body):
@@ -218,7 +223,7 @@ def finding_about_realestate(ft):
 
     daum = UseDaum(ft)
     daum_blog = daum.request_search_data(ft, req_str="마포 자이")
-    if len(daum_blog) > 0:
+    if (type(daum_blog) is list) and (len(daum_blog) > 0):
         send_gmail(ft, 'Daum Blogs', daum_blog)
 
     sgx = get_rate_of_process_sgx(ft)
@@ -228,12 +233,12 @@ def finding_about_realestate(ft):
 def finding_about_news(ft):
     # Send email
     nate_rank_news = search_nate_ranking_news(ft)
-    if len(nate_rank_news) > 0:
+    if (type(nate_rank_news) is list) and (len(nate_rank_news) > 0):
         send_gmail(ft, 'NATE IT news rank', nate_rank_news)
 
     n = UseNaver(ft)
     naver_news = n.search_today_information_and_technology(ft)
-    if len(naver_news) > 0:
+    if (type(naver_news) is list) and (len(naver_news) > 0):
         send_gmail(ft, 'NAVER IT news', naver_news)
 
 

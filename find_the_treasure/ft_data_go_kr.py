@@ -56,4 +56,4 @@ class UseDataKorea:  # www.data.go.kr
             s.insert_trade_info(ret_msg)
             trade_info.append(ret_msg)
 
-        return(trade_info)
+        return trade_info

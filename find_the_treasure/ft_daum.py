@@ -3,6 +3,7 @@
 import json
 import urllib.request
 import re
+import sys
 
 from bs4 import BeautifulSoup
 from requests import get
@@ -56,7 +57,11 @@ class UseDaum:
         options = '&result=20&sort=%s&output=json' % mode
         req_url = url + encText + options
         request = urllib.request.Request(req_url)
-        response = urllib.request.urlopen(request)
+        try:
+            response = urllib.request.urlopen(request)
+        except:
+            ft.logger.error('[DAUM]search data failed: %s %s', req_str, sys.exc_info()[0])
+            return None
         rescode = response.getcode()
         if (rescode == 200):
             response_body = response.read()
