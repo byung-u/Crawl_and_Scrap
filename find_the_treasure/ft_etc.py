@@ -72,7 +72,7 @@ def get_coex_exhibition(ft):
                     exhibition[4])
             ex_encode = result.encode('utf-8')
             if len(ex_encode) > MAX_TWEET_MSG:
-                ft.logging.error('[COEX] over 140char: %s', result)
+                ft.logger.error('[COEX] over 140char: %s', result)
                 continue
         result_msg.append(result)
 
@@ -164,7 +164,7 @@ def get_naver_popular_news(ft):
     url = 'http://news.naver.com/main/list.nhn?sid1=001&mid=sec&mode=LSD&date=%s' % date
     r = get(url)
     if r.status_code != codes.ok:
-        ft.logging.error('[NAVER NEWS] request error, code=%d', r.status_code)
+        ft.logger.error('[NAVER NEWS] request error, code=%d', r.status_code)
         return
 
     n = UseNaver(ft)
@@ -225,7 +225,7 @@ def get_realestate_daum(ft):
     url = 'http://realestate.daum.net/news'
     r = get(url)
     if r.status_code != codes.ok:
-        ft.logging.error('[DAUM Realstate] request error, code=%d', r.status_code)
+        ft.logger.error('[DAUM Realstate] request error, code=%d', r.status_code)
         return None
     rd_result_msg = []
 
@@ -249,7 +249,7 @@ def get_realestate_mk(ft):  # maekyung (MBN)
     url = 'http://news.mk.co.kr/newsList.php?sc=30000020'
     r = get(url)
     if r.status_code != codes.ok:
-        ft.logging.error('[MBN Realesate] request error, code=%d', r.status_code)
+        ft.logger.error('[MBN Realesate] request error, code=%d', r.status_code)
         return None
     rmk_result_msg = []
 
