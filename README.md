@@ -36,3 +36,41 @@ Quick Start
 
 Release
 -------
+- 0.1.0 (Sunday, 18 December 2016)
+  - Github repository에서 가장 최근에 star가 증가한 repo 가져오기 (all language)
+  - Naver IT news scrawling
+
+- 0.2.0 (Monday, 26 December 2016)
+  - Post twitter 기능 추가
+  - Use naver openapi url 주소 짧게 줄이는 기능 추가 (트위터 140자 제한)
+  - Coex 전시회 조회 기능 추가
+  - Github 언어별 조회조건 추가
+  - Stackoverflow vote가 증가한 게시판 정보 수집 기능 추가 (python)
+
+- 0.3.0 (Monday, 1 January 2017)
+  - Gmail 전송기능 추가
+  - Daum 블로그 조회기능 추가
+  - Nate ranking new 조회 추가
+
+- 0.3.1 (Friday, 27 January 2017)
+  - 중복된 조회정보 전송 방지 기능 추가 (SQlite3 DB에 전송한 url 정보 저장)
+  - cgitb를 디버깅하기 위해 추가 
+  - Stackoverflow에 racket 언어 추가
+  - OpenAPI(data.go.kr) 조회 기능 추가
+  - Naver 인기있는 뉴스 조회 추가
+  - 국립중앙박물관(이촌) 전시 정보 조회 추가
+
+- 0.3.2 (Thursday, 16 February 2017)
+  - 트위터에 특정 키워드 조회 기능 추가
+  - bug fix (예외 처리 추가)
+  - OpenAPI로 공정률 조회 추가
+  - HackerNews 31~60위 조회 추가
+  - MBN 부동산 뉴스 조회 추가
+
+- 0.4.0 (Friday, 24 February 2017)
+  - setup.py 추가
+  - 소스코드 모듈화
+
+License
+-------
+Find_the_treasure is licensed under the terms of the MIT License (see the file LICENSE).
