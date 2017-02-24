@@ -1,13 +1,38 @@
-# Trying to find Treasure (@Find_the_TR twitter bot)
+find_the_treasure
+----------------
 
-## 가져오는 정보
+웹 스크롤링, openAPI 호출을 이용하여 의미있는 정보를 수집해보기 위한 파이썬 유틸리티.
+Oauth, 인증키가 너무 많이 필요한 번거로움이...
 
-- Github repository star 개수 갱신 체크해서 트위터로 전송
-- Stackoverflow upvote 갱신 체크해서 트위터로 전송
-- nate, naver, daum, MBN news 수집해서 트위터로 전송하거나 내용이 많은 것은 이메일로 전송
-- data.go.kr 관심있는 지역의 아파트 가격, 공정률 정보 트위터 전송
-- 국립중앙박물관(이촌), Coex 전시 정보 수집하여 트위터 전송
+- 요약 가능한 정보는 url주소와 함께 트위터 전송
+- 긴 정보는 개인 G메일 전송
 
-## Requirement
+Quick Start
+----------------
+- Requirements
 
-- Oauth 관련하여 각종 api key, secret 정보 등이 필요
+  - Python 3.x
+  - Twitter Oauth
+  - Github Oauth
+  - Naver Oauth
+  - Daum Oauth
+  - OpenAPI key (www.data.go.kr)
+  - Gmail account
+
+수집 정보
+---------
+- 트위터 전송
+  - Github repository star 개수 갱신 체크해서 개수가 증가한 것
+  - Stackoverflow upvote 갱신 체크 개수가 증가한 것
+  - data.go.kr 관심있는 지역의 아파트 가격, 공정률 정보
+  - 국립중앙박물관(이촌) 전시 정보 
+  - Coex 전시 정보
+  - MBN 부동산 news 
+
+- 이메일 전송
+  - nate ranking 뉴스
+  - naver IT 뉴스
+  - daum 부동산 뉴스
+
+Release
+-------
