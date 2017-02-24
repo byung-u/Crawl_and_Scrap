@@ -5,9 +5,8 @@ from bs4 import BeautifulSoup
 import urllib.request
 from requests import get
 
-from ft_sqlite3 import UseSqlite3
-
-MAX_TWEET_MSG = 140
+from find_the_treasure.ft_sqlite3 import UseSqlite3
+from find_the_treasure import defaults
 
 
 class UseNaver:

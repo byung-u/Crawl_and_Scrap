@@ -7,7 +7,7 @@ import re
 from bs4 import BeautifulSoup
 from requests import get
 
-from ft_sqlite3 import UseSqlite3
+from find_the_treasure.ft_sqlite3 import UseSqlite3
 
 
 class UseDaum:

@@ -5,7 +5,7 @@ import re
 
 from bs4 import BeautifulSoup
 from datetime import datetime
-from ft_sqlite3 import UseSqlite3
+from find_the_treasure.ft_sqlite3 import UseSqlite3
 
 
 class UseDataKorea:  # www.data.go.kr

@@ -6,9 +6,9 @@ from datetime import datetime
 from requests import get, codes
 from time import gmtime, strftime, time
 
-from ft_defaults import MAX_TWEET_MSG
-from ft_naver import UseNaver
-from ft_sqlite3 import UseSqlite3
+from find_the_treasure.defaults import MAX_TWEET_MSG
+from find_the_treasure.ft_naver import UseNaver
+from find_the_treasure.ft_sqlite3 import UseSqlite3
 
 
 def check_duplicate(etc_type, etc_info):

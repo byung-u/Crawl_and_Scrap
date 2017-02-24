@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 import datetime
 
+from find_the_treasure import defaults
+from find_the_treasure.ft_sqlite3 import UseSqlite3
 from github import Github
-from ft_sqlite3 import UseSqlite3
-from ft_defaults import MAX_TWEET_MSG
 
 
 class UseGithub:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+"""find_the_treasure web scrawling command line tool."""
 # -*- coding: utf-8 -*-
 import configparser
 import cgitb
@@ -6,31 +6,31 @@ import json
 import time
 from twython import Twython, TwythonError
 
-from ft_github import UseGithub
-from ft_data_go_kr import (UseDataKorea)
-from ft_daum import UseDaum
-from ft_defaults import MAX_TWEET_MSG
-from ft_naver import UseNaver
-from ft_sqlite3 import UseSqlite3
+from find_the_treasure.ft_github import UseGithub
+from find_the_treasure.ft_data_go_kr import (UseDataKorea)
+from find_the_treasure.ft_daum import UseDaum
+from find_the_treasure.ft_naver import UseNaver
+from find_the_treasure.ft_sqlite3 import UseSqlite3
+from find_the_treasure import defaults
 
-from ft_etc import (get_coex_exhibition,
-                    search_stackoverflow,
-                    search_nate_ranking_news,
-                    get_naver_popular_news,
-                    get_national_museum_exhibition,
-                    get_realestate_daum,
-                    get_realestate_mk,
-                    get_rate_of_process_sgx,
-                    get_hacker_news,
-                    )
+from find_the_treasure.ft_etc import (get_coex_exhibition,
+                                      search_stackoverflow,
+                                      search_nate_ranking_news,
+                                      get_naver_popular_news,
+                                      get_national_museum_exhibition,
+                                      get_realestate_daum,
+                                      get_realestate_mk,
+                                      get_rate_of_process_sgx,
+                                      get_hacker_news,
+                                      )
 
 cgitb.enable(format='text')
 
 
-class FTbot:  # Find the Treasure 보물찾기 봇
+class FTbot:  # Find the Treasure 
     def __init__(self):
         self.config = configparser.ConfigParser()
-        self.config.readfp(open('./ft.ini'))  # fix file path
+        self.config.readfp(open(defaults.CONFIG_FILE))
         self.twitter_app_key = self.config.get('TWITTER', 'app_key')
         self.twitter_app_secret = self.config.get('TWITTER', 'app_secret')
         self.twitter_access_token = self.config.get('TWITTER', 'access_token')
@@ -65,8 +65,8 @@ class FTbot:  # Find the Treasure 보물찾기 봇
         self.apt_trade_svc_key = self.config.get('DATA_GO_KR', 'apt_rent_key', raw=True)
         self.apt_trade_dong = self.config.get('DATA_GO_KR', 'dong')
         self.apt_trade_district_code = self.config.get('DATA_GO_KR', 'district_code')
-        self.apt_trade_apt = self.config.get('DATA_GO_KR', 'apt', raw=True)
-        self.apt_trade_size = self.config.get('DATA_GO_KR', 'size', raw=True)
+        #self.apt_trade_apt = self.config.get('DATA_GO_KR', 'apt', raw=True)
+        #self.apt_trade_size = self.config.get('DATA_GO_KR', 'size', raw=True)
 
         self.rate_of_process_key = self.config.get('DATA_GO_KR', 'rate_of_process_key', raw=True)
         self.area_dcd = self.config.get('DATA_GO_KR', 'area_dcd', raw=True)
@@ -149,7 +149,7 @@ def ft_post_with_raw_timeline(ft, timeline):
     tl = json.loads(dump_tl)
     for i in tl['statuses']:
         result = 'By @%s, %s' % (i['user']['screen_name'], i['text'])
-        if len(result.encode('utf-8')) > MAX_TWEET_MSG:
+        if len(result.encode('utf-8')) > defaults.MAX_TWEET_MSG:
                 continue
         ft.post_tweet(result)
 
