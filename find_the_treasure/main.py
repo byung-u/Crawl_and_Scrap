@@ -95,9 +95,9 @@ class FTbot:  # Find the Treasure
             try:
                 self.twitter.update_status(status=post_msg)
             except TwythonError as e:
-                print(e)
+                ft.logger.error('TwythonError: %s', e)
         else:
-            print('no messeage for posting')
+            ft.logger.error('no messeage for posting')
             return
 
     def match_soup_class(self, target, mode='class'):
@@ -161,7 +161,7 @@ def send_gmail(ft, subject, body):
         server.quit()
         print('[%s] successfully sent the mail' % subject)
     except BaseException as e:
-        print("failed to send mail", str(e))
+        ft.logger.error('failed to send mail: %s', str(e))
 
 
 def ft_post_with_raw_timeline(ft, timeline):
@@ -187,13 +187,13 @@ def finding_about_software(ft):
         timeline_pop = ft.twitter.search(q='python', result_type='popular', count=5)
         ft_post_with_raw_timeline(ft, timeline_pop)
     except TwythonError as e:
-        print(e)
+        ft.logger.error('TwythonError %s', e)
 
     try:
         timeline_new = ft.twitter.search(q='python', result_type='recent', count=5)
         ft_post_with_raw_timeline(ft, timeline_new)
     except TwythonError as e:
-        print(e)
+        ft.logger.error('TwythonError %s', e)
 
     hn = get_hacker_news(ft)
     ft_post_tweet_array(ft, hn)
