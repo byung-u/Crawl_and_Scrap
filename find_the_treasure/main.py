@@ -33,10 +33,8 @@ class FTbot:  # Find the Treasure
     def __init__(self):
         self.config = configparser.ConfigParser()
 
-        config_file = defaults.CONFIG_FILE
-        if not os.path.exists(config_file):
-            config_file = './ft.ini'
-            print('is not found ?')
+        config_file = os.path.expanduser(defaults.CONFIG_FILE)
+        print(config_file)
         self.config.readfp(open(config_file))
 
         self.twitter_app_key = self.config.get('TWITTER', 'app_key')
@@ -104,7 +102,7 @@ class FTbot:  # Find the Treasure
             except TwythonError as e:
                 self.logger.error('TwythonError: %s', e)
         else:
-            ft.logger.error('no messeage for posting')
+            self.logger.error('no messeage for posting')
             return
 
     def match_soup_class(self, target, mode='class'):
@@ -112,6 +110,15 @@ class FTbot:  # Find the Treasure
             classes = tag.get(mode, [])
             return all(c in classes for c in target)
         return do_match
+
+    def check_max_tweet_msg(self, msg):
+        msg_encode = msg.encode('utf-8')
+        msg_len = len(msg_encode)
+        if msg_len > defaults.MAX_TWEET_MSG:
+            over_len = msg_len - defaults.MAX_TWEET_MSG + 3  # 3 means '...'
+            msg_encode = msg_encode[0:(msg_len-over_len)]
+            msg = '%s...' % msg_encode.decode("utf-8", "ignore")
+        return msg
 
 
 def ft_post_tweet_array(ft, msg):

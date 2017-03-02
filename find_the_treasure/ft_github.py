@@ -3,7 +3,6 @@
 import datetime
 import sys
 
-from find_the_treasure.defaults import MAX_TWEET_MSG
 from find_the_treasure.ft_sqlite3 import UseSqlite3
 from github import Github
 
@@ -64,11 +63,7 @@ class UseGithub:
                             repo.html_url,
                             repo.description
                     )
-                    msg_encode = msg.encode('utf-8')
-                    msg_encode_len = len(msg_encode)
-                    if msg_encode_len > MAX_TWEET_MSG:
-                        over_len = msg_encode_len - MAX_TWEET_MSG
-                        msg = '%s...' % msg[0:(len(msg)-over_len)]
+                    msg = ft.check_max_tweet_msg(msg)
                     send_msg.append(msg)
             except:
                 ft.logger.error(

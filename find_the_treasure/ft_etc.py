@@ -6,7 +6,6 @@ from datetime import datetime
 from requests import get, codes
 from time import gmtime, strftime, time
 
-from find_the_treasure.defaults import MAX_TWEET_MSG
 from find_the_treasure.ft_naver import UseNaver
 from find_the_treasure.ft_sqlite3 import UseSqlite3
 
@@ -58,23 +57,14 @@ def get_coex_exhibition(ft):
             continue
 
         exhibition = a.text.splitlines()
-        result = '%s\n%s\n\n%s\n%s\n요금:%s' % (
+        coex_result = '%s\n%s\n\n%s\n%s\n요금:%s' % (
                 exhibition[3],
                 short_url,
                 exhibition[4],
                 exhibition[6],
                 exhibition[5].lstrip('\\'))
-        ex_encode = result.encode('utf-8')
-        if len(ex_encode) > MAX_TWEET_MSG:
-            # one more try
-            result = '%s\n%s' % (
-                    exhibition[3],
-                    exhibition[4])
-            ex_encode = result.encode('utf-8')
-            if len(ex_encode) > MAX_TWEET_MSG:
-                ft.logger.error('[COEX] over 140char: %s', result)
-                continue
-        result_msg.append(result)
+        coex_result = ft.check_max_tweet_msg(coex_result)
+        result_msg.append(coex_result)
 
     return result_msg
 
@@ -112,15 +102,12 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
         if (check_duplicate(ft, 'stackoverflow', short_url)):
             continue
 
-        result = '[▲ %s]\n%s\n%s\n' % (
+        so_result = '[▲ %s]\n%s\n%s\n' % (
                 r["items"][i]["score"],
                 r["items"][i]["title"],
                 short_url)
-
-        so_encode = result.encode('utf-8')
-        if len(so_encode) > MAX_TWEET_MSG:
-            continue
-        result_msg.append(result)
+        so_result = ft.check_max_tweet_msg(so_result)
+        result_msg.append(so_result)
     return result_msg
 
 
@@ -181,12 +168,9 @@ def get_naver_popular_news(ft):
             short_url = n.naver_shortener_url(ft, li.a['href'])
             if short_url is None:
                 short_url = li.a['href']
-            result = '%s\n%s' % (li.a.text, short_url)
-
-            n_encode = result.encode('utf-8')
-            if len(n_encode) > MAX_TWEET_MSG:
-                result = short_url
-            result_msg.append(result)
+            n_result = '%s\n%s' % (li.a.text, short_url)
+            n_result = ft.check_max_tweet_msg(n_result)
+            result_msg.append(n_result)
     return result_msg
 
 
@@ -302,12 +286,7 @@ def get_hacker_news(ft):  # not popular rank 31~60
             if hn_short_url is None:
                 hn_short_url = hn_url
             break
-        hn_result = '[HackerNews]%s\n%s' % (f.text, hn_short_url)
-        if len(hn_result) > MAX_TWEET_MSG:
-            # -12 -> [HackerNews]
-            remain_text_len = MAX_TWEET_MSG - len(hn_short_url) - 5 - 12
-            hn_text = '%s...' % hn_text[:remain_text_len]
-            hn_result = '[HackerNews]%s\n%s' % (hn_text, hn_short_url)
-
+        hn_result = '[HackerNews]\nrank:%s\n%s' % (hn_text, hn_short_url)
+        hn_result = ft.check_max_tweet_msg(hn_result)
         hn_result_msg.append(hn_result)
     return hn_result_msg
