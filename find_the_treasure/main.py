@@ -34,7 +34,6 @@ class FTbot:  # Find the Treasure
         self.config = configparser.ConfigParser()
 
         config_file = os.path.expanduser(defaults.CONFIG_FILE)
-        print(config_file)
         self.config.readfp(open(config_file))
 
         self.twitter_app_key = self.config.get('TWITTER', 'app_key')
