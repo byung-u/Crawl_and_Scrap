@@ -4,6 +4,7 @@ import configparser
 import cgitb
 import json
 import logging
+import os
 from datetime import datetime
 from twython import Twython, TwythonError
 
@@ -31,7 +32,13 @@ cgitb.enable(format='text')
 class FTbot:  # Find the Treasure
     def __init__(self):
         self.config = configparser.ConfigParser()
-        self.config.readfp(open(defaults.CONFIG_FILE))
+
+        config_file = defaults.CONFIG_FILE
+        if not os.path.exists(config_file):
+            config_file = './ft.ini'
+            print('is not found ?')
+        self.config.readfp(open(config_file))
+
         self.twitter_app_key = self.config.get('TWITTER', 'app_key')
         self.twitter_app_secret = self.config.get('TWITTER', 'app_secret')
         self.twitter_access_token = self.config.get('TWITTER', 'access_token')
@@ -95,7 +102,7 @@ class FTbot:  # Find the Treasure
             try:
                 self.twitter.update_status(status=post_msg)
             except TwythonError as e:
-                ft.logger.error('TwythonError: %s', e)
+                self.logger.error('TwythonError: %s', e)
         else:
             ft.logger.error('no messeage for posting')
             return
