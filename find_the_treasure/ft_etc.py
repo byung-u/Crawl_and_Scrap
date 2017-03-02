@@ -176,7 +176,7 @@ def get_naver_popular_news(ft):
 
             if is_exist_interesting_keyword(li.a.text) is False:
                 continue
-            if (check_duplicate(ft, 'naver', li.a.text)):
+            if (check_duplicate(ft, 'naver', li.a['href'])):
                 continue
             short_url = n.naver_shortener_url(ft, li.a['href'])
             if short_url is None:
@@ -296,6 +296,8 @@ def get_hacker_news(ft):  # not popular rank 31~60
         hn_text = f.text.strip()
         for s in f.find_all(ft.match_soup_class(['storylink'])):
             hn_url = s['href']
+            if (check_duplicate(ft, 'hacker_news', hn_url)):
+                continue
             hn_short_url = n.naver_shortener_url(ft, hn_url)
             if hn_short_url is None:
                 hn_short_url = hn_url
@@ -307,7 +309,5 @@ def get_hacker_news(ft):  # not popular rank 31~60
             hn_text = '%s...' % hn_text[:remain_text_len]
             hn_result = '[HackerNews]%s\n%s' % (hn_text, hn_short_url)
 
-        if (check_duplicate(ft, 'hacker_news', hn_short_url)):
-            continue
         hn_result_msg.append(hn_result)
     return hn_result_msg
