@@ -285,8 +285,9 @@ def get_hacker_news(ft):  # not popular rank 31~60
             hn_short_url = n.naver_shortener_url(ft, hn_url)
             if hn_short_url is None:
                 hn_short_url = hn_url
+            hn_result = '[HackerNews]\nRank:%s\n%s' % (hn_text, hn_short_url)
+            hn_result = ft.check_max_tweet_msg(hn_result)
+            hn_result_msg.append(hn_result)
             break
-        hn_result = '[HackerNews]\nrank:%s\n%s' % (hn_text, hn_short_url)
-        hn_result = ft.check_max_tweet_msg(hn_result)
-        hn_result_msg.append(hn_result)
+
     return hn_result_msg
