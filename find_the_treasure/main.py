@@ -92,16 +92,15 @@ class FTbot:  # Find the Treasure
         self.logger = logging.getLogger('ft_logger')
         self.logger.addHandler(ch)
 
-    def post_tweet(self, post_msg):
+    def post_tweet(self, post_msg, subject='None'):
         if post_msg is not None:
-            # TODO: print -> logger
-            print('Tweet: ', post_msg)
             try:
                 self.twitter.update_status(status=post_msg)
+                self.logger.info('Tweet: %s', post_msg)
             except TwythonError as e:
                 self.logger.error('TwythonError: %s', e)
         else:
-            self.logger.error('no messeage for posting')
+            self.logger.error('[%s] no messeage for posting', subject)
             return
 
     def match_soup_class(self, target, mode='class'):
@@ -120,28 +119,28 @@ class FTbot:  # Find the Treasure
         return msg
 
 
-def ft_post_tweet_array(ft, msg):
+def ft_post_tweet_array(ft, msg, subject=None):
     if type(msg) is not list:
-        ft.logger.error('ft_post_tweet_array failed, %s', msg)
+        ft.logger.error('ft_post_tweet_array failed, [%s] %s', subject, msg)
         return
     if len(msg) <= 0:
-        ft.logger.error('ft_post_tweet_array failed, no message')
+        ft.logger.error('ft_post_tweet_array failed, [%s] no message', subject)
         return
 
     for i in range(len(msg)):
-        ft.post_tweet(msg[i])
+        ft.post_tweet(msg[i], subject)
 
 
 def github_post_tweet(ft, g):
 
     msg = g.get_github_great_repo(ft, 'hot', 'python', 10)
-    ft_post_tweet_array(ft, msg)
+    ft_post_tweet_array(ft, msg, 'Github')
 
     msg = g.get_github_great_repo(ft, 'new', 'python', 0)
-    ft_post_tweet_array(ft, msg)
+    ft_post_tweet_array(ft, msg, 'Github')
 
     msg = g.get_github_great_repo(ft, 'new', None, 3)  # None -> all language
-    ft_post_tweet_array(ft, msg)
+    ft_post_tweet_array(ft, msg, 'Github')
 
 
 def send_gmail(ft, subject, body):
@@ -184,7 +183,7 @@ def ft_post_with_raw_timeline(ft, timeline):
         result = 'By @%s, %s' % (i['user']['screen_name'], i['text'])
         if len(result.encode('utf-8')) > defaults.MAX_TWEET_MSG:
                 continue
-        ft.post_tweet(result)
+        ft.post_tweet(result, 'raw_timeline')
 
 
 def finding_about_software(ft):
@@ -192,9 +191,9 @@ def finding_about_software(ft):
     github_post_tweet(ft, g)
 
     so = search_stackoverflow(ft)  # python
-    ft_post_tweet_array(ft, so)
+    ft_post_tweet_array(ft, so, 'Stackoverflow')
     so = search_stackoverflow(ft, "activity", "racket")
-    ft_post_tweet_array(ft, so)
+    ft_post_tweet_array(ft, so, 'Stackoverflow')
 
     try:
         timeline_pop = ft.twitter.search(q='python', result_type='popular', count=5)
@@ -209,38 +208,38 @@ def finding_about_software(ft):
         ft.logger.error('TwythonError %s', e)
 
     hn = get_hacker_news(ft)
-    ft_post_tweet_array(ft, hn)
+    ft_post_tweet_array(ft, hn, 'Hacker News')
 
 
 def finding_about_exhibition(ft):
     exhibition = get_coex_exhibition(ft)
-    ft_post_tweet_array(ft, exhibition)
+    ft_post_tweet_array(ft, exhibition, 'Coex')
 
     nm = get_national_museum_exhibition(ft)
-    ft_post_tweet_array(ft, nm)
+    ft_post_tweet_array(ft, nm, 'National Museum')
 
 
 def finding_about_realestate(ft):
     dg = UseDataKorea(ft)
-    trade_msg = dg.ft_search_my_interesting_realstate(ft)
-    ft_post_tweet_array(ft, trade_msg)
+    trade_msg = dg.ft_search_my_interesting_realestate(ft)
+    ft_post_tweet_array(ft, trade_msg, 'Realestate korea')
 
     naver_popular_news = get_naver_popular_news(ft)
-    ft_post_tweet_array(ft, naver_popular_news)
+    ft_post_tweet_array(ft, naver_popular_news, 'Naver news')
 
     rd = get_realestate_daum(ft)
-    ft_post_tweet_array(ft, rd)
+    ft_post_tweet_array(ft, rd, 'Daum realestate')
 
     rmk = get_realestate_mk(ft)
-    ft_post_tweet_array(ft, rmk)
+    ft_post_tweet_array(ft, rmk, 'MBN realestate')
 
     daum = UseDaum(ft)
     daum_blog = daum.request_search_data(ft, req_str="마포 자이")
     if (type(daum_blog) is list) and (len(daum_blog) > 0):
         send_gmail(ft, 'Daum Blogs', daum_blog)
 
-    sgx = get_rate_of_process_sgx(ft)
-    ft.post_tweet(sgx)
+    sgx = get_rate_of_process_sgx(ft)  # sgx: 신/그/자
+    ft.post_tweet(sgx, 'rate of process')
 
 
 def finding_about_news(ft):
