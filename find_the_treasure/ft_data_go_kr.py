@@ -12,7 +12,7 @@ class UseDataKorea:  # www.data.go.kr
     def __init__(self, ft):
         pass
 
-    def ft_search_my_interesting_realstate(self, ft):
+    def ft_search_my_interesting_realestate(self, ft):
         s = UseSqlite3('korea')
         now = datetime.now()
         time_str = '%4d%02d' % (now.year, now.month)
