@@ -71,6 +71,11 @@ Release
   - setup.py 추가
   - 소스코드 모듈화
 
+- 0.4.1 (current)
+  - logging 추가, logger 사용
+  - configure file path 변경 (./ -> ~/)
+  - 140 초과 메시지 전송 기능 추가, 초과되는 문자열 삭제 후 포스팅
+
 License
 -------
 Find_the_treasure is licensed under the terms of the MIT License (see the file LICENSE).
