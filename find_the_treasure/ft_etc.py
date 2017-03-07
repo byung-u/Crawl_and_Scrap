@@ -301,7 +301,7 @@ def get_recruit_people_info(ft):  # 각종 모집 공고
     soup = BeautifulSoup(r.text, 'html.parser')
     for f in soup.find_all(ft.match_soup_class(['title'])):
         mozip = f.text.strip()
-        if mozip == '제목':
+        if mozip == '제목' or mozip.find('대학생') != -1:
             continue
         else:
             mozip_url = '%s%s' % (root_url, f.a['href'])
