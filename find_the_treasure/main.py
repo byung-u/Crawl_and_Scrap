@@ -24,6 +24,7 @@ from find_the_treasure.ft_etc import (get_coex_exhibition,
                                       get_realestate_mk,
                                       get_rate_of_process_sgx,
                                       get_hacker_news,
+                                      get_recruit_people_info,
                                       )
 
 cgitb.enable(format='text')
@@ -255,6 +256,12 @@ def finding_about_news(ft):
         send_gmail(ft, 'NAVER IT news', naver_news)
 
 
+def finding_about_etc(ft):
+
+    recruit_info = get_recruit_people_info(ft)
+    ft_post_tweet_array(ft, recruit_info, 'Recruit Info')
+
+
 def main():
     ft = FTbot()
     sqlite3 = UseSqlite3()
@@ -267,6 +274,8 @@ def main():
     finding_about_realestate(ft)
     # Nate, Daum
     finding_about_news(ft)
+    # etc
+    finding_about_etc(ft)
 
     sqlite3.delete_expired_tuple()
     sqlite3.close()

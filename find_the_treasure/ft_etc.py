@@ -291,3 +291,23 @@ def get_hacker_news(ft):  # not popular rank 31~60
             break
 
     return hn_result_msg
+
+
+def get_recruit_people_info(ft):  # 각종 모집 공고
+    mz_result_msg = []
+    root_url = 'http://goodmonitoring.com'
+    url = 'http://goodmonitoring.com/xe/moi'
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for f in soup.find_all(ft.match_soup_class(['title'])):
+        mozip = f.text.strip()
+        if mozip == '제목':
+            continue
+        else:
+            mozip_url = '%s%s' % (root_url, f.a['href'])
+            if (check_duplicate(ft, 'recruit_people', mozip_url)):
+                continue
+            mz_result = '%s\n%s' % (mozip, mozip_url)
+            mz_result_msg.append(mz_result)
+
+    return mz_result_msg
