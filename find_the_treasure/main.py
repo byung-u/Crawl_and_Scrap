@@ -33,7 +33,7 @@ class FTbot:  # Find the Treasure
     def __init__(self):
         self.config = configparser.ConfigParser()
 
-        config_file = os.path.expanduser(defaults.CONFIG_FILE)
+        config_file = os.path.expanduser(defaults.CONFIG_FILE_PATH)
         self.config.readfp(open(config_file))
 
         self.twitter_app_key = self.config.get('TWITTER', 'app_key')
@@ -78,7 +78,8 @@ class FTbot:  # Find the Treasure
         self.keyword = self.config.get('DATA_GO_KR', 'keyword', raw=True)
 
         now = datetime.now()
-        log_file = 'ft_%4d%02d%02d.log' % (now.year, now.month, now.day)
+        log_file = '%s/log/ft_%4d%02d%02d.log' % (
+                os.getenv("HOME"), now.year, now.month, now.day)
         # Write file - DEBUG, INFO, WARN, ERROR, CRITICAL
         # Console display - ERROR, CRITICAL
         ch = logging.StreamHandler()

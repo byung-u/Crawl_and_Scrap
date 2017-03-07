@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 import sqlite3
 from datetime import datetime
+from find_the_treasure import defaults
 
 
 class UseSqlite3:
     def __init__(self, mode=None):
-        self.conn = sqlite3.connect('sent_msg.db')
+        self.conn = sqlite3.connect(defaults.DB_FILE_PATH)
         self.c = self.conn.cursor()
 
         if mode == 'naver':
