@@ -25,6 +25,7 @@ from find_the_treasure.ft_etc import (get_coex_exhibition,
                                       get_rate_of_process_sgx,
                                       get_hacker_news,
                                       get_recruit_people_info,
+                                      get_rfc_draft_list,
                                       )
 
 cgitb.enable(format='text')
@@ -208,6 +209,9 @@ def finding_about_software(ft):
     hn = get_hacker_news(ft)
     ft_post_tweet_array(ft, hn, 'Hacker News')
 
+    rfc_draft = get_rfc_draft_list(ft)
+    ft_post_tweet_array(ft, rfc_draft, 'RFC DRAFT')
+
 
 def finding_about_exhibition(ft):
     exhibition = get_coex_exhibition(ft)
@@ -241,7 +245,6 @@ def finding_about_realestate(ft):
     daum_blog = daum.request_search_data(ft, req_str="마포 자이")
     if (type(daum_blog) is list) and (len(daum_blog) > 0):
         send_gmail(ft, 'Daum Blogs', daum_blog)
-
 
 
 def finding_about_news(ft):
