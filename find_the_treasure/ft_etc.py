@@ -155,9 +155,7 @@ def get_naver_popular_news(ft):
         ft.logger.error('[NAVER NEWS] request error, code=%d', r.status_code)
         return
 
-    n = UseNaver(ft)
     result_msg = []
-
     soup = BeautifulSoup(r.text, 'html.parser')
     for f in soup.find_all(ft.match_soup_class(['type02'])):
         for li in f.find_all('li'):
@@ -166,11 +164,7 @@ def get_naver_popular_news(ft):
                 continue
             if (check_duplicate(ft, 'naver', li.a['href'])):
                 continue
-            short_url = n.naver_shortener_url(ft, li.a['href'])
-            if short_url is None:
-                short_url = li.a['href']
-            n_result = '%s\n%s' % (li.a.text, short_url)
-            n_result = ft.check_max_tweet_msg(n_result)
+            n_result = '%s\n%s' % (li.a.text, li.a['href'])
             result_msg.append(n_result)
     return result_msg
 
@@ -206,7 +200,6 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
 
 
 def get_realestate_daum(ft):
-    n = UseNaver(ft)
     url = 'http://realestate.daum.net/news'
     r = get(url)
     if r.status_code != codes.ok:
@@ -219,19 +212,14 @@ def get_realestate_daum(ft):
     for f in soup.find_all(ft.match_soup_class(['link_news'])):
         if is_exist_interesting_keyword(f.text) is False:
             continue
-        rd_url = f['href']
-        if (check_duplicate(ft, 'realestate_daum', f.text)):
+        if (check_duplicate(ft, 'realestate_daum', f['href'])):
             continue
-        rd_short_url = n.naver_shortener_url(ft, rd_url)
-        if rd_short_url is None:
-            rd_short_url = rd_url
-        rd_result = '%s\n%s' % (f.text, rd_short_url)
+        rd_result = '%s\n%s' % (f.text, f['href'])
         rd_result_msg.append(rd_result)
     return rd_result_msg
 
 
 def get_realestate_mk(ft):  # maekyung (MBN)
-    n = UseNaver(ft)
     url = 'http://news.mk.co.kr/newsList.php?sc=30000020'
     r = get(url)
     if r.status_code != codes.ok:
@@ -246,14 +234,9 @@ def get_realestate_mk(ft):  # maekyung (MBN)
 
         if is_exist_interesting_keyword(mk_title) is False:
             continue
-        rmk_url = f.a['href']
-        if (check_duplicate(ft, 'realestate_mk', rmk_url)):
+        if (check_duplicate(ft, 'realestate_mk', f.a['href'])):
             continue
-
-        rmk_short_url = n.naver_shortener_url(ft, rmk_url)
-        if rmk_short_url is None:
-            rmk_short_url = rmk_url
-        rmk_result = '%s\n%s' % (f.a['title'], rmk_short_url)
+        rmk_result = '%s\n%s' % (f.a['title'], rmk_url)
         rmk_result_msg.append(rmk_result)
     return rmk_result_msg
 
