@@ -116,7 +116,7 @@ class FTbot:  # Find the Treasure
         msg_encode = msg.encode('utf-8')
         msg_len = len(msg_encode)
         if msg_len > defaults.MAX_TWEET_MSG:
-            over_len = msg_len - defaults.MAX_TWEET_MSG + 3  # 3 means '...'
+            over_len = msg_len - defaults.MAX_TWEET_MSG + 3 + 2  # ... + margin
             msg_encode = msg_encode[0:(msg_len-over_len)]
             msg = '%s...' % msg_encode.decode("utf-8", "ignore")
             self.logger.info('[Over 140]%s', msg)
