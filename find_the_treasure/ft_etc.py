@@ -236,7 +236,7 @@ def get_realestate_mk(ft):  # maekyung (MBN)
             continue
         if (check_duplicate(ft, 'realestate_mk', f.a['href'])):
             continue
-        rmk_result = '%s\n%s' % (f.a['title'], rmk_url)
+        rmk_result = '%s\n%s' % (f.a['title'], f.a['href'])
         rmk_result_msg.append(rmk_result)
     return rmk_result_msg
 
