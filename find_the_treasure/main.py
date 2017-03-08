@@ -199,7 +199,8 @@ def finding_about_software(ft):
     ft_post_tweet_array(ft, so, 'Stackoverflow')
 
     try:
-        timeline_pop = ft.twitter.search(q='python', result_type='popular', count=5)
+        timeline_pop = ft.twitter.search(
+                q='python', result_type='popular', count=5)
         ft_post_with_raw_timeline(ft, timeline_pop)
     except TwythonError as e:
         ft.logger.error('TwythonError %s', e)
@@ -221,22 +222,26 @@ def finding_about_realestate(ft):
     trade_msg = dg.ft_search_my_interesting_realestate(ft)
     ft_post_tweet_array(ft, trade_msg, 'Realestate korea')
 
+    sgx = get_rate_of_process_sgx(ft)  # sgx: 신/그/자
+    ft.post_tweet(sgx, 'rate of process')
+
     naver_popular_news = get_naver_popular_news(ft)
-    ft_post_tweet_array(ft, naver_popular_news, 'Naver news')
+    if (type(naver_popular_news) is list) and (len(naver_popular_news) > 0):
+        send_gmail(ft, 'Naver popular news', naver_popular_news)
 
     rd = get_realestate_daum(ft)
-    ft_post_tweet_array(ft, rd, 'Daum realestate')
+    if (type(rd) is list) and (len(rd) > 0):
+        send_gmail(ft, 'Daum realestate', rd)
 
     rmk = get_realestate_mk(ft)
-    ft_post_tweet_array(ft, rmk, 'MBN realestate')
+    if (type(rmk) is list) and (len(rmk) > 0):
+        send_gmail(ft, 'MBN realestate', rmk)
 
     daum = UseDaum(ft)
     daum_blog = daum.request_search_data(ft, req_str="마포 자이")
     if (type(daum_blog) is list) and (len(daum_blog) > 0):
         send_gmail(ft, 'Daum Blogs', daum_blog)
 
-    sgx = get_rate_of_process_sgx(ft)  # sgx: 신/그/자
-    ft.post_tweet(sgx, 'rate of process')
 
 
 def finding_about_news(ft):
