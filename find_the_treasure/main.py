@@ -204,12 +204,6 @@ def finding_about_software(ft):
     except TwythonError as e:
         ft.logger.error('TwythonError %s', e)
 
-    try:
-        timeline_new = ft.twitter.search(q='python', result_type='recent', count=5)
-        ft_post_with_raw_timeline(ft, timeline_new)
-    except TwythonError as e:
-        ft.logger.error('TwythonError %s', e)
-
     hn = get_hacker_news(ft)
     ft_post_tweet_array(ft, hn, 'Hacker News')
 
