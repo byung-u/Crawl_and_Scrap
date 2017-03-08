@@ -76,6 +76,9 @@ Release
   - configure file path 변경 (./ -> ~/)
   - 140 초과 메시지 전송 기능 추가, 초과되는 문자열 삭제 후 포스팅
 
+  - 모집공고 조회 추가
+  - RFC draft 문서중 AUTH48-DONE(Final approvals are complete) 상태 조회 추가
+
 License
 -------
 Find_the_treasure is licensed under the terms of the MIT License (see the file LICENSE).
