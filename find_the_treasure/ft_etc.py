@@ -6,6 +6,7 @@ from datetime import datetime
 from requests import get, codes
 from time import gmtime, strftime, time
 
+from find_the_treasure import defaults
 from find_the_treasure.ft_naver import UseNaver
 from find_the_treasure.ft_sqlite3 import UseSqlite3
 
@@ -209,7 +210,8 @@ def get_realestate_daum(ft):
     url = 'http://realestate.daum.net/news'
     r = get(url)
     if r.status_code != codes.ok:
-        ft.logger.error('[DAUM Realstate] request error, code=%d', r.status_code)
+        ft.logger.error(
+                '[DAUM Realstate] request error, code=%d', r.status_code)
         return None
     rd_result_msg = []
 
@@ -311,3 +313,41 @@ def get_recruit_people_info(ft):  # 각종 모집 공고
             mz_result_msg.append(mz_result)
 
     return mz_result_msg
+
+
+def get_rfc_draft_list(ft):  # get state 'AUTH48-DONE' only
+    url = 'https://www.rfc-editor.org/current_queue.php'
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    rfc_draft_msg = []
+
+    for n in soup.find_all(ft.match_soup_class(['narrowcolumn'])):
+        for tr in n.find_all('tr'):
+            try:
+                tr.a['href']
+            except TypeError:
+                continue
+            cnt = 0
+            for td in tr.find_all('td'):
+                if cnt == 0:  # state
+                    # AUTH48-DONE = Final approvals are complete
+                    if td.text.find('AUTH48-DONE') == -1:
+                        break
+                    else:
+                        state = td.text
+                elif cnt == 3:  # draft name and author, weeks in state/queue
+                    title = td.text.split()
+                    version = title[0].split('-')
+                    for b in tr.find_all('b'):
+                        rfc_draft = '[%s]\n%s(Ver:%s)\n%s' % (
+                                state.strip(),
+                                '-'.join(version[1:-1]), version[-1],
+                                b.a['href'])
+
+                        if len(rfc_draft) > defaults.MAX_TWEET_MSG:
+                            rfc_draft = '[%s]\nVer:%s\n%s' % (
+                                   state.strip(), version[-1], b.a['href'])
+
+                        rfc_draft_msg.append(rfc_draft)
+                cnt += 1
+    return rfc_draft_msg
