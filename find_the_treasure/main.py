@@ -184,7 +184,7 @@ def ft_post_with_raw_timeline(ft, timeline):
     dump_tl = json.dumps(timeline)  # dict -> json
     tl = json.loads(dump_tl)
     for i in tl['statuses']:
-        result = 'By @%s, %s' % (i['user']['screen_name'], i['text'])
+        result = 'Via @%s, %s' % (i['user']['screen_name'], i['text'])
         if len(result.encode('utf-8')) > defaults.MAX_TWEET_MSG:
                 continue
         ft.post_tweet(result, 'raw_timeline')
