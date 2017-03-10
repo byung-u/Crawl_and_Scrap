@@ -267,7 +267,6 @@ def finding_about_etc(ft):
 
 def main():
     ft = FTbot()
-    sqlite3 = UseSqlite3()
 
     # Github, Stackoverflow, Twitter
     finding_about_software(ft)
@@ -280,6 +279,7 @@ def main():
     # etc
     finding_about_etc(ft)
 
+    sqlite3 = UseSqlite3()
     sqlite3.delete_expired_tuple()
     sqlite3.close()
 
