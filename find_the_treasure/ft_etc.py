@@ -332,3 +332,26 @@ def get_rfc_draft_list(ft):  # get state 'AUTH48-DONE' only
                         rfc_draft_msg.append(rfc_draft)
                 cnt += 1
     return rfc_draft_msg
+
+
+def get_raspberripy_news(ft):
+
+    url = 'http://lifehacker.com/tag/raspberry-pi'
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    rb_news_msg = []
+    for l in soup.find_all(ft.match_soup_class(['postlist__item'])):
+        if len(l.a.text) == 0:
+            continue
+        rb_url = l.a.text
+        rb_title = l.a['href']
+
+        if (check_duplicate(ft, 'raspberripy', rb_url)):
+            continue
+
+        rb_news = '%s\n%s' (rb_title, rb_url)
+        if len(rb_news) > defaults.MAX_TWEET_MSG:
+            rb_news = '%s' (rb_url)
+        rb_news_msg.append(rb_news)
+
+    return rb_news_msg
