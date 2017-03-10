@@ -59,11 +59,11 @@ def get_coex_exhibition(ft):
 
         exhibition = a.text.splitlines()
         coex_result = '%s\n%s\n\n%s\n%s\n요금:%s' % (
-                exhibition[3],
-                short_url,
-                exhibition[4],
-                exhibition[6],
-                exhibition[5].lstrip('\\'))
+            exhibition[3],
+            short_url,
+            exhibition[4],
+            exhibition[6],
+            exhibition[5].lstrip('\\'))
         coex_result = ft.check_max_tweet_msg(coex_result)
         result_msg.append(coex_result)
 
@@ -104,9 +104,9 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
             continue
 
         so_result = '[▲ %s]\n%s\n%s\n' % (
-                r["items"][i]["score"],
-                r["items"][i]["title"],
-                short_url)
+            r["items"][i]["score"],
+            r["items"][i]["title"],
+            short_url)
         so_result = ft.check_max_tweet_msg(so_result)
         result_msg.append(so_result)
     return result_msg
@@ -114,7 +114,7 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
 
 def search_nate_ranking_news(ft):
     url = 'http://news.nate.com/rank/interest?sc=its&p=day&date=%s' % (
-            strftime("%Y%m%d", gmtime()))
+        strftime("%Y%m%d", gmtime()))
 
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -125,8 +125,7 @@ def search_nate_ranking_news(ft):
         result = '%s\n%s\n%s\n\n' % (
             news_rank.em.text,
             news_rank.strong.text,
-            news_rank.a['href'],
-            )
+            news_rank.a['href'])
 
         result_msg.append(result)
 
@@ -138,8 +137,7 @@ def search_nate_ranking_news(ft):
             result = '%d위\n%s\n%s\n' % (
                 i,
                 news.text,
-                news['href'],
-                )
+                news['href'])
             i += 1
             result_msg.append(result)
     return result_msg
@@ -204,7 +202,7 @@ def get_realestate_daum(ft):
     r = get(url)
     if r.status_code != codes.ok:
         ft.logger.error(
-                '[DAUM Realstate] request error, code=%d', r.status_code)
+            '[DAUM Realstate] request error, code=%d', r.status_code)
         return None
     rd_result_msg = []
 
@@ -243,14 +241,14 @@ def get_realestate_mk(ft):  # maekyung (MBN)
 
 def get_rate_of_process_sgx(ft):
     url = 'http://www.khug.or.kr/rateOfBuildingDistributionApt.do?API_KEY=%s&AREA_DCD=%s' % (
-            ft.rate_of_process_key, ft.area_dcd)
+        ft.rate_of_process_key, ft.area_dcd)
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
     for item in soup.find_all('item'):
         if item.addr.text.find(ft.keyword) >= 0:
             msg = '%s(%s)\n%s\n%d' % (
-                    item.addr.text, item.tpow_rt.text, item.bsu_nm.text,
-                    int(time()))
+                item.addr.text, item.tpow_rt.text, item.bsu_nm.text,
+                int(time()))
             return msg
 
 
@@ -323,13 +321,13 @@ def get_rfc_draft_list(ft):  # get state 'AUTH48-DONE' only
                     version = title[0].split('-')
                     for b in tr.find_all('b'):
                         rfc_draft = '[%s]\n%s(Ver:%s)\n%s' % (
-                                state.strip(),
-                                '-'.join(version[1:-1]), version[-1],
-                                b.a['href'])
+                            state.strip(),
+                            '-'.join(version[1:-1]), version[-1],
+                            b.a['href'])
 
                         if len(rfc_draft) > defaults.MAX_TWEET_MSG:
                             rfc_draft = '[%s]\nVer:%s\n%s' % (
-                                   state.strip(), version[-1], b.a['href'])
+                                state.strip(), version[-1], b.a['href'])
 
                         rfc_draft_msg.append(rfc_draft)
                 cnt += 1
