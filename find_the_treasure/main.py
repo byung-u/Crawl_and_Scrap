@@ -26,6 +26,7 @@ from find_the_treasure.ft_etc import (get_coex_exhibition,
                                       get_hacker_news,
                                       get_recruit_people_info,
                                       get_rfc_draft_list,
+                                      get_raspberripy_news,
                                       )
 
 cgitb.enable(format='text')
@@ -248,6 +249,10 @@ def finding_about_realestate(ft):
 
 
 def finding_about_news(ft):
+    # Post tweet
+    rb_news = get_raspberripy_news(ft)
+    ft.post_tweet(rb_news, 'raspberripy news')
+
     # Send email
     nate_rank_news = search_nate_ranking_news(ft)
     if (type(nate_rank_news) is list) and (len(nate_rank_news) > 0):
