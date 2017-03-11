@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
 import sqlite3
 from datetime import datetime
 from find_the_treasure import defaults
@@ -7,7 +8,8 @@ from find_the_treasure import defaults
 
 class UseSqlite3:
     def __init__(self, mode=None):
-        self.conn = sqlite3.connect(defaults.DB_FILE_PATH)
+        db_file_path = os.environ.get('SQLITE3_FOR_FT')
+        self.conn = sqlite3.connect(db_file_path)
         self.c = self.conn.cursor()
 
         if mode == 'naver':
