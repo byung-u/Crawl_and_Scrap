@@ -251,7 +251,7 @@ def finding_about_realestate(ft):
 def finding_about_news(ft):
     # Post tweet
     rb_news = get_raspberripy_news(ft)
-    ft.post_tweet(rb_news, 'raspberripy news')
+    ft_post_tweet_array(ft, rb_news, 'raspberripy news')
 
     # Send email
     nate_rank_news = search_nate_ranking_news(ft)
