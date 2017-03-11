@@ -64,7 +64,7 @@ class FTbot:  # Find the Treasure
         self.gmail_to_addr = os.environ.get('GOOGOLE_TO_ADDR')
 
         self.apt_trade_url = os.environ.get('DATA_APT_TRADE_URL')
-        self.apt_trade_svc_key = os.environ.get('DATA_APT_TRADE_KEY')
+        self.apt_trade_svc_key = os.environ.get('DATA_APT_API_KEY')
         self.apt_trade_dong = os.environ.get('REALESTATE_DONG')
         self.apt_trade_district_code = os.environ.get('REALESTATE_DISTRICT_CODE')
         # self.apt_trade_apt = os.environ.get('DATA_GO_KR', 'apt', raw=True)
