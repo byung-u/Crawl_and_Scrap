@@ -343,15 +343,15 @@ def get_raspberripy_news(ft):
     for l in soup.find_all(ft.match_soup_class(['postlist__item'])):
         if len(l.a.text) == 0:
             continue
-        rb_url = l.a.text
-        rb_title = l.a['href']
+        rb_title = l.a.text
+        rb_url = l.a['href']
 
         if (check_duplicate(ft, 'raspberripy', rb_url)):
             continue
 
-        rb_news = '%s\n%s' (rb_title, rb_url)
+        rb_news = '%s\n%s' % (rb_title, rb_url)
         if len(rb_news) > defaults.MAX_TWEET_MSG:
-            rb_news = '%s' (rb_url)
+            rb_news = '%s' % (rb_url)
         rb_news_msg.append(rb_news)
 
     return rb_news_msg
