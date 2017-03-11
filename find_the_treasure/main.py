@@ -1,6 +1,5 @@
 """find_the_treasure web scrawling command line tool."""
 # -*- coding: utf-8 -*-
-import configparser
 import cgitb
 import json
 import logging
@@ -34,55 +33,50 @@ cgitb.enable(format='text')
 
 class FTbot:  # Find the Treasure
     def __init__(self):
-        self.config = configparser.ConfigParser()
 
-        config_file = os.path.expanduser(defaults.CONFIG_FILE_PATH)
-        self.config.readfp(open(config_file))
-
-        self.twitter_app_key = self.config.get('TWITTER', 'app_key')
-        self.twitter_app_secret = self.config.get('TWITTER', 'app_secret')
-        self.twitter_access_token = self.config.get('TWITTER', 'access_token')
-        self.twitter_access_secret = self.config.get(
-                'TWITTER', 'access_secret')
-        self.twitter_id = self.config.get('TWITTER', 'id')
+        self.twitter_app_key = os.getenv('TWITTER_APP_KEY')
+        self.twitter_app_secret = os.environ.get('TWITTER_APP_SECRET')
+        self.twitter_access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
+        self.twitter_access_secret = os.environ.get('TWITTER_ACCESS_SECRET')
+        self.twitter_id = os.environ.get('TWITTER_ID')
         self.twitter = Twython(
-                self.twitter_app_key,
-                self.twitter_app_secret,
-                self.twitter_access_token,
-                self.twitter_access_secret
+            self.twitter_app_key,
+            self.twitter_app_secret,
+            self.twitter_access_token,
+            self.twitter_access_secret
         )
 
-        self.github_id = self.config.get('GITHUB', 'id')
-        self.github_p = self.config.get('GITHUB', 'p_w')
-        self.github_client_id = self.config.get('GITHUB', 'client_id')
-        self.github_client_secret = self.config.get('GITHUB', 'client_secret')
+        self.github_id = os.environ.get('GITHUB_ID')
+        self.github_p = os.environ.get('GITHUB_PW')
+        self.github_client_id = os.environ.get('GITHUB_CLIENT_ID')
+        self.github_client_secret = os.environ.get('GITHUB_CLIENT_SECRET')
 
-        self.naver_client_id = self.config.get('NAVER', 'client_id')
-        self.naver_secret = self.config.get('NAVER', 'client_secret')
+        self.naver_client_id = os.environ.get('NAVER_CLIENT_ID')
+        self.naver_secret = os.environ.get('NAVER_CLIENT_SECRET')
 
-        self.daum_client_id = self.config.get('DAUM', 'client_id')
-        self.daum_secret = self.config.get('DAUM', 'client_secret')
-        self.daum_app_key = self.config.get('DAUM', 'app_key')
+        self.daum_client_id = os.environ.get('DAUM_CLIENT_ID')
+        self.daum_secret = os.environ.get('DAUM_CLIENT_SECRET')
+        self.daum_app_key = os.environ.get('DAUM_APP_KEY')
 
-        self.google_id = self.config.get('GOOGLE', 'id')
-        self.google_p = self.config.get('GOOGLE', 'p_w')
-        self.gmail_from_addr = self.config.get('GOOGLE', 'from_addr')
-        self.gmail_to_addr = self.config.get('GOOGLE', 'to_addr')
+        self.google_id = os.environ.get('GOOGOLE_ID')
+        self.google_p = os.environ.get('GOOGOLE_PW')
+        self.gmail_from_addr = os.environ.get('GOOGOLE_FROM_ADDR')
+        self.gmail_to_addr = os.environ.get('GOOGOLE_TO_ADDR')
 
-        self.apt_trade_url = self.config.get('DATA_GO_KR', 'apt_trade_url')
-        self.apt_trade_svc_key = self.config.get('DATA_GO_KR', 'apt_rent_key', raw=True)
-        self.apt_trade_dong = self.config.get('DATA_GO_KR', 'dong')
-        self.apt_trade_district_code = self.config.get('DATA_GO_KR', 'district_code')
-        # self.apt_trade_apt = self.config.get('DATA_GO_KR', 'apt', raw=True)
-        # self.apt_trade_size = self.config.get('DATA_GO_KR', 'size', raw=True)
+        self.apt_trade_url = os.environ.get('DATA_APT_TRADE_URL')
+        self.apt_trade_svc_key = os.environ.get('DATA_APT_TRADE_KEY')
+        self.apt_trade_dong = os.environ.get('REALESTATE_DONG')
+        self.apt_trade_district_code = os.environ.get('REALESTATE_DISTRICT_CODE')
+        # self.apt_trade_apt = os.environ.get('DATA_GO_KR', 'apt', raw=True)
+        # self.apt_trade_size = os.environ.get('DATA_GO_KR', 'size', raw=True)
 
-        self.rate_of_process_key = self.config.get('DATA_GO_KR', 'rate_of_process_key', raw=True)
-        self.area_dcd = self.config.get('DATA_GO_KR', 'area_dcd', raw=True)
-        self.keyword = self.config.get('DATA_GO_KR', 'keyword', raw=True)
+        self.rate_of_process_key = os.environ.get('RATE_OF_PROCESS_KEY')
+        self.area_dcd = os.environ.get('ROP_AREA_DCD')
+        self.keyword = os.environ.get('ROP_KEYWORD')
 
         now = datetime.now()
         log_file = '%s/log/ft_%4d%02d%02d.log' % (
-                os.getenv("HOME"), now.year, now.month, now.day)
+            os.getenv("HOME"), now.year, now.month, now.day)
         # Write file - DEBUG, INFO, WARN, ERROR, CRITICAL
         # Console display - ERROR, CRITICAL
         ch = logging.StreamHandler()
@@ -118,7 +112,7 @@ class FTbot:  # Find the Treasure
         msg_len = len(msg_encode)
         if msg_len > defaults.MAX_TWEET_MSG:
             over_len = msg_len - defaults.MAX_TWEET_MSG + 3 + 2  # ... + margin
-            msg_encode = msg_encode[0:(msg_len-over_len)]
+            msg_encode = msg_encode[0:(msg_len - over_len)]
             msg = '%s...' % msg_encode.decode("utf-8", "ignore")
             self.logger.info('[Over 140]%s', msg)
         return msg
@@ -202,7 +196,7 @@ def finding_about_software(ft):
 
     try:
         timeline_pop = ft.twitter.search(
-                q='python', result_type='popular', count=5)
+            q='python', result_type='popular', count=5)
         ft_post_with_raw_timeline(ft, timeline_pop)
     except TwythonError as e:
         ft.logger.error('TwythonError %s', e)
