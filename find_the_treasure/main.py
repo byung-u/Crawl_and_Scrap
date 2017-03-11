@@ -34,7 +34,7 @@ cgitb.enable(format='text')
 class FTbot:  # Find the Treasure
     def __init__(self):
 
-        self.twitter_app_key = os.getenv('TWITTER_APP_KEY')
+        self.twitter_app_key = os.environ.get('TWITTER_APP_KEY')
         self.twitter_app_secret = os.environ.get('TWITTER_APP_SECRET')
         self.twitter_access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
         self.twitter_access_secret = os.environ.get('TWITTER_ACCESS_SECRET')
