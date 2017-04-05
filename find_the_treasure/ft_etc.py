@@ -59,8 +59,8 @@ def get_coex_exhibition(ft):
 
         exhibition = a.text.splitlines()
         coex_result = '%s\n%s\n\n%s\n%s\n요금:%s' % (
-            exhibition[3],
             short_url,
+            exhibition[3],
             exhibition[4],
             exhibition[6],
             exhibition[5].lstrip('\\'))
@@ -268,7 +268,7 @@ def get_hacker_news(ft):  # not popular rank 31~60
             hn_short_url = n.naver_shortener_url(ft, hn_url)
             if hn_short_url is None:
                 hn_short_url = hn_url
-            hn_result = '[HackerNews]\nRank:%s\n%s' % (hn_text, hn_short_url)
+            hn_result = '[HackerNews]\n%s\nRank:%s' % (hn_short_url, hn_text)
             hn_result = ft.check_max_tweet_msg(hn_result)
             hn_result_msg.append(hn_result)
             break
