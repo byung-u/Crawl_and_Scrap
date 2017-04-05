@@ -170,7 +170,7 @@ def send_gmail(ft, subject, body):
         server.login(gmail_user, gmail_pwd)
         server.sendmail(FROM, TO, msg.as_string())
         server.quit()
-        print('[%s] successfully sent the mail' % subject)
+        ft.logger.info('[%s] successfully sent the mail' % subject)
     except BaseException as e:
         ft.logger.error('failed to send mail: %s', str(e))
 
