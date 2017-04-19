@@ -218,28 +218,31 @@ def finding_about_exhibition(ft):
 
 def finding_about_realestate(ft):
     dg = UseDataKorea(ft)
-    trade_msg = dg.ft_search_my_interesting_realestate(ft)
-    ft_post_tweet_array(ft, trade_msg, 'Realestate korea')
+    #trade_msg = dg.ft_search_my_interesting_realestate(ft)
+    #ft_post_tweet_array(ft, trade_msg, 'Realestate korea')
 
-    sgx = get_rate_of_process_sgx(ft)  # sgx: 신/그/자
-    ft.post_tweet(sgx, 'rate of process')
+    molt_msg = dg.ft_get_mole_news(ft)
+    ft_post_tweet_array(ft, molt_msg, '국토부')
 
-    naver_popular_news = get_naver_popular_news(ft)
-    if (type(naver_popular_news) is list) and (len(naver_popular_news) > 0):
-        send_gmail(ft, 'Naver popular news', naver_popular_news)
+    #sgx = get_rate_of_process_sgx(ft)  # sgx: 신/그/자
+    #ft.post_tweet(sgx, 'rate of process')
 
-    rd = get_realestate_daum(ft)
-    if (type(rd) is list) and (len(rd) > 0):
-        send_gmail(ft, 'Daum realestate', rd)
+    #naver_popular_news = get_naver_popular_news(ft)
+    #if (type(naver_popular_news) is list) and (len(naver_popular_news) > 0):
+    #    send_gmail(ft, 'Naver popular news', naver_popular_news)
 
-    rmk = get_realestate_mk(ft)
-    if (type(rmk) is list) and (len(rmk) > 0):
-        send_gmail(ft, 'MBN realestate', rmk)
+    #rd = get_realestate_daum(ft)
+    #if (type(rd) is list) and (len(rd) > 0):
+    #    send_gmail(ft, 'Daum realestate', rd)
 
-    daum = UseDaum(ft)
-    daum_blog = daum.request_search_data(ft, req_str="마포 자이")
-    if (type(daum_blog) is list) and (len(daum_blog) > 0):
-        send_gmail(ft, 'Daum Blogs', daum_blog)
+    #rmk = get_realestate_mk(ft)
+    #if (type(rmk) is list) and (len(rmk) > 0):
+    #    send_gmail(ft, 'MBN realestate', rmk)
+
+    #daum = UseDaum(ft)
+    #daum_blog = daum.request_search_data(ft, req_str="마포 자이")
+    #if (type(daum_blog) is list) and (len(daum_blog) > 0):
+    #    send_gmail(ft, 'Daum Blogs', daum_blog)
 
 
 def finding_about_news(ft):
@@ -268,15 +271,15 @@ def main():
     ft = FTbot()
 
     # Github, Stackoverflow, Twitter
-    finding_about_software(ft)
+    #finding_about_software(ft)
     # Coex, National Museum
-    finding_about_exhibition(ft)
+    #finding_about_exhibition(ft)
     # Data.go.kr, MBN, Naver. Daum
     finding_about_realestate(ft)
     # Nate, Daum
-    finding_about_news(ft)
+    #finding_about_news(ft)
     # etc
-    finding_about_etc(ft)
+    #finding_about_etc(ft)
 
     sqlite3 = UseSqlite3()
     sqlite3.delete_expired_tuple()

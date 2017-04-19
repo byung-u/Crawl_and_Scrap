@@ -5,7 +5,10 @@ import re
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+from requests import get, codes
+
 from find_the_treasure.ft_sqlite3 import UseSqlite3
+from find_the_treasure.ft_naver import UseNaver
 
 
 class UseDataKorea:  # www.data.go.kr
@@ -53,7 +56,34 @@ class UseDataKorea:  # www.data.go.kr
             if (s.already_sent_korea(ret_msg)):
                 ft.logger.info('Already sent: %s', ret_msg)
                 continue
-            s.insert_trade_info(ret_msg)
             trade_info.append(ret_msg)
 
         return trade_info
+
+    def ft_get_mole_news(self, ft):  # 국토교통부 보도자료
+        s = UseSqlite3('korea')
+        n = UseNaver(ft)
+        url = 'http://www.molit.go.kr/USR/NEWS/m_71/lst.jsp'
+        r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[MOLT] request error, code=%d', r.status_code)
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        molt_info = []
+        for tbody in soup.find_all('tbody'):
+            for tr in tbody.find_all('tr'):
+                try:
+                    tr.a['href']
+                except TypeError:
+                    continue
+                href = 'http://www.molit.go.kr/USR/NEWS/m_71/%s' % tr.a['href']
+                short_url = n.naver_shortener_url(ft, href)
+                if short_url is None:
+                    short_url = href
+                if (s.already_sent_korea(short_url)):
+                    ft.logger.info('Already sent: %s', short_url)
+                    continue
+                ret_msg = '%s\n%s' % (tr.a.text, short_url)
+                molt_info.append(ret_msg)
+
+        return molt_info

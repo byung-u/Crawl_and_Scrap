@@ -3,7 +3,6 @@
 import os
 import sqlite3
 from datetime import datetime
-from find_the_treasure import defaults
 
 
 class UseSqlite3:
@@ -158,19 +157,24 @@ class UseSqlite3:
         else:
             return True
 
-    def already_sent_korea(self, trade_msg):
-        if trade_msg is None:
+    def already_sent_korea(self, send_msg):
+        if send_msg is None:
             return False  # ignore
 
         query = '''
         SELECT * FROM sent_msg_korea WHERE real_state_rental_msg="%s"''' % (
-                trade_msg)
+                send_msg)
         self.c.execute(query)
         data = self.c.fetchone()
         if data is None:
+            # insert new vlaue
+            query = '''INSERT INTO sent_msg_korea VALUES
+                    (NULL, "%s", CURRENT_TIMESTAMP)''' % send_msg
+            self.c.execute(query)
+            self.conn.commit()
             return False
         else:
-            return True
+            return True  # already sent
 
     def insert_naver_news(self, news):
         news = news.replace("\"", "'")
@@ -194,12 +198,6 @@ class UseSqlite3:
     def insert_etc(self, etc_type, etc_info):
         query = '''INSERT INTO sent_msg_etc VALUES
         (NULL, "%s", "%s", CURRENT_TIMESTAMP)''' % (etc_type, etc_info)
-        self.c.execute(query)
-        self.conn.commit()
-
-    def insert_trade_info(self, trade_info):
-        query = '''INSERT INTO sent_msg_korea VALUES
-        (NULL, "%s", CURRENT_TIMESTAMP)''' % trade_info
         self.c.execute(query)
         self.conn.commit()
 
