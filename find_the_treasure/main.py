@@ -8,7 +8,7 @@ from datetime import datetime
 from twython import Twython, TwythonError
 
 from find_the_treasure.ft_github import UseGithub
-from find_the_treasure.ft_data_go_kr import (UseDataKorea)
+from find_the_treasure.ft_korea_gov import (UseDataKorea)
 from find_the_treasure.ft_daum import UseDaum
 from find_the_treasure.ft_naver import UseNaver
 from find_the_treasure.ft_sqlite3 import UseSqlite3
