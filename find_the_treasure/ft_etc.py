@@ -252,14 +252,18 @@ def get_rate_of_process_sgx(ft):
             return msg
 
 
-def get_hacker_news(ft):  # not popular rank 31~60
+def get_hacker_news(ft):  # popular rank 31~45
     n = UseNaver(ft)
     hn_result_msg = []
 
     url = 'https://news.ycombinator.com/news?p=2'
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
+    cnt = 0
     for f in soup.find_all(ft.match_soup_class(['athing'])):
+        cnt += 1
+        if cnt == 15:  # 30 item was too much
+            break
         hn_text = f.text.strip()
         for s in f.find_all(ft.match_soup_class(['storylink'])):
             hn_url = s['href']
@@ -320,6 +324,8 @@ def get_rfc_draft_list(ft):  # get state 'AUTH48-DONE' only
                     title = td.text.split()
                     version = title[0].split('-')
                     for b in tr.find_all('b'):
+                        if (check_duplicate(ft, 'rfc', b.a['href'])):
+                            continue
                         rfc_draft = '[%s]\n%s(Ver:%s)\n%s' % (
                             state.strip(),
                             '-'.join(version[1:-1]), version[-1],
