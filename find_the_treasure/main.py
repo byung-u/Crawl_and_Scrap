@@ -196,7 +196,7 @@ def finding_about_software(ft):
 
     try:
         timeline_pop = ft.twitter.search(
-            q='python', result_type='popular', count=5)
+            q='python', result_type='popular', count=1)
         ft_post_with_raw_timeline(ft, timeline_pop)
     except TwythonError as e:
         ft.logger.error('TwythonError %s', e)
