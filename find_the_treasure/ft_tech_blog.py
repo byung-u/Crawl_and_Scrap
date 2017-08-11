@@ -51,6 +51,29 @@ class TechBlog:
             send_msg.append(result)
         return send_msg
 
+    def naver(self, ft):
+        desc = ""
+        send_msg = []
+        url = 'http://d2.naver.com/d2.atom'
+        r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog naver] request error, code=%d', r.status_code)
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        for idx, p in enumerate(soup.find_all(['title', 'link'])):
+            if idx & 1:
+                result_url = p['href']
+                if self.sqlite3.already_sent_tech_blog(result_url):
+                    continue
+                self.sqlite3.insert_tech_blog(result_url)
+
+                result = '[Naver]\n%s\n%s' % (desc, result_url)
+                result = ft.check_max_tweet_msg(result)
+                send_msg.append(result)
+            else:
+                desc = p.string
+        return send_msg
+
     def spoqa(self, ft):
         send_msg = []
         base_url = 'https://spoqa.github.io/'
