@@ -23,6 +23,7 @@ Quick Start
 수집 정보
 ---------
 - 트위터 전송
+  - 기술 블로그 (카카오, 레진, Naver D2, 리디북스, 스포카, 우아한 형제들, ... 더 추가중)
   - Github repository star 개수 갱신 체크해서 개수가 증가한 것
   - Stackoverflow upvote 갱신 체크 개수가 증가한 것
   - data.go.kr 관심있는 지역의 아파트 가격, 공정률 정보
@@ -40,7 +41,7 @@ Release
 -------
 - 0.6.0 (current)
   - 기술 블로그 스크롤링 추가
-  - (예정)unittest 추가
+  - unittest 추가
 
 - 0.5.0 (Friday, 11 August 2017)
   - logging 추가, logger 사용
@@ -137,6 +138,14 @@ export ROP_KEYWORD="xxx"
 
 #
 ```
+
+
+Test
+----
+- 웹 접속에 문제가 없는지 확인하는 테스트
+
+`python3 -m unittest `
+
 
 License
 -------
