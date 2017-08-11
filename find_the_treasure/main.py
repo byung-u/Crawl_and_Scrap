@@ -10,16 +10,17 @@ from twython import Twython, TwythonError
 from find_the_treasure.ft_github import UseGithub
 from find_the_treasure.ft_korea_gov import (UseDataKorea)
 from find_the_treasure.ft_daum import UseDaum
-from find_the_treasure.ft_naver import UseNaver
+# from find_the_treasure.ft_naver import UseNaver
 from find_the_treasure.ft_sqlite3 import UseSqlite3
+from find_the_treasure.ft_tech_blog import TechBlog
 from find_the_treasure import defaults
 
 from find_the_treasure.ft_etc import (get_coex_exhibition,
                                       search_stackoverflow,
                                       search_nate_ranking_news,
-                                      get_naver_popular_news,
+                                      # get_naver_popular_news,
                                       get_national_museum_exhibition,
-                                      get_realestate_daum,
+                                      # get_realestate_daum,
                                       get_realestate_mk,
                                       get_rate_of_process_sgx,
                                       get_hacker_news,
@@ -194,18 +195,23 @@ def finding_about_software(ft):
     so = search_stackoverflow(ft, "activity", "racket")
     ft_post_tweet_array(ft, so, 'Stackoverflow')
 
-    try:
-        timeline_pop = ft.twitter.search(
-            q='python', result_type='popular', count=1)
-        ft_post_with_raw_timeline(ft, timeline_pop)
-    except TwythonError as e:
-        ft.logger.error('TwythonError %s', e)
+    # Useless information for me
+    # try:
+    #     timeline_pop = ft.twitter.search(
+    #         q='python', result_type='popular', count=1)
+    #     ft_post_with_raw_timeline(ft, timeline_pop)
+    # except TwythonError as e:
+    #     ft.logger.error('TwythonError %s', e)
 
     hn = get_hacker_news(ft)
     ft_post_tweet_array(ft, hn, 'Hacker News')
 
     rfc_draft = get_rfc_draft_list(ft)
     ft_post_tweet_array(ft, rfc_draft, 'RFC DRAFT')
+
+    t = TechBlog(ft)
+    tb = t.spoqa(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog spoqa')
 
 
 def finding_about_exhibition(ft):
@@ -221,26 +227,26 @@ def finding_about_realestate(ft):
     trade_msg = dg.ft_search_my_interesting_realestate(ft)
     ft_post_tweet_array(ft, trade_msg, 'Realestate korea')
 
-    molt_msg = dg.ft_get_mole_news(ft)
-    ft_post_tweet_array(ft, molt_msg, '국토부')
+    molit_msg = dg.ft_get_molit_news(ft)
+    ft_post_tweet_array(ft, molit_msg, '국토부')
 
     sgx = get_rate_of_process_sgx(ft)  # sgx: 신/그/자
     ft.post_tweet(sgx, 'rate of process')
 
-    naver_popular_news = get_naver_popular_news(ft)
-    if (type(naver_popular_news) is list) and (len(naver_popular_news) > 0):
-        send_gmail(ft, 'Naver popular news', naver_popular_news)
+    # naver_popular_news = get_naver_popular_news(ft)
+    # if (type(naver_popular_news) is list) and (len(naver_popular_news) > 0):
+    #     send_gmail(ft, 'Naver popular news', naver_popular_news)
 
-    rd = get_realestate_daum(ft)
-    if (type(rd) is list) and (len(rd) > 0):
-        send_gmail(ft, 'Daum realestate', rd)
+    # rd = get_realestate_daum(ft)
+    # if (type(rd) is list) and (len(rd) > 0):
+    #     send_gmail(ft, 'Daum realestate', rd)
 
     rmk = get_realestate_mk(ft)
     if (type(rmk) is list) and (len(rmk) > 0):
         send_gmail(ft, 'MBN realestate', rmk)
 
     daum = UseDaum(ft)
-    daum_blog = daum.request_search_data(ft, req_str="마포 자이")
+    daum_blog = daum.request_search_data(ft, req_str="마포")
     if (type(daum_blog) is list) and (len(daum_blog) > 0):
         send_gmail(ft, 'Daum Blogs', daum_blog)
 
@@ -255,10 +261,10 @@ def finding_about_news(ft):
     if (type(nate_rank_news) is list) and (len(nate_rank_news) > 0):
         send_gmail(ft, 'NATE IT news rank', nate_rank_news)
 
-    n = UseNaver(ft)
-    naver_news = n.search_today_information_and_technology(ft)
-    if (type(naver_news) is list) and (len(naver_news) > 0):
-        send_gmail(ft, 'NAVER IT news', naver_news)
+    # n = UseNaver(ft)
+    # naver_news = n.search_today_information_and_technology(ft)
+    # if (type(naver_news) is list) and (len(naver_news) > 0):
+    #     send_gmail(ft, 'NAVER IT news', naver_news)
 
 
 def finding_about_etc(ft):
