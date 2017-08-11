@@ -73,6 +73,26 @@ class TestUrlConn(unittest.TestCase):
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
+        url = 'http://tech.kakao.com'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+        url = 'http://tech.lezhin.com'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+        url = 'http://d2.naver.com/d2.atom'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+        url = 'https://www.ridicorp.com/blog/'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+        url = 'http://woowabros.github.io'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
 
 if __name__ == '__main__':
     unittest.main()
