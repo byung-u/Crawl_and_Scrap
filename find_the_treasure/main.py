@@ -210,8 +210,18 @@ def finding_about_software(ft):
     ft_post_tweet_array(ft, rfc_draft, 'RFC DRAFT')
 
     t = TechBlog(ft)
+    tb = t.kakao(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog kakao')
+    tb = t.lezhin(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog lezhin')
+    tb = t.naver(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog naver d2')
+    tb = t.ridi(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog ridi')
     tb = t.spoqa(ft)
     ft_post_tweet_array(ft, tb, 'Tech Blog spoqa')
+    tb = t.woowabros(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog woowabros')
 
 
 def finding_about_exhibition(ft):
