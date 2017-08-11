@@ -47,6 +47,13 @@ class UseSqlite3:
             "etc_info" text,
             "update_time" datetime
             )''')
+        elif mode == 'tech_blog':
+            self.c.execute('''
+            CREATE TABLE IF NOT EXISTS sent_msg_tech_blog (
+            "id" integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+            "url" text,
+            "update_time" datetime
+            )''')
         else:  # None
             pass
 
@@ -80,6 +87,9 @@ class UseSqlite3:
         elif mode == 'etc':
             delete_query = """
             DELETE FROM sent_msg_etc WHERE update_time < '%s'""" % time_str
+        elif mode == 'github':
+            delete_query = """
+            DELETE FROM sent_msg_tech_blog WHERE update_time < '%s'""" % time_str
         else:  # all
             # naver
             delete_query = """
@@ -100,6 +110,10 @@ class UseSqlite3:
             # etc
             delete_query = """
             DELETE FROM sent_msg_etc WHERE update_time < '%s'""" % time_str
+            self.c.execute(delete_query)
+            # tech blog
+            delete_query = """
+            DELETE FROM sent_msg_tech_blog WHERE update_time < '%s'""" % time_str
             self.c.execute(delete_query)
 
         self.c.execute(delete_query)
@@ -176,6 +190,19 @@ class UseSqlite3:
         else:
             return True  # already sent
 
+    def already_sent_tech_blog(self, url):
+        if url is None:
+            return False  # ignore
+
+        query = 'SELECT * FROM sent_msg_tech_blog WHERE url="%s"' % url
+        self.c.execute(query)
+        data = self.c.fetchone()
+        if data is None:
+            return False
+        else:
+            return True  # already sent
+
+
     def insert_naver_news(self, news):
         news = news.replace("\"", "'")
         query = '''INSERT INTO sent_msg_naver VALUES
@@ -200,6 +227,13 @@ class UseSqlite3:
         (NULL, "%s", "%s", CURRENT_TIMESTAMP)''' % (etc_type, etc_info)
         self.c.execute(query)
         self.conn.commit()
+
+    def insert_tech_blog(self, url):
+        query = '''INSERT INTO sent_msg_tech_blog VALUES
+        (NULL, "%s", CURRENT_TIMESTAMP)''' % url
+        self.c.execute(query)
+        self.conn.commit()
+
 
     def close(self):
         self.conn.close()
