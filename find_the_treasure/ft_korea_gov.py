@@ -60,7 +60,7 @@ class UseDataKorea:  # www.data.go.kr
 
         return trade_info
 
-    def ft_get_mole_news(self, ft):  # 국토교통부 보도자료
+    def ft_get_molit_news(self, ft):  # 국토교통부 보도자료
         s = UseSqlite3('korea')
         n = UseNaver(ft)
         url = 'http://www.molit.go.kr/USR/NEWS/m_71/lst.jsp'
