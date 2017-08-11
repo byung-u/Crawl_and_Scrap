@@ -252,17 +252,19 @@ def get_rate_of_process_sgx(ft):
             return msg
 
 
-def get_hacker_news(ft):  # popular rank 31~45
+def get_hacker_news(ft):
     n = UseNaver(ft)
     hn_result_msg = []
 
-    url = 'https://news.ycombinator.com/news?p=2'
+    # p=1, rank 16~30
+    # p=2, rank 31~45
+    url = 'https://news.ycombinator.com/news?p=0'  # rank 1~15
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
     cnt = 0
     for f in soup.find_all(ft.match_soup_class(['athing'])):
         cnt += 1
-        if cnt == 15:  # 30 item was too much
+        if cnt == 5:  # 5 articles
             break
         hn_text = f.text.strip()
         for s in f.find_all(ft.match_soup_class(['storylink'])):
