@@ -38,7 +38,11 @@ Quick Start
 
 Release
 -------
-- 0.5.0 (current)
+- 0.6.0 (current)
+  - 기술 블로그 스크롤링 추가
+  - (예정)unittest 추가
+
+- 0.5.0 (Friday, 11 August 2017)
   - logging 추가, logger 사용
   - configure file path 변경 (./ -> ~/)
   - 140 초과 메시지 전송 기능 추가, 초과되는 문자열 삭제 후 포스팅
