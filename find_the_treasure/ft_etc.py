@@ -174,6 +174,10 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
 
     url = 'https://www.museum.go.kr/site/korm/exhiSpecialTheme/list/current?listType=list'
     r = get(url)
+    if r.status_code != codes.ok:
+        ft.logger.error('[NAVER NEWS] request error, code=%d', r.status_code)
+        return
+
     soup = BeautifulSoup(r.text, 'html.parser')
     for f in soup.find_all(ft.match_soup_class(['list_sty01'])):
         for li in f.find_all('li'):
