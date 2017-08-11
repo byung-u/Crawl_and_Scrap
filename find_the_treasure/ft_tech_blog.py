@@ -74,6 +74,24 @@ class TechBlog:
                 desc = p.string
         return send_msg
 
+    def ridi(self, ft):
+        send_msg = []
+        base_url = 'https://www.ridicorp.com/'
+        url = 'https://www.ridicorp.com/blog/'
+        r = get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        for l in soup.find_all(ft.match_soup_class(['list-item'])):
+            desc = l.find(ft.match_soup_class(['desc']))
+            result_url = '%s%s' % (base_url, l['href'])
+            if self.sqlite3.already_sent_tech_blog(result_url):
+                continue
+            self.sqlite3.insert_tech_blog(result_url)
+
+            result = '[RIDI]\n%s\n%s' % (desc.string, result_url)
+            result = ft.check_max_tweet_msg(result)
+            send_msg.append(result)
+        return send_msg
+
     def spoqa(self, ft):
         send_msg = []
         base_url = 'https://spoqa.github.io/'
