@@ -11,6 +11,26 @@ class TechBlog:
     def __init__(self, ft):
         self.sqlite3 = UseSqlite3('tech_blog')
 
+    def kakao(self, ft):
+        send_msg = []
+        url = 'http://tech.kakao.com'
+        r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog kakao] request error, code=%d', r.status_code)
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        for p in soup.find_all(ft.match_soup_class(['post'])):
+            desc = p.find(ft.match_soup_class(['post-title']))
+            result_url = '%s%s' % (url, p.a['href'])
+            if self.sqlite3.already_sent_tech_blog(result_url):
+                continue
+            self.sqlite3.insert_tech_blog(result_url)
+
+            result = '[Kakao]\n%s\n%s' % (desc.string, result_url)
+            result = ft.check_max_tweet_msg(result)
+            send_msg.append(result)
+        return send_msg
+
     def spoqa(self, ft):
         send_msg = []
         base_url = 'https://spoqa.github.io/'
@@ -26,11 +46,10 @@ class TechBlog:
                 desc = auth.find(ft.match_soup_class(['post-description']))
                 result_url = '%s%s' % (base_url, post.a['href'][1:])
                 if self.sqlite3.already_sent_tech_blog(result_url):
-                    # already exist
                     continue
                 self.sqlite3.insert_tech_blog(result_url)
 
-                result = '[Spoqa]\n%s\n%s' % (desc.string, result_url)
+                result = '[SPOQA]\n%s\n%s' % (desc.string, result_url)
                 result = ft.check_max_tweet_msg(result)
                 send_msg.append(result)
         return send_msg
@@ -51,11 +70,10 @@ class TechBlog:
                 if result_url is None or desc.string is None:
                     continue
                 if self.sqlite3.already_sent_tech_blog(result_url):
-                    # already exist
                     continue
                 self.sqlite3.insert_tech_blog(result_url)
 
-                result = '%s\n%s' % (desc.string, result_url)
+                result = '[WOOWA]\n%s\n%s' % (desc.string, result_url)
                 result = ft.check_max_tweet_msg(result)
                 send_msg.append(result)
         return send_msg
