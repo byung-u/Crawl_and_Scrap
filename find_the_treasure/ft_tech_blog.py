@@ -26,7 +26,27 @@ class TechBlog:
                 continue
             self.sqlite3.insert_tech_blog(result_url)
 
-            result = '[Kakao]\n%s\n%s' % (desc.string, result_url)
+            result = '[KAKAO]\n%s\n%s' % (desc.string, result_url)
+            result = ft.check_max_tweet_msg(result)
+            send_msg.append(result)
+        return send_msg
+
+    def lezhin(self, ft):
+        send_msg = []
+        url = 'http://tech.lezhin.com'
+        r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog lezhin] request error, code=%d', r.status_code)
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        for p in soup.find_all(ft.match_soup_class(['post-item'])):
+            desc = p.find(ft.match_soup_class(['post-title']))
+            result_url = '%s%s' % (url, p.a['href'])
+            if self.sqlite3.already_sent_tech_blog(result_url):
+                continue
+            self.sqlite3.insert_tech_blog(result_url)
+
+            result = '[LEZHIN]\n%s\n%s' % (desc.string, result_url)
             result = ft.check_max_tweet_msg(result)
             send_msg.append(result)
         return send_msg
