@@ -268,7 +268,7 @@ def get_hacker_news(ft):
     cnt = 0
     for f in soup.find_all(ft.match_soup_class(['athing'])):
         cnt += 1
-        if cnt == 5:  # 5 articles
+        if cnt > 5:  # 5 articles
             break
         hn_text = f.text.strip()
         for s in f.find_all(ft.match_soup_class(['storylink'])):
