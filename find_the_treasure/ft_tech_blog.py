@@ -134,7 +134,7 @@ class TechBlog:
                     continue
                 self.sqlite3.insert_tech_blog(result_url)
 
-                result = '[WOOWA]\n%s\n%s' % (desc.string, result_url)
+                result = '[WOOWA]\n%s\n%s' % (result_url, desc.string)
                 result = ft.check_max_tweet_msg(result)
                 send_msg.append(result)
         return send_msg
