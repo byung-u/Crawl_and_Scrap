@@ -5,6 +5,7 @@ import json
 import logging
 import os
 from datetime import datetime
+from requests import post
 from twython import Twython, TwythonError
 
 from find_the_treasure.ft_github import UseGithub
@@ -63,6 +64,7 @@ class FTbot:  # Find the Treasure
         self.google_p = os.environ.get('GOOGOLE_PW')
         self.gmail_from_addr = os.environ.get('GOOGOLE_FROM_ADDR')
         self.gmail_to_addr = os.environ.get('GOOGOLE_TO_ADDR')
+        self.google_url_api_key = os.environ.get('GOOGOLE_URL_API_KEY')
 
         self.apt_trade_url = os.environ.get('DATA_APT_TRADE_URL')
         self.apt_trade_svc_key = os.environ.get('DATA_APT_API_KEY')
@@ -117,6 +119,15 @@ class FTbot:  # Find the Treasure
             msg = '%s...' % msg_encode.decode("utf-8", "ignore")
             self.logger.info('[Over 140 omitting]%s', msg)
         return msg
+
+    def shortener_url(self, url):
+        post_url = 'https://www.googleapis.com/urlshortener/v1/url'
+        payload = {'longUrl': url}
+        headers = {'content-type': 'application/json'}
+        params = {'key': self.google_url_api_key}
+        r = post(post_url, data=json.dumps(payload), headers=headers, params=params)
+        js = json.loads(r.text)
+        return js['id']
 
 
 def ft_post_tweet_array(ft, msg, subject=None):
