@@ -62,7 +62,6 @@ class UseDataKorea:  # www.data.go.kr
 
     def ft_get_molit_news(self, ft):  # 국토교통부 보도자료
         s = UseSqlite3('korea')
-        n = UseNaver(ft)
         url = 'http://www.molit.go.kr/USR/NEWS/m_71/lst.jsp'
         r = get(url)
         if r.status_code != codes.ok:
@@ -77,12 +76,12 @@ class UseDataKorea:  # www.data.go.kr
                 except TypeError:
                     continue
                 href = 'http://www.molit.go.kr/USR/NEWS/m_71/%s' % tr.a['href']
-                short_url = n.naver_shortener_url(ft, href)
+                if (s.already_sent_korea(href)):
+                    ft.logger.info('Already sent: %s', href)
+                    continue
+                short_url = ft.shortener_url(href)
                 if short_url is None:
                     short_url = href
-                if (s.already_sent_korea(short_url)):
-                    ft.logger.info('Already sent: %s', short_url)
-                    continue
                 ret_msg = '%s\n%s' % (tr.a.text, short_url)
                 molt_info.append(ret_msg)
 
