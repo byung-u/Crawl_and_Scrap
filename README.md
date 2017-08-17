@@ -13,12 +13,17 @@ Quick Start
 - Requirements
 
   - Python 3.x
-  - Twitter Oauth
-  - Github Oauth
-  - Naver Oauth
-  - Daum Oauth
-  - OpenAPI key (www.data.go.kr)
   - Gmail account
+
+- Authorization
+
+  - [Twitter Oauth](https://apps.twitter.com)
+  - [Github Oauth](https://github.com/settings/developers)
+  - [Naver Oauth](https://developers.naver.com/apps)
+  - [Daum Oauth](https://developers.daum.net/console)
+  - [OpenAPI key](http://www.data.go.kr/)
+  - [Google url shortenr key](https://developers.google.com/url-shortener/v1/getting_started#APIKey)
+
 
 수집 정보
 ---------
@@ -42,6 +47,8 @@ Release
 - 0.6.0 (current)
   - 기술 블로그 스크롤링 추가
   - unittest 추가
+  - shortner url api change (naver -> google)
+  - pycon2017 새로 배운거 적용 (soup.select 사용)
 
 - 0.5.0 (Friday, 11 August 2017)
   - logging 추가, logger 사용
