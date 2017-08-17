@@ -7,7 +7,6 @@ from requests import get, codes
 from time import gmtime, strftime, time
 
 from find_the_treasure import defaults
-from find_the_treasure.ft_naver import UseNaver
 from find_the_treasure.ft_sqlite3 import UseSqlite3
 
 
@@ -37,7 +36,6 @@ def is_exist_interesting_keyword(keyword):
 
 
 def get_coex_exhibition(ft):
-    n = UseNaver(ft)
     url = 'http://www.coex.co.kr/blog/event_exhibition?list_type=list'
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -51,11 +49,11 @@ def get_coex_exhibition(ft):
             # TODO : 다음페이지 ignore -> ?
             continue
 
-        short_url = n.naver_shortener_url(ft, a['href'])
+        if (check_duplicate(ft, 'coex', a['href'])):
+            continue
+        short_url = ft.shortener_url(a['href'])
         if short_url is None:
             short_url = a['href']
-        if (check_duplicate(ft, 'coex', short_url)):
-            continue
 
         exhibition = a.text.splitlines()
         coex_result = '%s\n%s\n\n%s\n%s\n요금:%s' % (
@@ -82,8 +80,6 @@ intitle : search keyword (ex. quick sort)
 
 
 def search_stackoverflow(ft, sort='activity', lang='python'):
-    n = UseNaver(ft)
-
     STACK_EXCHANGE_API_URL = "https://api.stackexchange.com"
     r = get(STACK_EXCHANGE_API_URL + "/search", {
         "order": "desc",
@@ -97,11 +93,11 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
         if r["items"][i]["score"] <= 1:
             continue
 
-        short_url = n.naver_shortener_url(ft, r["items"][i]["link"])
+        if (check_duplicate(ft, 'stackoverflow', r["items"][i]["link"])):
+            continue
+        short_url = ft.shortener_url(r["items"][i]["link"])
         if short_url is None:
             short_url = r["items"][i]["link"]
-        if (check_duplicate(ft, 'stackoverflow', short_url)):
-            continue
 
         so_result = '[▲ %s]\n%s\n%s\n' % (
             r["items"][i]["score"],
@@ -168,7 +164,6 @@ def get_naver_popular_news(ft):
 
 
 def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
-    n = UseNaver(ft)
     MUSEUM_URL = 'https://www.museum.go.kr'
     nm_result_msg = []
 
@@ -193,7 +188,7 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
 
             if (check_duplicate(ft, 'national_museum', ex_url)):
                 continue
-            nm_short_url = n.naver_shortener_url(ft, ex_url)
+            nm_short_url = ft.shortener_url(ex_url)
             if nm_short_url is None:
                 nm_short_url = ex_url
             nm_result = '%s\n%s\n%s' % (period, exhibition, nm_short_url)
@@ -257,7 +252,6 @@ def get_rate_of_process_sgx(ft):
 
 
 def get_hacker_news(ft):
-    n = UseNaver(ft)
     hn_result_msg = []
 
     # p=1, rank 16~30
@@ -275,7 +269,7 @@ def get_hacker_news(ft):
             hn_url = s['href']
             if (check_duplicate(ft, 'hacker_news', hn_url)):
                 continue
-            hn_short_url = n.naver_shortener_url(ft, hn_url)
+            hn_short_url = ft.shortener_url(hn_url)
             if hn_short_url is None:
                 hn_short_url = hn_url
             hn_result = '[HackerNews]\n%s\nRank:%s' % (hn_short_url, hn_text)
