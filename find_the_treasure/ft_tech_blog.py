@@ -22,11 +22,12 @@ class TechBlog:
         for p in soup.find_all(ft.match_soup_class(['post'])):
             desc = p.find(ft.match_soup_class(['post-title']))
             result_url = '%s%s' % (url, p.a['href'])
+            result_url = ft.shortener_url(result_url)
             if self.sqlite3.already_sent_tech_blog(result_url):
                 continue
             self.sqlite3.insert_tech_blog(result_url)
 
-            result = '[KAKAO]\n%s\n%s' % (desc.string, result_url)
+            result = '%s\n%s\n#kakao' % (desc.string, result_url)
             result = ft.check_max_tweet_msg(result)
             send_msg.append(result)
         return send_msg
@@ -42,11 +43,12 @@ class TechBlog:
         for p in soup.find_all(ft.match_soup_class(['post-item'])):
             desc = p.find(ft.match_soup_class(['post-title']))
             result_url = '%s%s' % (url, p.a['href'])
+            result_url = ft.shortener_url(result_url)
             if self.sqlite3.already_sent_tech_blog(result_url):
                 continue
             self.sqlite3.insert_tech_blog(result_url)
 
-            result = '[LEZHIN]\n%s\n%s' % (desc.string, result_url)
+            result = '%s\n%s\n#lezhin' % (desc.string, result_url)
             result = ft.check_max_tweet_msg(result)
             send_msg.append(result)
         return send_msg
@@ -63,11 +65,12 @@ class TechBlog:
         for idx, p in enumerate(soup.find_all(['title', 'link'])):
             if idx & 1:
                 result_url = p['href']
+                result_url = ft.shortener_url(result_url)
                 if self.sqlite3.already_sent_tech_blog(result_url):
                     continue
                 self.sqlite3.insert_tech_blog(result_url)
 
-                result = '[Naver]\n%s\n%s' % (desc, result_url)
+                result = '%s\n%s\n#naver_d2' % (desc, result_url)
                 result = ft.check_max_tweet_msg(result)
                 send_msg.append(result)
             else:
@@ -83,11 +86,12 @@ class TechBlog:
         for l in soup.find_all(ft.match_soup_class(['list-item'])):
             desc = l.find(ft.match_soup_class(['desc']))
             result_url = '%s%s' % (base_url, l['href'])
+            result_url = ft.shortener_url(result_url)
             if self.sqlite3.already_sent_tech_blog(result_url):
                 continue
             self.sqlite3.insert_tech_blog(result_url)
 
-            result = '[RIDI]\n%s\n%s' % (desc.string, result_url)
+            result = '%s\n%s\n#ridicorp' % (desc.string, result_url)
             result = ft.check_max_tweet_msg(result)
             send_msg.append(result)
         return send_msg
@@ -106,11 +110,12 @@ class TechBlog:
                 post = auth.find(ft.match_soup_class(['post-title']))
                 desc = auth.find(ft.match_soup_class(['post-description']))
                 result_url = '%s%s' % (base_url, post.a['href'][1:])
+                result_url = ft.shortener_url(result_url)
                 if self.sqlite3.already_sent_tech_blog(result_url):
                     continue
                 self.sqlite3.insert_tech_blog(result_url)
 
-                result = '[SPOQA]\n%s\n%s' % (desc.string, result_url)
+                result = '%s\n%s\n#spoqa' % (desc.string, result_url)
                 result = ft.check_max_tweet_msg(result)
                 send_msg.append(result)
         return send_msg
@@ -127,14 +132,15 @@ class TechBlog:
         for l in soup.find_all(ft.match_soup_class(['list'])):
             for lm in l.find_all(ft.match_soup_class(['list-module'])):
                 desc = lm.find(ft.match_soup_class(['post-description']))
-                result_url = '[Woowabros]\n%s%s' % (base_url, lm.a['href'])
+                result_url = '%s%s' % (base_url, lm.a['href'])
+                result_url = ft.shortener_url(result_url)
                 if result_url is None or desc.string is None:
                     continue
                 if self.sqlite3.already_sent_tech_blog(result_url):
                     continue
                 self.sqlite3.insert_tech_blog(result_url)
 
-                result = '[WOOWA]\n%s\n%s' % (result_url, desc.string)
+                result = '%s\n%s\n#woowabros' % (result_url, desc.string)
                 result = ft.check_max_tweet_msg(result)
                 send_msg.append(result)
         return send_msg
