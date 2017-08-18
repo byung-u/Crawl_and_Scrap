@@ -320,11 +320,11 @@ def get_recruit_people_info(ft):  # 각종 모집 공고
             continue
         else:
             mozip_url = '%s%s' % (root_url, f.a['href'])
+            if (check_duplicate(ft, 'recruit_people', mozip_url)):
+                continue
             short_url = ft.shortener_url(mozip_url)
             if short_url is None:
                 short_url = mozip_url
-            if (check_duplicate(ft, 'recruit_people', short_url)):
-                continue
             mz_result = '%s\n%s' % (mozip, short_url)
             mz_result_msg.append(mz_result)
 
@@ -355,9 +355,9 @@ def get_rfc_draft_list(ft):  # get state 'AUTH48-DONE' only
                     title = td.text.split()
                     version = title[0].split('-')
                     for b in tr.find_all('b'):
-                        short_url = ft.shortener_url(b.a['href'])
-                        if (check_duplicate(ft, 'rfc', short_url)):
+                        if (check_duplicate(ft, 'rfc', b.a['href'])):
                             continue
+                        short_url = ft.shortener_url(b.a['href'])
                         rfc_draft = '[%s]\n%s(Ver:%s)\n%s' % (
                             state.strip(),
                             '-'.join(version[1:-1]), version[-1],
@@ -382,12 +382,11 @@ def get_raspberripy_news(ft):
         if len(l.a.text) == 0:
             continue
         rb_title = l.a.text
+        if (check_duplicate(ft, 'raspberripy', l.a['href'])):
+            continue
         rb_url = ft.shortener_url(l.a['href'])
         if rb_url is None:
             rb_url = l.a['href']
-
-        if (check_duplicate(ft, 'raspberripy', rb_url)):
-            continue
 
         rb_news = '%s\n%s' % (rb_title, rb_url)
         if len(rb_news) > defaults.MAX_TWEET_MSG:
