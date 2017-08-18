@@ -320,9 +320,12 @@ def get_recruit_people_info(ft):  # 각종 모집 공고
             continue
         else:
             mozip_url = '%s%s' % (root_url, f.a['href'])
-            if (check_duplicate(ft, 'recruit_people', mozip_url)):
+            short_url = ft.shortener_url(mozip_url)
+            if short_url is None:
+                short_url = mozip_url
+            if (check_duplicate(ft, 'recruit_people', short_url)):
                 continue
-            mz_result = '%s\n%s' % (mozip, mozip_url)
+            mz_result = '%s\n%s' % (mozip, short_url)
             mz_result_msg.append(mz_result)
 
     return mz_result_msg
@@ -378,7 +381,9 @@ def get_raspberripy_news(ft):
         if len(l.a.text) == 0:
             continue
         rb_title = l.a.text
-        rb_url = l.a['href']
+        rb_url = ft.shortener_url(l.a['href'])
+        if rb_url is None:
+            rb_url = l.a['href']
 
         if (check_duplicate(ft, 'raspberripy', rb_url)):
             continue
