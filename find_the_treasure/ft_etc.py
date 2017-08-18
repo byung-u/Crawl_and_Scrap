@@ -355,16 +355,17 @@ def get_rfc_draft_list(ft):  # get state 'AUTH48-DONE' only
                     title = td.text.split()
                     version = title[0].split('-')
                     for b in tr.find_all('b'):
-                        if (check_duplicate(ft, 'rfc', b.a['href'])):
+                        short_url = ft.shortener_url(b.a['href'])
+                        if (check_duplicate(ft, 'rfc', short_url)):
                             continue
                         rfc_draft = '[%s]\n%s(Ver:%s)\n%s' % (
                             state.strip(),
                             '-'.join(version[1:-1]), version[-1],
-                            b.a['href'])
+                            short_url)
 
                         if len(rfc_draft) > defaults.MAX_TWEET_MSG:
                             rfc_draft = '[%s]\nVer:%s\n%s' % (
-                                state.strip(), version[-1], b.a['href'])
+                                state.strip(), version[-1], short_url)
 
                         rfc_draft_msg.append(rfc_draft)
                 cnt += 1
