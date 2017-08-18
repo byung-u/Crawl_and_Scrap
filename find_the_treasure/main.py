@@ -21,6 +21,7 @@ from find_the_treasure.ft_etc import (get_coex_exhibition,
                                       search_nate_ranking_news,
                                       # get_naver_popular_news,
                                       get_national_museum_exhibition,
+                                      get_onoffmix,
                                       # get_realestate_daum,
                                       get_realestate_mk,
                                       get_rate_of_process_sgx,
@@ -60,6 +61,7 @@ class FTbot:  # Find the Treasure
         self.daum_secret = os.environ.get('DAUM_CLIENT_SECRET')
         self.daum_app_key = os.environ.get('DAUM_APP_KEY')
 
+        self.chromedriver_path = os.environ.get('CHROMEDRIVER_PATH')
         self.google_id = os.environ.get('GOOGOLE_ID')
         self.google_p = os.environ.get('GOOGOLE_PW')
         self.gmail_from_addr = os.environ.get('GOOGOLE_FROM_ADDR')
@@ -236,6 +238,9 @@ def finding_about_software(ft):
 
 
 def finding_about_exhibition(ft):
+    exhibition = get_onoffmix(ft)
+    ft_post_tweet_array(ft, exhibition, 'onoffmix')
+
     exhibition = get_coex_exhibition(ft)
     ft_post_tweet_array(ft, exhibition, 'Coex')
 

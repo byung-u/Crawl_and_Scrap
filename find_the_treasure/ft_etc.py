@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from requests import get, codes
 from time import gmtime, strftime, time
+from selenium import webdriver
 
 from find_the_treasure import defaults
 from find_the_treasure.ft_sqlite3 import UseSqlite3
@@ -33,6 +34,33 @@ def is_exist_interesting_keyword(keyword):
         return True
     else:
         return False
+
+
+def get_onoffmix(ft):
+    result_msg = []
+    driver = webdriver.Chrome(ft.chromedriver_path)
+    driver.implicitly_wait(3)
+
+    url = 'https://www.onoffmix.com/event'
+    driver.get(url)
+    html = driver.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+    session = soup.select('div > div.sideLeft > div.contentBox.todayEventArea > ul > li > a')
+    for s in session:
+        if len(s.text) == 0:
+            # print(s['href'], s.text)
+            continue
+        if (check_duplicate(ft, 'onoffmix', s['href'])):
+            continue
+        short_url = ft.shortener_url(s['href'])
+        if short_url is None:
+            short_url = s['href']
+
+        result = '%s\n%s\n#onoffmix' % (short_url, s.text)
+        result = ft.check_max_tweet_msg(result)
+        result_msg.append(result)
+
+    return result_msg
 
 
 def get_coex_exhibition(ft):
