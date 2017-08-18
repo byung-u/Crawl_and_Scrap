@@ -22,9 +22,9 @@ class TechBlog:
         for p in soup.find_all(ft.match_soup_class(['post'])):
             desc = p.find(ft.match_soup_class(['post-title']))
             result_url = '%s%s' % (url, p.a['href'])
-            result_url = ft.shortener_url(result_url)
             if self.sqlite3.already_sent_tech_blog(result_url):
                 continue
+            result_url = ft.shortener_url(result_url)
             self.sqlite3.insert_tech_blog(result_url)
 
             result = '%s\n%s\n#kakao' % (result_url, desc.string)
@@ -43,9 +43,9 @@ class TechBlog:
         for p in soup.find_all(ft.match_soup_class(['post-item'])):
             desc = p.find(ft.match_soup_class(['post-title']))
             result_url = '%s%s' % (url, p.a['href'])
-            result_url = ft.shortener_url(result_url)
             if self.sqlite3.already_sent_tech_blog(result_url):
                 continue
+            result_url = ft.shortener_url(result_url)
             self.sqlite3.insert_tech_blog(result_url)
 
             result = '%s\n%s\n#lezhin' % (result_url, desc.string)
@@ -65,9 +65,9 @@ class TechBlog:
         for idx, p in enumerate(soup.find_all(['title', 'link'])):
             if idx & 1:
                 result_url = p['href']
-                result_url = ft.shortener_url(result_url)
                 if self.sqlite3.already_sent_tech_blog(result_url):
                     continue
+                result_url = ft.shortener_url(result_url)
                 self.sqlite3.insert_tech_blog(result_url)
 
                 result = '%s\n%s\n#naver_d2' % (result_url, desc)
@@ -86,9 +86,9 @@ class TechBlog:
         for l in soup.find_all(ft.match_soup_class(['list-item'])):
             desc = l.find(ft.match_soup_class(['desc']))
             result_url = '%s%s' % (base_url, l['href'])
-            result_url = ft.shortener_url(result_url)
             if self.sqlite3.already_sent_tech_blog(result_url):
                 continue
+            result_url = ft.shortener_url(result_url)
             self.sqlite3.insert_tech_blog(result_url)
 
             result = '%s\n%s\n#ridicorp' % (result_url, desc.string)
@@ -110,12 +110,12 @@ class TechBlog:
                 post = auth.find(ft.match_soup_class(['post-title']))
                 desc = auth.find(ft.match_soup_class(['post-description']))
                 result_url = '%s%s' % (base_url, post.a['href'][1:])
-                result_url = ft.shortener_url(result_url)
                 if self.sqlite3.already_sent_tech_blog(result_url):
                     continue
+                result_url = ft.shortener_url(result_url)
                 self.sqlite3.insert_tech_blog(result_url)
 
-                result = '%s\n%s\n#spoqa' % (reulst_url, desc.string)
+                result = '%s\n%s\n#spoqa' % (result_url, desc.string)
                 result = ft.check_max_tweet_msg(result)
                 send_msg.append(result)
         return send_msg
@@ -133,10 +133,10 @@ class TechBlog:
             for lm in l.find_all(ft.match_soup_class(['list-module'])):
                 desc = lm.find(ft.match_soup_class(['post-description']))
                 result_url = '%s%s' % (base_url, lm.a['href'])
+                if self.sqlite3.already_sent_tech_blog(result_url):
+                    continue
                 result_url = ft.shortener_url(result_url)
                 if result_url is None or desc.string is None:
-                    continue
-                if self.sqlite3.already_sent_tech_blog(result_url):
                     continue
                 self.sqlite3.insert_tech_blog(result_url)
 
