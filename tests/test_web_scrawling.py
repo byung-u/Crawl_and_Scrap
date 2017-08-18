@@ -68,11 +68,6 @@ class TestUrlConn(unittest.TestCase):
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
-    def test_onoffmix(self):
-        url = 'https://www.onoffmix.com/event'
-        r = get(url)
-        self.assertIs(r.status_code, codes.ok)
-
     def test_tech_blog(self):
         url = 'https://spoqa.github.io/index.html'
         r = get(url)
