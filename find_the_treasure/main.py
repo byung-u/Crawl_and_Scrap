@@ -238,6 +238,8 @@ def finding_about_software(ft):
     ft_post_tweet_array(ft, tb, 'Tech Blog ridi')
     tb = t.spoqa(ft)
     ft_post_tweet_array(ft, tb, 'Tech Blog spoqa')
+    tb = t.whatap(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog whatap')
     tb = t.woowabros(ft)
     ft_post_tweet_array(ft, tb, 'Tech Blog woowabros')
 

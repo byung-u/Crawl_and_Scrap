@@ -89,6 +89,10 @@ class TestUrlConn(unittest.TestCase):
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
+        url = 'http://tech.whatap.io/'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
         url = 'http://woowabros.github.io'
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
