@@ -27,7 +27,7 @@ class TechBlog:
                 continue
             self.sqlite3.insert_tech_blog(result_url)
 
-            result = '%s\n%s\n#kakao' % (desc.string, result_url)
+            result = '%s\n%s\n#kakao' % (result_url, desc.string)
             result = ft.check_max_tweet_msg(result)
             send_msg.append(result)
         return send_msg
@@ -48,7 +48,7 @@ class TechBlog:
                 continue
             self.sqlite3.insert_tech_blog(result_url)
 
-            result = '%s\n%s\n#lezhin' % (desc.string, result_url)
+            result = '%s\n%s\n#lezhin' % (result_url, desc.string)
             result = ft.check_max_tweet_msg(result)
             send_msg.append(result)
         return send_msg
@@ -70,7 +70,7 @@ class TechBlog:
                     continue
                 self.sqlite3.insert_tech_blog(result_url)
 
-                result = '%s\n%s\n#naver_d2' % (desc, result_url)
+                result = '%s\n%s\n#naver_d2' % (result_url, desc)
                 result = ft.check_max_tweet_msg(result)
                 send_msg.append(result)
             else:
@@ -91,7 +91,7 @@ class TechBlog:
                 continue
             self.sqlite3.insert_tech_blog(result_url)
 
-            result = '%s\n%s\n#ridicorp' % (desc.string, result_url)
+            result = '%s\n%s\n#ridicorp' % (result_url, desc.string)
             result = ft.check_max_tweet_msg(result)
             send_msg.append(result)
         return send_msg
@@ -115,7 +115,7 @@ class TechBlog:
                     continue
                 self.sqlite3.insert_tech_blog(result_url)
 
-                result = '%s\n%s\n#spoqa' % (desc.string, result_url)
+                result = '%s\n%s\n#spoqa' % (reulst_url, desc.string)
                 result = ft.check_max_tweet_msg(result)
                 send_msg.append(result)
         return send_msg
