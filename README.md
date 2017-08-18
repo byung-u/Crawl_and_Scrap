@@ -5,8 +5,8 @@ find_the_treasure
 openAPI 호출을 이용하여 의미있는 정보를 수집해보기 위한 파이썬 유틸리티.   
 Oauth, 인증키가 너무 많이 필요한 번거로움이...
 
-- 요약 가능한 정보는 url주소와 함께 트위터 전송
-- 긴 정보는 개인 G메일 전송
+- 140자 요약 가능한 정보는 url주소와 함께 트위터 전송
+- 긴 정보는 개인 G메일 전송으로 처리
 
 Quick Start
 ----------------
@@ -33,6 +33,7 @@ Quick Start
   - Stackoverflow upvote 갱신 체크 개수가 증가한 것
   - data.go.kr 관심있는 지역의 아파트 가격, 공정률 정보
   - 국립중앙박물관(이촌) 전시 정보 
+  - onoffmix 이벤트 정보
   - Coex 전시 정보
   - MBN 부동산 news  
 
@@ -46,9 +47,13 @@ Release
 -------
 - 0.6.0 (current)
   - 기술 블로그 스크롤링 추가
+  - onoffmix 행사 일정
   - unittest 추가
   - shortner url api change (naver -> google)
-  - pycon2017 새로 배운거 적용 (soup.select 사용)
+  - pyconkr2017에서 새로 배운거 적용
+    - soup.select 사용
+    - selenium 사용
+
 
 - 0.5.0 (Friday, 11 August 2017)
   - logging 추가, logger 사용
