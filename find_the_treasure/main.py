@@ -99,12 +99,12 @@ class FTbot:  # Find the Treasure
     def post_tweet(self, post_msg, subject='None'):
         if post_msg is not None:
             try:
-                if self.twit_post > self.twit_post_limit:
+                self.twit_post += 1
+                if self.twit_post >= self.twit_post_limit:
                     self.logger.error([self.twit_post], 'post failed, try after 15 minute')
                 else:
                     self.twitter.update_status(status=post_msg)
-                    self.logger.info('Tweet: %s', post_msg)
-                self.twit_post += 1
+                    self.logger.info('Tweet: %s [%d/180]', post_msg, self.twit_post)
             except TwythonError as e:
                 self.logger.error('TwythonError: %s', e)
         else:
