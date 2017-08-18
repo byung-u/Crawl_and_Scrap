@@ -36,7 +36,8 @@ cgitb.enable(format='text')
 
 class FTbot:  # Find the Treasure
     def __init__(self):
-
+        self.twit_post_limit = 180  # every 15min, https://dev.twitter.com/rest/public/rate-limiting
+        self.twit_post = 0
         self.twitter_app_key = os.environ.get('TWITTER_APP_KEY')
         self.twitter_app_secret = os.environ.get('TWITTER_APP_SECRET')
         self.twitter_access_token = os.environ.get('TWITTER_ACCESS_TOKEN')
@@ -98,12 +99,16 @@ class FTbot:  # Find the Treasure
     def post_tweet(self, post_msg, subject='None'):
         if post_msg is not None:
             try:
-                self.twitter.update_status(status=post_msg)
-                self.logger.info('Tweet: %s', post_msg)
+                if self.twit_post > self.twit_post_limit:
+                    self.logger.error([self.twit_post], 'post failed, try after 15 minute')
+                else:
+                    self.twitter.update_status(status=post_msg)
+                    self.logger.info('Tweet: %s', post_msg)
+                self.twit_post += 1
             except TwythonError as e:
                 self.logger.error('TwythonError: %s', e)
         else:
-            self.logger.error('[%s] no messeage for posting', subject)
+            self.logger.info('[%s] no posting message', subject)
             return
 
     def match_soup_class(self, target, mode='class'):
