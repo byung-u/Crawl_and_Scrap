@@ -49,9 +49,10 @@ class UseGithub:
                 lang = repo.get_languages()
                 if len(lang) == 0:
                     continue
-                ret = s.already_sent_github(repo.html_url)
+                short_url = ft.shortener_url(repo.html_url)
+                ret = s.already_sent_github(short_url)
                 if ret:
-                    ft.logger.info('Already sent: %s', repo.html_url)
+                    ft.logger.info('Already sent: %s', short_url)
                     continue
                 else:
                     # https://developer.github.com/v3/repos/
@@ -59,7 +60,7 @@ class UseGithub:
                     msg = '[%s]\n★ %s\n\n%s\n%s' % (
                             list(lang.keys())[0],
                             repo.stargazers_count,
-                            repo.html_url,
+                            short_url,
                             repo.description
                     )
                     msg = ft.check_max_tweet_msg(msg)
