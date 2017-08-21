@@ -15,11 +15,71 @@ class TechBlog:
         if self.sqlite3.already_sent_tech_blog(result_url):
             return None
 
-        result_url = ft.shortener_url(result_url)
         self.sqlite3.insert_tech_blog(result_url)
+        result_url = ft.shortener_url(result_url)
 
-        result = '%s\n%s\n#%s' % (result_url, desc.string)
+        result = '%s\n%s\n#%s' % (result_url, msg, name)
         result = ft.check_max_tweet_msg(result)
+        return result
+
+    def daliworks(self, ft):
+        send_msg = []
+        url = 'http://techblog.daliworks.net/'
+        r = get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        #main > div > article:nth-child(3) > h1 > a
+        sessions = soup.select('div > article > h1 > a')
+        for s in sessions:
+            result_url = '%s%s' % (url, s['href'])
+            result = self.create_result_msg(ft, result_url, s.text.strip(), 'daliworks')
+            if result is None:
+                continue
+            send_msg.append(result)
+        return send_msg
+
+    def devpools(self, ft):
+        send_msg = []
+        url = 'http://devpools.kr/'
+        r = get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('div > div > header > h2 > a')
+        for s in sessions:
+            result_url = s['href']
+            result = self.create_result_msg(ft, result_url, s.text.strip(), 'devpools')
+            if result is None:
+                continue
+            send_msg.append(result)
+        return send_msg
+
+    def dramancompany(self, ft):
+        send_msg = []
+        url = 'http://blog.dramancompany.com/'
+        r = get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        #masonry > article.post-749.post.type-post.status-publish.format-standard.hentry.category-develop.post-container.masonry-element.col-md-4 > div.post-article.post-title > h2 > a
+        sessions = soup.select('div > h2 > a')
+        for s in sessions:
+            result_url = s['href']
+            result = self.create_result_msg(ft, result_url, s.text.strip(), 'devpools')
+            if result is None:
+                continue
+            send_msg.append(result)
+        return send_msg
+
+    def goodoc(self, ft):
+        send_msg = []
+        url = 'http://dev.goodoc.co.kr/'
+        r = get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        # post-233 > header > h2 > a
+        sessions = soup.select('header > h2 > a')
+        for s in sessions:
+            result_url = s['href']
+            result = self.create_result_msg(ft, result_url, s.text.strip(), 'goodoc')
+            if result is None:
+                continue
+            send_msg.append(result)
+        return send_msg
 
     def kakao(self, ft):
         send_msg = []
@@ -33,7 +93,7 @@ class TechBlog:
             desc = p.find(ft.match_soup_class(['post-title']))
             result_url = '%s%s' % (url, p.a['href'])
 
-            result = create_result_msg(ft, result_url, desc.string, 'kakao')
+            result = self.create_result_msg(ft, result_url, desc.string, 'kakao')
             if result is None:
                 continue
             send_msg.append(result)
@@ -51,7 +111,7 @@ class TechBlog:
             desc = p.find(ft.match_soup_class(['post-title']))
             result_url = '%s%s' % (url, p.a['href'])
 
-            result = create_result_msg(ft, result_url, desc.string, 'lezhin')
+            result = self.create_result_msg(ft, result_url, desc.string, 'lezhin')
             if result is None:
                 continue
             send_msg.append(result)
@@ -69,13 +129,58 @@ class TechBlog:
         for idx, p in enumerate(soup.find_all(['title', 'link'])):
             if idx & 1:
                 result_url = p['href']
-
-                result = create_result_msg(ft, result_url, desc, 'naver_d2')
+                result = self.create_result_msg(ft, result_url, desc, 'naver_d2')
                 if result is None:
                     continue
                 send_msg.append(result)
             else:
                 desc = p.string
+        return send_msg
+
+    def naver_nuli(self, ft):
+        send_msg = []
+        base_url = 'http://nuli.navercorp.com'
+        url = 'http://nuli.navercorp.com/sharing/blog/main'
+        r = get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        # showList > ul > li:nth-child(1) > p.list_title > a
+        sessions = soup.select('div > ul > li > p > a')
+        for s in sessions:
+            result_url = '%s%s' % (base_url, s['href'])
+            result = self.create_result_msg(ft, result_url, s.text.strip(), 'naver_nuli')
+            if result is None:
+                continue
+            send_msg.append(result)
+        return send_msg
+
+    def netmanias(self, ft):
+        send_msg = []
+        base_url = 'http://www.netmanias.com'
+        url = 'http://www.netmanias.com/ko/'
+        r = get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        # body > div.clo_contents > div > div > div:nth-child(1) > div > div.mpw_frame.mps_netmanias.cmm_transbox > div.mpc_contents > div:nth-child(3) > div:nth-child(2) > div.mlp_contents > div.mlc_memo.cfs_malgun > div.mls_subject > a
+        sessions = soup.select('div > div > div > a')
+        for s in sessions:
+            if s.string is None:
+                continue
+            if s['href'].find('#cmt') != -1:  # ignore comment
+                continue
+            if s['href'].find('&tag') != -1:  # ignore tag page
+                continue
+            if s['href'].find('id=sponsor') != -1:  # ignore sponsor page
+                continue
+            if s['href'].find('id=sitenews') != -1:  # ignore sitenews page
+                continue
+            if s['href'].find('id=qna') != -1:  # ignore qna page
+                continue
+            if s['href'].find('no=') == -1:  # ignore subject page
+                continue
+            result_url = '%s%s' % (base_url, s['href'])
+            result = self.create_result_msg(ft, result_url, s.text.strip(), 'netmanias')
+            if result is None:
+                continue
+            send_msg.append(result)
         return send_msg
 
     def ridi(self, ft):
@@ -87,7 +192,21 @@ class TechBlog:
         for l in soup.find_all(ft.match_soup_class(['list-item'])):
             desc = l.find(ft.match_soup_class(['desc']))
             result_url = '%s%s' % (base_url, l['href'])
-            result = create_result_msg(ft, result_url, desc.string, 'ridicorp')
+            result = self.create_result_msg(ft, result_url, desc.string, 'ridicorp')
+            if result is None:
+                continue
+            send_msg.append(result)
+        return send_msg
+
+    def skplanet(self, ft):
+        send_msg = []
+        url = 'http://readme.skplanet.com/'
+        r = get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('header > h1 > a')
+        for s in sessions:
+            result_url = '%s%s' % (url, s['href'])
+            result = self.create_result_msg(ft, result_url, s.text.strip(), 'skplanet')
             if result is None:
                 continue
             send_msg.append(result)
@@ -107,10 +226,28 @@ class TechBlog:
                 post = auth.find(ft.match_soup_class(['post-title']))
                 desc = auth.find(ft.match_soup_class(['post-description']))
                 result_url = '%s%s' % (base_url, post.a['href'][1:])
-                result = create_result_msg(ft, result_url, desc.string, 'spoqa')
+                result = self.create_result_msg(ft, result_url, desc.string, 'spoqa')
                 if result is None:
                     continue
                 send_msg.append(result)
+        return send_msg
+
+    def tyle(self, ft):
+        send_msg = []
+        url = 'https://blog.tyle.io/'
+        r = get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('div > a')
+        for s in sessions:
+            try:
+                desc = s.span.string
+                result_url = '%s%s' % (url, s['href'])
+                result = self.create_result_msg(ft, result_url, desc, 'tyle')
+                if result is None:
+                    continue
+                send_msg.append(result)
+            except:
+                continue
         return send_msg
 
     def whatap(self, ft):
@@ -121,7 +258,7 @@ class TechBlog:
         for w in soup.find_all(ft.match_soup_class(['widget_recent_entries'])):
             for a_tag in w.find_all('a'):
                 result_url = a_tag['href']
-                result = create_result_msg(ft, result_url, a_tag.text, 'whatap')
+                result = self.create_result_msg(ft, result_url, a_tag.text, 'whatap')
                 if result is None:
                     continue
                 send_msg.append(result)
@@ -142,7 +279,7 @@ class TechBlog:
                 result_url = '%s%s' % (base_url, lm.a['href'])
                 if result_url is None or desc.string is None:
                     continue
-                result = create_result_msg(ft, result_url, desc.string, 'woowabros')
+                result = self.create_result_msg(ft, result_url, desc.string, 'woowabros')
                 if result is None:
                     continue
                 send_msg.append(result)
