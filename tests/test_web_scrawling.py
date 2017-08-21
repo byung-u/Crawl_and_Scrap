@@ -58,6 +58,14 @@ class TestUrlConn(unittest.TestCase):
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
+        url = 'http://d2.naver.com/d2.atom'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+        url = 'http://nuli.navercorp.com/sharing/blog/main'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
     def test_raspberripy(self):
         url = 'http://lifehacker.com/tag/raspberry-pi'
         r = get(url)
@@ -68,32 +76,68 @@ class TestUrlConn(unittest.TestCase):
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
-    def test_tech_blog(self):
+    def test_spoqa(self):
         url = 'https://spoqa.github.io/index.html'
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
+    def test_kakao(self):
         url = 'http://tech.kakao.com'
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
+    def test_lezhin(self):
         url = 'http://tech.lezhin.com'
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
-        url = 'http://d2.naver.com/d2.atom'
-        r = get(url)
-        self.assertIs(r.status_code, codes.ok)
-
+    def test_ridi(self):
         url = 'https://www.ridicorp.com/blog/'
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
+    def test_whatap(self):
         url = 'http://tech.whatap.io/'
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
+    def test_woowa(self):
         url = 'http://woowabros.github.io'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+    def test_skplanet(self):
+        url = 'http://readme.skplanet.com/'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+    def test_daliworks(self):
+        url = 'http://techblog.daliworks.net/'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+    def test_devpools(self):
+        url = 'http://devpools.kr/'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+    def test_dramacompany(self):
+        url = 'http://blog.dramancompany.com/'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+    def test_goodoc(self):
+        url = 'http://dev.goodoc.co.kr/'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+    def test_netmanias(self):
+        url = 'http://www.netmanias.com/ko/'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+    def test_tyle(self):
+        url = 'https://blog.tyle.io/'
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
