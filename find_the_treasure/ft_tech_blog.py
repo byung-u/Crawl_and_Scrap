@@ -26,6 +26,9 @@ class TechBlog:
         send_msg = []
         url = 'http://techblog.daliworks.net/'
         r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog daliworks] request error, code=%d', r.status_code)
+            return
         soup = BeautifulSoup(r.text, 'html.parser')
         #main > div > article:nth-child(3) > h1 > a
         sessions = soup.select('div > article > h1 > a')
@@ -41,6 +44,9 @@ class TechBlog:
         send_msg = []
         url = 'http://devpools.kr/'
         r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog devpools] request error, code=%d', r.status_code)
+            return
         soup = BeautifulSoup(r.text, 'html.parser')
         sessions = soup.select('div > div > header > h2 > a')
         for s in sessions:
@@ -55,6 +61,9 @@ class TechBlog:
         send_msg = []
         url = 'http://blog.dramancompany.com/'
         r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog dramancompany] request error, code=%d', r.status_code)
+            return
         soup = BeautifulSoup(r.text, 'html.parser')
         #masonry > article.post-749.post.type-post.status-publish.format-standard.hentry.category-develop.post-container.masonry-element.col-md-4 > div.post-article.post-title > h2 > a
         sessions = soup.select('div > h2 > a')
@@ -70,6 +79,9 @@ class TechBlog:
         send_msg = []
         url = 'http://dev.goodoc.co.kr/'
         r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog goodoc] request error, code=%d', r.status_code)
+            return
         soup = BeautifulSoup(r.text, 'html.parser')
         # post-233 > header > h2 > a
         sessions = soup.select('header > h2 > a')
@@ -158,6 +170,9 @@ class TechBlog:
         base_url = 'http://www.netmanias.com'
         url = 'http://www.netmanias.com/ko/'
         r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog netmanias] request error, code=%d', r.status_code)
+            return
         soup = BeautifulSoup(r.text, 'html.parser')
         # body > div.clo_contents > div > div > div:nth-child(1) > div > div.mpw_frame.mps_netmanias.cmm_transbox > div.mpc_contents > div:nth-child(3) > div:nth-child(2) > div.mlp_contents > div.mlc_memo.cfs_malgun > div.mls_subject > a
         sessions = soup.select('div > div > div > a')
@@ -188,6 +203,9 @@ class TechBlog:
         base_url = 'https://www.ridicorp.com/'
         url = 'https://www.ridicorp.com/blog/'
         r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog ridicorp] request error, code=%d', r.status_code)
+            return
         soup = BeautifulSoup(r.text, 'html.parser')
         for l in soup.find_all(ft.match_soup_class(['list-item'])):
             desc = l.find(ft.match_soup_class(['desc']))
@@ -202,6 +220,9 @@ class TechBlog:
         send_msg = []
         url = 'http://readme.skplanet.com/'
         r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog skplanet] request error, code=%d', r.status_code)
+            return
         soup = BeautifulSoup(r.text, 'html.parser')
         sessions = soup.select('header > h1 > a')
         for s in sessions:
@@ -236,6 +257,9 @@ class TechBlog:
         send_msg = []
         url = 'https://blog.tyle.io/'
         r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog tyle] request error, code=%d', r.status_code)
+            return
         soup = BeautifulSoup(r.text, 'html.parser')
         sessions = soup.select('div > a')
         for s in sessions:
@@ -254,6 +278,9 @@ class TechBlog:
         send_msg = []
         url = 'http://tech.whatap.io/'
         r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog whatap] request error, code=%d', r.status_code)
+            return
         soup = BeautifulSoup(r.text, 'html.parser')
         for w in soup.find_all(ft.match_soup_class(['widget_recent_entries'])):
             for a_tag in w.find_all('a'):
