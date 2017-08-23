@@ -22,6 +22,24 @@ class TechBlog:
         result = ft.check_max_tweet_msg(result)
         return result
 
+    def boxnwhisker(self, ft):
+        send_msg = []
+        url = 'http://www.boxnwhis.kr/'
+        r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog boxnwhis] request error, code=%d', r.status_code)
+            return
+        soup = BeautifulSoup(r.content.decode('utf-8', 'replace'), 'html.parser')
+        # body > section.recent-posts > ol > li:nth-child(5) > h2 > a
+        sessions = soup.select('h2 > a')
+        for s in sessions:
+            result_url = '%s%s' % (url, s['href'])
+            result = self.create_result_msg(ft, result_url, s.text.strip(), 'boxnwhisker')
+            if result is None:
+                continue
+            send_msg.append(result)
+        return send_msg
+
     def daliworks(self, ft):
         send_msg = []
         url = 'http://techblog.daliworks.net/'
@@ -124,6 +142,24 @@ class TechBlog:
             result_url = '%s%s' % (url, p.a['href'])
 
             result = self.create_result_msg(ft, result_url, desc.string, 'lezhin')
+            if result is None:
+                continue
+            send_msg.append(result)
+        return send_msg
+
+    def linchpinsoft(self, ft):
+        send_msg = []
+        url = 'http://www.linchpinsoft.com/blog/'
+        r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog linchpinsoft] request error, code=%d', r.status_code)
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        #main > div.posts-box.posts-box-8 > div > div:nth-child(1) > article > div.post-details > h2 > a
+        sessions = soup.select('div > h2 > a')
+        for s in sessions:
+            print(s.text.strip(), s['href'])
+            result = self.create_result_msg(ft, s['href'], s.text.strip(), 'linchpinsoft')
             if result is None:
                 continue
             send_msg.append(result)
@@ -251,6 +287,24 @@ class TechBlog:
                 if result is None:
                     continue
                 send_msg.append(result)
+        return send_msg
+
+    def tosslab(self, ft):
+        send_msg = []
+        url = 'http://tosslab.github.io/'
+        r = get(url)
+        if r.status_code != codes.ok:
+            ft.logger.error('[Tech blog tooslab] request error, code=%d', r.status_code)
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        # body > div.container > div > section > ul.posts > li:nth-child(2) > h2 > a
+        sessions = soup.select('div > div > section > ul > li > h2 > a')
+        for s in sessions:
+            result_url = '%s%s' % (url, s['href'])
+            result = self.create_result_msg(ft, result_url, s.text.strip(), 'tosslab')
+            if result is None:
+                continue
+            send_msg.append(result)
         return send_msg
 
     def tyle(self, ft):
