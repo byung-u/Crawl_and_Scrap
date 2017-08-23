@@ -4,6 +4,7 @@ import cgitb
 import json
 import logging
 import os
+import time
 from datetime import datetime
 from requests import post
 from twython import Twython, TwythonError
@@ -36,7 +37,7 @@ cgitb.enable(format='text')
 
 class FTbot:  # Find the Treasure
     def __init__(self):
-        self.twit_post_limit = 180  # every 15min, https://dev.twitter.com/rest/public/rate-limiting
+        self.twit_post_limit = 180 # every 15min, https://dev.twitter.com/rest/public/rate-limiting
         self.twit_post = 0
         self.twitter_app_key = os.environ.get('TWITTER_APP_KEY')
         self.twitter_app_secret = os.environ.get('TWITTER_APP_SECRET')
@@ -102,9 +103,10 @@ class FTbot:  # Find the Treasure
                 self.twit_post += 1
                 if self.twit_post >= self.twit_post_limit:
                     self.logger.error([self.twit_post], 'post failed, try after 15 minute')
-                else:
-                    self.twitter.update_status(status=post_msg)
-                    self.logger.info('Tweet: %s [%d/180]', post_msg, self.twit_post)
+                    time.sleep(960)  # 15 * 60 sec + 60
+
+                self.twitter.update_status(status=post_msg)
+                self.logger.info('Tweet: %s [%d/180]', post_msg, self.twit_post)
             except TwythonError as e:
                 self.logger.error('TwythonError: %s', e)
         else:
@@ -228,16 +230,32 @@ def finding_about_software(ft):
     ft_post_tweet_array(ft, rfc_draft, 'RFC DRAFT')
 
     t = TechBlog(ft)
+    tb = t.daliworks(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog daliworks')
+    tb = t.devpools(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog devpools')
+    tb = t.dramancompany(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog dramacompany')
+    tb = t.goodoc(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog goodoc')
     tb = t.kakao(ft)
     ft_post_tweet_array(ft, tb, 'Tech Blog kakao')
     tb = t.lezhin(ft)
     ft_post_tweet_array(ft, tb, 'Tech Blog lezhin')
     tb = t.naver(ft)
     ft_post_tweet_array(ft, tb, 'Tech Blog naver d2')
+    tb = t.naver_nuli(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog naver nuli')
+    tb = t.netmanias(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog netmanias')
     tb = t.ridi(ft)
     ft_post_tweet_array(ft, tb, 'Tech Blog ridi')
+    tb = t.skplanet(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog skplanet')
     tb = t.spoqa(ft)
     ft_post_tweet_array(ft, tb, 'Tech Blog spoqa')
+    tb = t.tyle(ft)
+    ft_post_tweet_array(ft, tb, 'Tech Blog tyle')
     tb = t.whatap(ft)
     ft_post_tweet_array(ft, tb, 'Tech Blog whatap')
     tb = t.woowabros(ft)
