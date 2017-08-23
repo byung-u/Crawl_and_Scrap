@@ -127,10 +127,10 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
         if short_url is None:
             short_url = r["items"][i]["link"]
 
-        so_result = '[▲ %s]\n%s\n%s\n' % (
+        so_result = '[▲ %s]\n%s\n%s' % (
             r["items"][i]["score"],
-            r["items"][i]["title"],
-            short_url)
+            short_url,
+            r["items"][i]["title"])
         so_result = ft.check_max_tweet_msg(so_result)
         result_msg.append(so_result)
     return result_msg
@@ -300,7 +300,7 @@ def get_hacker_news(ft):
             hn_short_url = ft.shortener_url(hn_url)
             if hn_short_url is None:
                 hn_short_url = hn_url
-            hn_result = '[HackerNews]\n%s\nRank:%s' % (hn_short_url, hn_text)
+            hn_result = '%s\nRank:%s\n#hacker_news' % (hn_short_url, hn_text)
             hn_result = ft.check_max_tweet_msg(hn_result)
             hn_result_msg.append(hn_result)
             break
@@ -325,7 +325,7 @@ def get_recruit_people_info(ft):  # 각종 모집 공고
             short_url = ft.shortener_url(mozip_url)
             if short_url is None:
                 short_url = mozip_url
-            mz_result = '%s\n%s' % (mozip, short_url)
+            mz_result = '%s\n%s' % (short_url, mozip)
             mz_result_msg.append(mz_result)
 
     return mz_result_msg
@@ -388,7 +388,7 @@ def get_raspberripy_news(ft):
         if rb_url is None:
             rb_url = l.a['href']
 
-        rb_news = '%s\n%s' % (rb_title, rb_url)
+        rb_news = '%s\n%s' % (rb_url, rb_title)
         if len(rb_news) > defaults.MAX_TWEET_MSG:
             rb_news = '%s' % (rb_url)
         rb_news_msg.append(rb_news)
