@@ -82,7 +82,7 @@ class UseDataKorea:  # www.data.go.kr
                 short_url = ft.shortener_url(href)
                 if short_url is None:
                     short_url = href
-                ret_msg = '%s\n%s\n#molit' % (tr.a.text, short_url)
+                ret_msg = '%s\n%s\n#molit' % (short_url, tr.a.text)
                 molt_info.append(ret_msg)
 
         return molt_info
