@@ -28,7 +28,7 @@ Quick Start
 수집 정보
 ---------
 - 트위터 전송
-  - 기술 블로그 (카카오, 레진, Naver D2, 리디북스, 스포카, 우아한 형제들, ... 더 추가중)
+  - 기술 블로그
   - Github repository star 개수 갱신 체크해서 개수가 증가한 것
   - Stackoverflow upvote 갱신 체크 개수가 증가한 것
   - data.go.kr 관심있는 지역의 아파트 가격, 공정률 정보
@@ -42,6 +42,25 @@ Quick Start
   - nate ranking 뉴스
   - naver IT 뉴스
   - daum 부동산 뉴스
+
+- 기술블로그(A to Z)
+  - [박스엔휘스커](http://www.boxnwhis.kr/)
+  - [달리웍스](http://techblog.daliworks.net/)
+  - [개발바보들](http://devpools.kr/)
+  - [드라마엔컴퍼니](http://blog.dramancompany.com/)
+  - [굿닥](http://dev.goodoc.co.kr/)
+  - [카카오](http://tech.kakao.com)
+  - [레진](http://tech.lezhin.com)
+  - [네이버D2](http://d2.naver.com/d2.atom)
+  - [네이버널리](http://nuli.navercorp.com/sharing/blog/main)
+  - [넷매니아즈](http://www.netmanias.com/ko/)
+  - [리디북스](https://www.ridicorp.com/blog/)
+  - [SK플래닛](http://readme.skplanet.com/)
+  - [스포카](https://spoqa.github.io/index.html)
+  - [토스랩](http://tosslab.github.io/)
+  - [타일](https://blog.tyle.io/)
+  - [와탭](http://tech.whatap.io/)
+  - [우아한형제들](http://woowabros.github.io/index.html)
 
 Release
 -------
