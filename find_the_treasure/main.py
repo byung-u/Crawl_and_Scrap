@@ -6,6 +6,7 @@ import logging
 import os
 import time
 from datetime import datetime
+from envparse import env
 from requests import codes, get, post
 from twython import Twython, TwythonError
 
@@ -76,9 +77,10 @@ class FTbot:  # Find the Treasure
         self.gmail_to_addr = os.environ.get('GOOGOLE_TO_ADDR')
         self.google_url_api_key = os.environ.get('GOOGOLE_URL_API_KEY')
 
+        self.apt_rent_url = os.environ.get('DATA_APT_RENT_URL')
         self.apt_trade_url = os.environ.get('DATA_APT_TRADE_URL')
         self.apt_trade_svc_key = os.environ.get('DATA_APT_API_KEY')
-        self.apt_trade_dong = os.environ.get('REALESTATE_DONG')
+        self.apt_trade_dong = env('REALESTATE_DONG', cast=list)
         self.apt_trade_district_code = os.environ.get('REALESTATE_DISTRICT_CODE')
         # self.apt_trade_apt = os.environ.get('DATA_GO_KR', 'apt', raw=True)
         # self.apt_trade_size = os.environ.get('DATA_GO_KR', 'size', raw=True)
@@ -217,7 +219,6 @@ def find_tech_blogs(ft):
     t.boxnwhisker(ft)
     t.daliworks(ft)
     t.devpools(ft)
-    return
     t.dramancompany(ft)
     t.goodoc(ft)
     t.kakao(ft)
@@ -260,6 +261,10 @@ def deprecated(ft, run_type):
     if (type(naver_news) is list) and (len(naver_news) > 0):
         ft.send_gmail('NAVER IT news', naver_news)
 
+    dg = UseDataKorea(ft)
+    dg.realstate_trade(ft)
+    dg.realstate_rent(ft)
+
 
 def finding_and_mail(ft):
     rmk = get_realestate_mk(ft)
@@ -297,16 +302,13 @@ def finding_and_tweet(ft):
     get_coex_exhibition(ft)
     get_national_museum_exhibition(ft)
 
-    # Korea
-    dg = UseDataKorea(ft)
-    dg.ft_search_my_interesting_realestate(ft)  # FIXME : check
-    dg.ft_get_molit_news(ft)
-
-    # dg.ft_get_tta_news(ft) # 한국정보통신기술협회
-    get_rate_of_process_sgx(ft)  # sgx: 신그랑
-
     # ETC
-    get_recruit_people_info(ft)
+    dg = UseDataKorea(ft)
+    dg.get_molit_news(ft)   # 국토교통부
+    dg.get_tta_news(ft)     # 한국정보통신기술협회
+
+    get_recruit_people_info(ft)  # 모니터링 요원 모집공고ㅓ
+    get_rate_of_process_sgx(ft)  # 공정률 확인
 
 
 def main():
