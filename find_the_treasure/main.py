@@ -79,9 +79,9 @@ class FTbot:  # Find the Treasure
 
         self.apt_rent_url = os.environ.get('DATA_APT_RENT_URL')
         self.apt_trade_url = os.environ.get('DATA_APT_TRADE_URL')
-        self.apt_trade_svc_key = os.environ.get('DATA_APT_API_KEY')
-        self.apt_trade_dong = env('REALESTATE_DONG', cast=list)
-        self.apt_trade_district_code = os.environ.get('REALESTATE_DISTRICT_CODE')
+        self.apt_svc_key = os.environ.get('DATA_APT_API_KEY')
+        self.apt_dong = env('REALESTATE_DONG', cast=list)
+        self.apt_district_code = env('REALESTATE_DISTRICT_CODE', cast=list)
         # self.apt_trade_apt = os.environ.get('DATA_GO_KR', 'apt', raw=True)
         # self.apt_trade_size = os.environ.get('DATA_GO_KR', 'size', raw=True)
 
@@ -261,10 +261,6 @@ def deprecated(ft, run_type):
     if (type(naver_news) is list) and (len(naver_news) > 0):
         ft.send_gmail('NAVER IT news', naver_news)
 
-    dg = UseDataKorea(ft)
-    dg.realstate_trade(ft)
-    dg.realstate_rent(ft)
-
 
 def finding_and_mail(ft):
     rmk = get_realestate_mk(ft)
@@ -306,6 +302,8 @@ def finding_and_tweet(ft):
     dg = UseDataKorea(ft)
     dg.get_molit_news(ft)   # 국토교통부
     dg.get_tta_news(ft)     # 한국정보통신기술협회
+    dg.realstate_trade(ft)
+    dg.realstate_rent(ft)
 
     get_recruit_people_info(ft)  # 모니터링 요원 모집공고ㅓ
     get_rate_of_process_sgx(ft)  # 공정률 확인
