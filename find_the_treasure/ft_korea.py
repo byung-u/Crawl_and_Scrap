@@ -29,10 +29,12 @@ class UseDataKorea:  # www.data.go.kr
         now = datetime.now()
         time_str = '%4d%02d' % (now.year, now.month)
 
-        request_url = '%s?LAWD_CD=%s&DEAL_YMD=%s&serviceKey=%s' % (ft.apt_trade_url,
-                                                                   ft.apt_trade_district_code,
-                                                                   time_str,
-                                                                   ft.apt_trade_svc_key)
+        for district_code in ft.apt_district_code:
+            request_url = '%s?LAWD_CD=%s&DEAL_YMD=%s&serviceKey=%s' % (
+                          ft.apt_trade_url, district_code, time_str, ft.apt_svc_key)
+            self.request_realstate_trade(ft, request_url)
+
+    def request_realstate_trade(self, ft, request_url):
 
         req = urllib.request.Request(request_url)
         try:
@@ -50,10 +52,9 @@ class UseDataKorea:  # www.data.go.kr
         items = soup.findAll('item')
         for item in items:
             item = item.text
-            print(item)
             item = re.sub('<.*?>', ' ', item)
             info = item.split()
-            if info[3] not in ft.apt_trade_dong:
+            if info[3] not in ft.apt_dong:
                 continue
             # if info[5].find(ft.apt_trade_apt) == -1:
             #     continue
@@ -67,16 +68,16 @@ class UseDataKorea:  # www.data.go.kr
                 continue
             ft.post_tweet(ret_msg, 'Realestate')
 
-
     def realstate_rent(self, ft):
         now = datetime.now()
         time_str = '%4d%02d' % (now.year, now.month)
 
-        request_url = '%s?LAWD_CD=%s&DEAL_YMD=%s&serviceKey=%s' % (ft.apt_rent_url,
-                                                                   ft.apt_trade_district_code,
-                                                                   time_str,
-                                                                   ft.apt_trade_svc_key)
+        for district_code in ft.apt_district_code:
+            request_url = '%s?LAWD_CD=%s&DEAL_YMD=%s&serviceKey=%s' % (
+                          ft.apt_rent_url, district_code, time_str, ft.apt_svc_key)
+            self.request_realstate_rent(ft, request_url)
 
+    def request_realstate_rent(self, ft, request_url):
         req = urllib.request.Request(request_url)
         try:
             res = urllib.request.urlopen(req)
@@ -95,7 +96,7 @@ class UseDataKorea:  # www.data.go.kr
             item = item.text
             item = re.sub('<.*?>', ' ', item)
             info = item.split()
-            if info[2] not in ft.apt_trade_dong:
+            if info[2] not in ft.apt_dong:
                 continue
             # if info[5].find(ft.apt_trade_apt) == -1:
             #     continue
