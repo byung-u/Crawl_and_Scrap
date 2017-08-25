@@ -28,17 +28,22 @@ Quick Start
 수집 정보
 ---------
 - 트위터 전송
-  - 기술 블로그
-  - Github repository star 개수 갱신 체크해서 개수가 증가한 것
-  - Stackoverflow upvote 갱신 체크 개수가 증가한 것
-  - data.go.kr 관심있는 지역의 아파트 가격, 공정률 정보
-  - 국립중앙박물관(이촌) 전시 정보 
-  - onoffmix 이벤트 정보
-  - Coex 전시 정보
-  - MBN 부동산 news  
+  - TECH 
+    - 기술 블로그
+    - Github repository star 개수 갱신 체크해서 개수가 증가한 것
+    - Stackoverflow upvote 갱신 체크 개수가 증가한 것
+  - 국가부처
+    - 국토교통부 보도자료
+    - 한국정보통신협회 입찰공고
+    - data.go.kr 공정률 정보
+  - 전시, 모임
+    - 국립중앙박물관(이촌) 전시 정보 
+    - onoffmix 이벤트 정보
+    - Coex 전시 정보
 
 
 - 이메일 전송
+  - MBN 부동산 news  
   - nate ranking 뉴스
   - naver IT 뉴스
   - daum 부동산 뉴스
@@ -64,12 +69,15 @@ Quick Start
 
 Release
 -------
-- 0.6.0 (current)
+- 0.6.1 (current)
+  - 중복함수 제거
+
+- 0.6.0 (Friday, 25 August 2017)
   - 기술 블로그 스크롤링 추가
   - onoffmix 행사 일정
   - unittest 추가
   - shortner url api change (naver -> google)
-  - pyconkr2017에서 새로 배운거 적용
+  - pyconkr2017에서 새로 배운거 적용[via 이준범](https://github.com/beomi)
     - soup.select 사용
     - selenium 사용
 
@@ -149,10 +157,12 @@ export DAUM_APP_KEY="xxx"
 export DAUM_CLIENT_ID="xxx"
 export DAUM_CLIENT_SECRET="xxx"
 
+export CHROMEDRIVER_PATH="$HOME/xxx"
 export GOOGOLE_ID="xxx"
 export GOOGOLE_PW="xxx"
 export GOOGOLE_FROM_ADDR="xxx"
 export GOOGOLE_TO_ADDR="xxx"
+export GOOGOLE_URL_API_KEY="xxxxx"
 
 export DATA_APT_RENT_URL="xxx"
 export DATA_APT_TRADE_URL="xxx"
@@ -167,7 +177,6 @@ export RATE_OF_PROCESS_KEY="xxx"
 export ROP_AREA_DCD="xxx"
 export ROP_KEYWORD="xxx"
 
-#
 ```
 
 
