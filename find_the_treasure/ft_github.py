@@ -49,22 +49,21 @@ class UseGithub:
                 lang = repo.get_languages()
                 if len(lang) == 0:
                     continue
-                short_url = ft.shortener_url(repo.html_url)
-                ret = s.already_sent_github(short_url)
+                ret = s.already_sent_github(repo.html_url)
                 if ret:
-                    ft.logger.info('Already sent: %s', short_url)
+                    ft.logger.info('Already sent: %s', repo.html_url)
                     continue
-                else:
-                    # https://developer.github.com/v3/repos/
-                    s.insert_url(repo.html_url)
-                    msg = '[%s]\n★ %s\n\n%s\n%s' % (
-                            list(lang.keys())[0],
-                            repo.stargazers_count,
-                            short_url,
-                            repo.description
-                    )
-                    msg = ft.check_max_tweet_msg(msg)
-                    send_msg.append(msg)
+                short_url = ft.shortener_url(repo.html_url)
+                # https://developer.github.com/v3/repos/
+                s.insert_url(repo.html_url)
+                msg = '[%s]\n★ %s\n\n%s\n%s' % (
+                        list(lang.keys())[0],
+                        repo.stargazers_count,
+                        short_url,
+                        repo.description
+                )
+                msg = ft.check_max_tweet_msg(msg)
+                send_msg.append(msg)
             except:
                 ft.logger.error(
                         '[GITHUB] repo_process failed: %s %s', repo, sys.exc_info()[0])
