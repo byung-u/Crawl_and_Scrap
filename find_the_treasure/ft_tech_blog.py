@@ -202,6 +202,26 @@ class TechBlog:
                 continue
             ft.post_tweet(result, 'Tech Blog netmanias')
 
+    def realm(self, ft):
+        base_url = 'https://academy.realm.io'
+        url = 'https://academy.realm.io/kr/'
+        r = ft.request_and_get(url, 'Tech blog realm')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        #tweets-slider-wrap > div > div > div.article.col-xs-12.col-sm-2.card.micro.flex.center.js-post-toggle.slick-slide.slick-current.slick-active > div > div > a.news-headline.col-xs-12.col-sm-11.text-center
+        sessions = soup.select('div > div > div > div > a')
+        # sessions = soup.select('div > div > a')
+        for s in sessions:
+            if len(s.text.strip()) < 5:
+                continue
+            # print(s)
+            result_url = '%s%s' % (base_url, s['href'])
+            result = self.create_result_msg(ft, result_url, s.text.strip(), 'realm')
+            if result is None:
+                continue
+            ft.post_tweet(result, 'Tech Blog realm')
+
     def ridi(self, ft):
         base_url = 'https://www.ridicorp.com/'
         url = 'https://www.ridicorp.com/blog/'
