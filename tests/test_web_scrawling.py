@@ -141,6 +141,15 @@ class TestUrlConn(unittest.TestCase):
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
+    def test_realm(self):
+        url = 'https://academy.realm.io/kr/'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
+    def test_tta(self):
+        url = 'http://www.tta.or.kr/news/tender.jsp'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
 
 if __name__ == '__main__':
     unittest.main()
