@@ -10,7 +10,7 @@ from requests import post
 from twython import Twython, TwythonError
 
 from find_the_treasure.ft_github import UseGithub
-from find_the_treasure.ft_korea_gov import (UseDataKorea)
+from find_the_treasure.ft_korea import (UseDataKorea)
 from find_the_treasure.ft_daum import UseDaum
 # from find_the_treasure.ft_naver import UseNaver
 from find_the_treasure.ft_sqlite3 import UseSqlite3
@@ -108,7 +108,7 @@ class FTbot:  # Find the Treasure
                 self.twitter.update_status(status=post_msg)
                 self.logger.info('Tweet: %s [%d/180]', post_msg, self.twit_post)
             except TwythonError as e:
-                self.logger.error('TwythonError: %s', e)
+                self.logger.error('TwythonError: %s [%s]', e, post_msg)
         else:
             self.logger.info('[%s] no posting message', subject)
             return
@@ -279,13 +279,16 @@ def finding_about_exhibition(ft):
     ft_post_tweet_array(ft, nm, 'National Museum')
 
 
-def finding_about_realestate(ft):
+def finding_about_korea(ft):
     dg = UseDataKorea(ft)
     trade_msg = dg.ft_search_my_interesting_realestate(ft)
     ft_post_tweet_array(ft, trade_msg, 'Realestate korea')
 
-    molit_msg = dg.ft_get_molit_news(ft)
-    ft_post_tweet_array(ft, molit_msg, '국토부')
+    result_msg = dg.ft_get_molit_news(ft)
+    ft_post_tweet_array(ft, result_msg, '국토부')
+
+    # result_msg = dg.ft_get_tta_news(ft)
+    # ft_post_tweet_array(ft, result_msg, '한국정보통신기술협회')
 
     sgx = get_rate_of_process_sgx(ft)  # sgx: 신/그/자
     ft.post_tweet(sgx, 'rate of process')
@@ -338,7 +341,7 @@ def main():
     # Coex, National Museum
     finding_about_exhibition(ft)
     # Data.go.kr, MBN, Naver. Daum
-    finding_about_realestate(ft)
+    finding_about_korea(ft)
     # Nate, Daum
     finding_about_news(ft)
     # etc
