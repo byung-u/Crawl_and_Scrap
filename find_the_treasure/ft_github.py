@@ -22,28 +22,23 @@ class UseGithub:
 
     def get_github_repos(self, mode, date_range, star_range, lang):
         if mode == 'new':
-            repos = self.github_no_login.search_repositories(
-                    "github",
-                    created=date_range,
-                    stars=star_range,
-                    sort="stars",
-                    order="desc",
-                    language=lang,
-            )
+            repos = self.github_no_login.search_repositories("github",
+                                                             created=date_range,
+                                                             stars=star_range,
+                                                             sort="stars",
+                                                             order="desc",
+                                                             language=lang,)
         else:  # hot
-            repos = self.github_no_login.search_repositories(
-                    "github",
-                    pushed=date_range,
-                    stars=star_range,
-                    sort="stars",
-                    order="desc",
-                    language=lang,
-            )
+            repos = self.github_no_login.search_repositories("github",
+                                                             pushed=date_range,
+                                                             stars=star_range,
+                                                             sort="stars",
+                                                             order="desc",
+                                                             language=lang,)
         return repos
 
     def sqlite_repo_process(self, ft, mode, repos):
         s = UseSqlite3('github')
-        send_msg = []
         for repo in repos:
             try:
                 lang = repo.get_languages()
@@ -56,19 +51,16 @@ class UseGithub:
                 short_url = ft.shortener_url(repo.html_url)
                 # https://developer.github.com/v3/repos/
                 s.insert_url(repo.html_url)
-                msg = '[%s]\n★ %s\n\n%s\n%s' % (
-                        list(lang.keys())[0],
-                        repo.stargazers_count,
-                        short_url,
-                        repo.description
-                )
+                msg = '[%s]\n★ %s\n\n%s\n%s\n#github' % (list(lang.keys())[0],
+                                                         repo.stargazers_count,
+                                                         short_url,
+                                                         repo.description)
                 msg = ft.check_max_tweet_msg(msg)
-                send_msg.append(msg)
+                ft.post_tweet(msg, 'Github')
             except:
-                ft.logger.error(
-                        '[GITHUB] repo_process failed: %s %s', repo, sys.exc_info()[0])
+                ft.logger.error('[GITHUB] repo_process failed: %s %s',
+                                repo, sys.exc_info()[0])
         s.close()
-        return send_msg
 
     # Search range yesterday & today just 2 days.
     # If use over 2days, then occur rate-limiting.

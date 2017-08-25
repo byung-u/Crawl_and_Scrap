@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-from requests import get, codes
 
 from find_the_treasure.ft_sqlite3 import UseSqlite3
 
@@ -22,21 +21,9 @@ class TechBlog:
         result = ft.check_max_tweet_msg(result)
         return result
 
-    def request_and_get(self, ft, url, name):
-        try:
-            r = get(url)
-            if r.status_code != codes.ok:
-                ft.logger.error('[Tech blog %s] request error, code=%d', name, r.status_code)
-                return None
-            return r
-        except:
-            ft.logger.error('[Tech blog %s] connect fail', name)
-            return None
-
     def boxnwhisker(self, ft):
-        send_msg = []
         url = 'http://www.boxnwhis.kr/'
-        r = self.request_and_get(ft, url, 'boxnwhisker')
+        r = ft.request_and_get(url, 'Tech blog boxnwhisker')
         if r is None:
             return
         soup = BeautifulSoup(r.content.decode('utf-8', 'replace'), 'html.parser')
@@ -47,30 +34,26 @@ class TechBlog:
             result = self.create_result_msg(ft, result_url, s.text.strip(), 'boxnwhisker')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog boxnwhisker')
 
     def daliworks(self, ft):
-        send_msg = []
         url = 'http://techblog.daliworks.net/'
-        r = self.request_and_get(ft, url, 'daliworks')
+        r = ft.request_and_get(url, 'Tech blog daliworks')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        #main > div > article:nth-child(3) > h1 > a
+        # main > div > article:nth-child(3) > h1 > a
         sessions = soup.select('div > article > h1 > a')
         for s in sessions:
             result_url = '%s%s' % (url, s['href'])
             result = self.create_result_msg(ft, result_url, s.text.strip(), 'daliworks')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog daliworks')
 
     def devpools(self, ft):
-        send_msg = []
         url = 'http://devpools.kr/'
-        r = self.request_and_get(ft, url, 'devpools')
+        r = ft.request_and_get(url, 'Tech blog devpools')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -80,30 +63,26 @@ class TechBlog:
             result = self.create_result_msg(ft, result_url, s.text.strip(), 'devpools')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog devpools')
 
     def dramancompany(self, ft):
-        send_msg = []
         url = 'http://blog.dramancompany.com/'
-        r = self.request_and_get(ft, url, 'dramancompany')
+        r = ft.request_and_get(url, 'Tech blog dramancompany')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        #masonry > article.post-749.post.type-post.status-publish.format-standard.hentry.category-develop.post-container.masonry-element.col-md-4 > div.post-article.post-title > h2 > a
+        # masonry > article.post-749.post.type-post.status-publish.format-standard.hentry.category-develop.post-container.masonry-element.col-md-4 > div.post-article.post-title > h2 > a
         sessions = soup.select('div > h2 > a')
         for s in sessions:
             result_url = s['href']
             result = self.create_result_msg(ft, result_url, s.text.strip(), 'devpools')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog dramancompany')
 
     def goodoc(self, ft):
-        send_msg = []
         url = 'http://dev.goodoc.co.kr/'
-        r = self.request_and_get(ft, url, 'goodoc')
+        r = ft.request_and_get(url, 'Tech blog goodoc')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -114,13 +93,11 @@ class TechBlog:
             result = self.create_result_msg(ft, result_url, s.text.strip(), 'goodoc')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog goodoc')
 
     def kakao(self, ft):
-        send_msg = []
         url = 'http://tech.kakao.com'
-        r = self.request_and_get(ft, url, 'kakao')
+        r = ft.request_and_get(url, 'Tech blog kakao')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -131,13 +108,11 @@ class TechBlog:
             result = self.create_result_msg(ft, result_url, desc.string, 'kakao')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog kakao')
 
     def lezhin(self, ft):
-        send_msg = []
         url = 'http://tech.lezhin.com'
-        r = self.request_and_get(ft, url, 'lezhin')
+        r = ft.request_and_get(url, 'Tech blog lezhin')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -148,30 +123,26 @@ class TechBlog:
             result = self.create_result_msg(ft, result_url, desc.string, 'lezhin')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog lezhin')
 
     def linchpinsoft(self, ft):
-        send_msg = []
         url = 'http://www.linchpinsoft.com/blog/'
-        r = self.request_and_get(ft, url, 'linchpinsoft')
+        r = ft.request_and_get(url, 'Tech blog linchpinsoft')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        #main > div.posts-box.posts-box-8 > div > div:nth-child(1) > article > div.post-details > h2 > a
+        # main > div.posts-box.posts-box-8 > div > div:nth-child(1) > article > div.post-details > h2 > a
         sessions = soup.select('div > h2 > a')
         for s in sessions:
             result = self.create_result_msg(ft, s['href'], s.text.strip(), 'linchpinsoft')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog linchpinsoft')
 
     def naver(self, ft):
         desc = ""
-        send_msg = []
         url = 'http://d2.naver.com/d2.atom'
-        r = self.request_and_get(ft, url, 'naver_d2')
+        r = ft.request_and_get(url, 'Tech blog naver_d2')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -181,16 +152,14 @@ class TechBlog:
                 result = self.create_result_msg(ft, result_url, desc, 'naver_d2')
                 if result is None:
                     continue
-                send_msg.append(result)
+                ft.post_tweet(result, 'Tech Blog naver_d2')
             else:
                 desc = p.string
-        return send_msg
 
     def naver_nuli(self, ft):
-        send_msg = []
         base_url = 'http://nuli.navercorp.com'
         url = 'http://nuli.navercorp.com/sharing/blog/main'
-        r = self.request_and_get(ft, url, 'naver_nuli')
+        r = ft.request_and_get(url, 'Tech blog naver_nuli')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -201,14 +170,12 @@ class TechBlog:
             result = self.create_result_msg(ft, result_url, s.text.strip(), 'naver_nuli')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog naver_nuli')
 
     def netmanias(self, ft):
-        send_msg = []
         base_url = 'http://www.netmanias.com'
         url = 'http://www.netmanias.com/ko/'
-        r = self.request_and_get(ft, url, 'netmanias')
+        r = ft.request_and_get(url, 'Tech blog netmanias')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -233,14 +200,12 @@ class TechBlog:
             result = self.create_result_msg(ft, result_url, s.text.strip(), 'netmanias')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog netmanias')
 
     def ridi(self, ft):
-        send_msg = []
         base_url = 'https://www.ridicorp.com/'
         url = 'https://www.ridicorp.com/blog/'
-        r = self.request_and_get(ft, url, 'ridicorp')
+        r = ft.request_and_get(url, 'Tech blog ridicorp')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -250,13 +215,11 @@ class TechBlog:
             result = self.create_result_msg(ft, result_url, desc.string, 'ridicorp')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog ridi')
 
     def skplanet(self, ft):
-        send_msg = []
         url = 'http://readme.skplanet.com/'
-        r = self.request_and_get(ft, url, 'skplanet')
+        r = ft.request_and_get(url, 'Tech blog skplanet')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -266,14 +229,12 @@ class TechBlog:
             result = self.create_result_msg(ft, result_url, s.text.strip(), 'skplanet')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog skplanet')
 
     def spoqa(self, ft):
-        send_msg = []
         base_url = 'https://spoqa.github.io/'
         url = 'https://spoqa.github.io/index.html'
-        r = self.request_and_get(ft, url, 'spoqa')
+        r = ft.request_and_get(url, 'Tech blog spoqa')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -285,13 +246,11 @@ class TechBlog:
                 result = self.create_result_msg(ft, result_url, desc.string, 'spoqa')
                 if result is None:
                     continue
-                send_msg.append(result)
-        return send_msg
+                ft.post_tweet(result, 'Tech Blog spoqa')
 
     def tosslab(self, ft):
-        send_msg = []
         url = 'http://tosslab.github.io/'
-        r = self.request_and_get(ft, url, 'tosslab')
+        r = ft.request_and_get(url, 'Tech blog tosslab')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -302,13 +261,11 @@ class TechBlog:
             result = self.create_result_msg(ft, result_url, s.text.strip(), 'tosslab')
             if result is None:
                 continue
-            send_msg.append(result)
-        return send_msg
+            ft.post_tweet(result, 'Tech Blog tosslab')
 
     def tyle(self, ft):
-        send_msg = []
         url = 'https://blog.tyle.io/'
-        r = self.request_and_get(ft, url, 'tyle')
+        r = ft.request_and_get(url, 'Tech blog tyle')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -320,15 +277,13 @@ class TechBlog:
                 result = self.create_result_msg(ft, result_url, desc, 'tyle')
                 if result is None:
                     continue
-                send_msg.append(result)
+                ft.post_tweet(result, 'Tech Blog tyle')
             except:
                 continue
-        return send_msg
 
     def whatap(self, ft):
-        send_msg = []
         url = 'http://tech.whatap.io/'
-        r = self.request_and_get(ft, url, 'whatap')
+        r = ft.request_and_get(url, 'Tech blog whatap')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -338,14 +293,12 @@ class TechBlog:
                 result = self.create_result_msg(ft, result_url, a_tag.text, 'whatap')
                 if result is None:
                     continue
-                send_msg.append(result)
-        return send_msg
+                ft.post_tweet(result, 'Tech Blog whatap')
 
     def woowabros(self, ft):
-        send_msg = []
         base_url = 'http://woowabros.github.io'
         url = 'http://woowabros.github.io/index.html'
-        r = self.request_and_get(ft, url, 'woowabros')
+        r = ft.request_and_get(url, 'Tech blog woowabros')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -358,5 +311,4 @@ class TechBlog:
                 result = self.create_result_msg(ft, result_url, desc.string, 'woowabros')
                 if result is None:
                     continue
-                send_msg.append(result)
-        return send_msg
+                ft.post_tweet(result, 'Tech Blog woowabros')

@@ -6,13 +6,19 @@ import logging
 import os
 import time
 from datetime import datetime
-from requests import post
+from requests import codes, get, post
 from twython import Twython, TwythonError
 
+# gmail
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+# custom
 from find_the_treasure.ft_github import UseGithub
 from find_the_treasure.ft_korea import (UseDataKorea)
 from find_the_treasure.ft_daum import UseDaum
-# from find_the_treasure.ft_naver import UseNaver
+from find_the_treasure.ft_naver import UseNaver
 from find_the_treasure.ft_sqlite3 import UseSqlite3
 from find_the_treasure.ft_tech_blog import TechBlog
 from find_the_treasure import defaults
@@ -20,10 +26,10 @@ from find_the_treasure import defaults
 from find_the_treasure.ft_etc import (get_coex_exhibition,
                                       search_stackoverflow,
                                       search_nate_ranking_news,
-                                      # get_naver_popular_news,
+                                      get_naver_popular_news,
                                       get_national_museum_exhibition,
                                       get_onoffmix,
-                                      # get_realestate_daum,
+                                      get_realestate_daum,
                                       get_realestate_mk,
                                       get_rate_of_process_sgx,
                                       get_hacker_news,
@@ -37,7 +43,7 @@ cgitb.enable(format='text')
 
 class FTbot:  # Find the Treasure
     def __init__(self):
-        self.twit_post_limit = 180 # every 15min, https://dev.twitter.com/rest/public/rate-limiting
+        self.twit_post_limit = 180  # every 15min, https://dev.twitter.com/rest/public/rate-limiting
         self.twit_post = 0
         self.twitter_app_key = os.environ.get('TWITTER_APP_KEY')
         self.twitter_app_secret = os.environ.get('TWITTER_APP_SECRET')
@@ -125,7 +131,7 @@ class FTbot:  # Find the Treasure
         if msg_len > defaults.MAX_TWEET_MSG:
             over_len = msg_len - defaults.MAX_TWEET_MSG + 3 + 2  # ... + margin
             msg_encode = msg_encode[0:(msg_len - over_len)]
-            msg = '%s...' % msg_encode.decode("utf-8", "ignore")
+            msg = '%s' % msg_encode.decode("utf-8", "ignore")
             self.logger.info('[Over 140 omitting]%s', msg)
         return msg
 
@@ -138,218 +144,179 @@ class FTbot:  # Find the Treasure
         js = json.loads(r.text)
         return js['id']
 
+    def post_tweet_list(self, msg, subject=None):
+        if type(msg) is not list:
+            self.logger.error('post_tweet_list failed, [%s] %s', subject, msg)
+            return
+        if len(msg) <= 0:
+            self.logger.error('post_tweet_list failed, [%s] no message', subject)
+            return
 
-def ft_post_tweet_array(ft, msg, subject=None):
-    if type(msg) is not list:
-        ft.logger.error('ft_post_tweet_array failed, [%s] %s', subject, msg)
-        return
-    if len(msg) <= 0:
-        ft.logger.error('ft_post_tweet_array failed, [%s] no message', subject)
-        return
+        for i in range(len(msg)):
+            self.post_tweet(msg[i], subject)
 
-    for i in range(len(msg)):
-        ft.post_tweet(msg[i], subject)
+    def send_gmail(self, subject, body):
 
+        if type(body) is list:
+            send_msg = '\n'.join(body)
+        else:
+            send_msg = body
 
-def github_post_tweet(ft, g):
+        gmail_user = self.google_id
+        gmail_pwd = self.google_p
+        FROM = self.gmail_from_addr
+        TO = self.gmail_to_addr
 
-    msg = g.get_github_great_repo(ft, 'hot', 'python', 10)
-    ft_post_tweet_array(ft, msg, 'Github')
+        msg = MIMEMultipart('alternative')
+        msg['From'] = gmail_user
+        msg['To'] = 'iam.byungwoo@gmail.com'
+        msg['Subject'] = subject
+        msg.attach(MIMEText(send_msg, 'plain', 'utf-8'))  # encoding
 
-    msg = g.get_github_great_repo(ft, 'new', 'python', 0)
-    ft_post_tweet_array(ft, msg, 'Github')
+        try:
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.ehlo()
+            server.starttls()
+            server.login(gmail_user, gmail_pwd)
+            server.sendmail(FROM, TO, msg.as_string())
+            server.quit()
+            self.logger.info('[%s] successfully sent the mail' % subject)
+        except BaseException as e:
+            self.logger.error('failed to send mail: %s', str(e))
 
-    msg = g.get_github_great_repo(ft, 'new', None, 3)  # None -> all language
-    ft_post_tweet_array(ft, msg, 'Github')
+    def post_with_raw_timeline(self, timeline):
+        dump_tl = json.dumps(timeline)  # dict -> json
+        tl = json.loads(dump_tl)
+        for i in tl['statuses']:
+            result = 'Via @%s, %s' % (i['user']['screen_name'], i['text'])
+            if len(result.encode('utf-8')) > defaults.MAX_TWEET_MSG:
+                    continue
+            self.post_tweet(result, 'raw_timeline')
 
-
-def send_gmail(ft, subject, body):
-    import smtplib
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.text import MIMEText
-
-    if type(body) is list:
-        send_msg = '\n'.join(body)
-    else:
-        send_msg = body
-
-    gmail_user = ft.google_id
-    gmail_pwd = ft.google_p
-    FROM = ft.gmail_from_addr
-    TO = ft.gmail_to_addr
-
-    msg = MIMEMultipart('alternative')
-    msg['From'] = gmail_user
-    msg['To'] = 'iam.byungwoo@gmail.com'
-    msg['Subject'] = subject
-    msg.attach(MIMEText(send_msg, 'plain', 'utf-8'))  # encoding
-
-    try:
-        server = smtplib.SMTP("smtp.gmail.com", 587)
-        server.ehlo()
-        server.starttls()
-        server.login(gmail_user, gmail_pwd)
-        server.sendmail(FROM, TO, msg.as_string())
-        server.quit()
-        ft.logger.info('[%s] successfully sent the mail' % subject)
-    except BaseException as e:
-        ft.logger.error('failed to send mail: %s', str(e))
-
-
-def ft_post_with_raw_timeline(ft, timeline):
-    dump_tl = json.dumps(timeline)  # dict -> json
-    tl = json.loads(dump_tl)
-    for i in tl['statuses']:
-        result = 'Via @%s, %s' % (i['user']['screen_name'], i['text'])
-        if len(result.encode('utf-8')) > defaults.MAX_TWEET_MSG:
-                continue
-        ft.post_tweet(result, 'raw_timeline')
+    def request_and_get(self, url, name):
+        try:
+            r = get(url)
+            if r.status_code != codes.ok:
+                self.logger.error('[%s] request error, code=%d', name, r.status_code)
+                return None
+            return r
+        except:
+            self.logger.error('[%s] connect fail', name)
+            return None
 
 
-def finding_about_software(ft):
-    g = UseGithub(ft)
-    github_post_tweet(ft, g)
+def db_table_check():
+    sqlite3 = UseSqlite3()
+    sqlite3.delete_expired_tuple()
+    sqlite3.close()
 
-    so = search_stackoverflow(ft)  # python
-    ft_post_tweet_array(ft, so, 'Stackoverflow')
-    so = search_stackoverflow(ft, "activity", "racket")
-    ft_post_tweet_array(ft, so, 'Stackoverflow')
 
-    # Useless information for me
-    # try:
-    #     timeline_pop = ft.twitter.search(
-    #         q='python', result_type='popular', count=1)
-    #     ft_post_with_raw_timeline(ft, timeline_pop)
-    # except TwythonError as e:
-    #     ft.logger.error('TwythonError %s', e)
-
-    hn = get_hacker_news(ft)
-    ft_post_tweet_array(ft, hn, 'Hacker News')
-
-    rfc_draft = get_rfc_draft_list(ft)
-    ft_post_tweet_array(ft, rfc_draft, 'RFC DRAFT')
-
+def find_tech_blogs(ft):
     t = TechBlog(ft)
-    tb = t.boxnwhisker(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog boxnwhisker')
-    tb = t.daliworks(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog daliworks')
-    tb = t.devpools(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog devpools')
-    tb = t.dramancompany(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog dramacompany')
-    tb = t.goodoc(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog goodoc')
-    tb = t.kakao(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog kakao')
-    tb = t.lezhin(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog lezhin')
-    tb = t.linchpinsoft(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog linchpinsoft')
-    tb = t.naver(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog naver d2')
-    tb = t.naver_nuli(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog naver nuli')
-    tb = t.netmanias(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog netmanias')
-    tb = t.ridi(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog ridi')
-    tb = t.skplanet(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog skplanet')
-    tb = t.spoqa(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog spoqa')
-    tb = t.tosslab(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog tosslab')
-    tb = t.tyle(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog tyle')
-    tb = t.whatap(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog whatap')
-    tb = t.woowabros(ft)
-    ft_post_tweet_array(ft, tb, 'Tech Blog woowabros')
+
+    t.boxnwhisker(ft)
+    t.daliworks(ft)
+    t.devpools(ft)
+    return
+    t.dramancompany(ft)
+    t.goodoc(ft)
+    t.kakao(ft)
+    t.lezhin(ft)
+    t.linchpinsoft(ft)
+    t.naver(ft)
+    t.naver_nuli(ft)
+    t.netmanias(ft)
+    t.ridi(ft)
+    t.skplanet(ft)
+    t.spoqa(ft)
+    t.tosslab(ft)
+    t.tyle(ft)
+    t.whatap(ft)
+    t.woowabros(ft)
 
 
-def finding_about_exhibition(ft):
-    exhibition = get_onoffmix(ft)
-    ft_post_tweet_array(ft, exhibition, 'onoffmix')
+def deprecated(ft, run_type):
+    if run_type is False:
+        return
 
-    exhibition = get_coex_exhibition(ft)
-    ft_post_tweet_array(ft, exhibition, 'Coex')
+    # Popular twitter keyword search
+    try:
+        timeline_pop = ft.twitter.search(
+            q='python', result_type='popular', count=1)
+        ft.post_with_raw_timeline(timeline_pop)
+    except TwythonError as e:
+        ft.logger.error('TwythonError %s', e)
 
-    nm = get_national_museum_exhibition(ft)
-    ft_post_tweet_array(ft, nm, 'National Museum')
+    naver_popular_news = get_naver_popular_news(ft)
+    if (type(naver_popular_news) is list) and (len(naver_popular_news) > 0):
+        ft.send_gmail('Naver popular news', naver_popular_news)
+
+    rd = get_realestate_daum(ft)
+    if (type(rd) is list) and (len(rd) > 0):
+        ft.send_gmail('Daum realestate', rd)
+
+    n = UseNaver(ft)
+    naver_news = n.search_today_information_and_technology(ft)
+    if (type(naver_news) is list) and (len(naver_news) > 0):
+        ft.send_gmail('NAVER IT news', naver_news)
 
 
-def finding_about_korea(ft):
-    dg = UseDataKorea(ft)
-    trade_msg = dg.ft_search_my_interesting_realestate(ft)
-    ft_post_tweet_array(ft, trade_msg, 'Realestate korea')
-
-    result_msg = dg.ft_get_molit_news(ft)
-    ft_post_tweet_array(ft, result_msg, '국토부')
-
-    # result_msg = dg.ft_get_tta_news(ft)
-    # ft_post_tweet_array(ft, result_msg, '한국정보통신기술협회')
-
-    sgx = get_rate_of_process_sgx(ft)  # sgx: 신/그/자
-    ft.post_tweet(sgx, 'rate of process')
-
-    # naver_popular_news = get_naver_popular_news(ft)
-    # if (type(naver_popular_news) is list) and (len(naver_popular_news) > 0):
-    #     send_gmail(ft, 'Naver popular news', naver_popular_news)
-
-    # rd = get_realestate_daum(ft)
-    # if (type(rd) is list) and (len(rd) > 0):
-    #     send_gmail(ft, 'Daum realestate', rd)
-
+def finding_and_mail(ft):
     rmk = get_realestate_mk(ft)
     if (type(rmk) is list) and (len(rmk) > 0):
-        send_gmail(ft, 'MBN realestate', rmk)
+        ft.send_gmail('MBN realestate', rmk)
 
     daum = UseDaum(ft)
     daum_blog = daum.request_search_data(ft, req_str="마포")
     if (type(daum_blog) is list) and (len(daum_blog) > 0):
-        send_gmail(ft, 'Daum Blogs', daum_blog)
+        ft.send_gmail('Daum Blogs', daum_blog)
 
-
-def finding_about_news(ft):
-    # Post tweet
-    rb_news = get_raspberripy_news(ft)
-    ft_post_tweet_array(ft, rb_news, 'raspberripy news')
-
-    # Send email
     nate_rank_news = search_nate_ranking_news(ft)
     if (type(nate_rank_news) is list) and (len(nate_rank_news) > 0):
-        send_gmail(ft, 'NATE IT news rank', nate_rank_news)
-
-    # n = UseNaver(ft)
-    # naver_news = n.search_today_information_and_technology(ft)
-    # if (type(naver_news) is list) and (len(naver_news) > 0):
-    #     send_gmail(ft, 'NAVER IT news', naver_news)
+        ft.send_gmail('NATE IT news rank', nate_rank_news)
 
 
-def finding_about_etc(ft):
+def finding_and_tweet(ft):
+    # Tech
+    find_tech_blogs(ft)
 
-    recruit_info = get_recruit_people_info(ft)
-    ft_post_tweet_array(ft, recruit_info, 'Recruit Info')
+    g = UseGithub(ft)
+    g.get_github_great_repo(ft, 'hot', 'python', 10)
+    g.get_github_great_repo(ft, 'new', 'python', 0)
+    g.get_github_great_repo(ft, 'new', None, 3)  # all languages
+
+    search_stackoverflow(ft, "activity", "python")
+    search_stackoverflow(ft, "activity", "racket")
+
+    get_hacker_news(ft)
+    get_rfc_draft_list(ft)
+    get_raspberripy_news(ft)
+
+    # Exhibition
+    get_onoffmix(ft)
+    get_coex_exhibition(ft)
+    get_national_museum_exhibition(ft)
+
+    # Korea
+    dg = UseDataKorea(ft)
+    dg.ft_search_my_interesting_realestate(ft)  # FIXME : check
+    dg.ft_get_molit_news(ft)
+
+    # dg.ft_get_tta_news(ft) # 한국정보통신기술협회
+    get_rate_of_process_sgx(ft)  # sgx: 신그랑
+
+    # ETC
+    get_recruit_people_info(ft)
 
 
 def main():
     ft = FTbot()
 
-    # Github, Stackoverflow, Twitter
-    finding_about_software(ft)
-    # Coex, National Museum
-    finding_about_exhibition(ft)
-    # Data.go.kr, MBN, Naver. Daum
-    finding_about_korea(ft)
-    # Nate, Daum
-    finding_about_news(ft)
-    # etc
-    finding_about_etc(ft)
+    finding_and_tweet(ft)
+    finding_and_mail(ft)
+    deprecated(ft, False)
 
-    sqlite3 = UseSqlite3()
-    sqlite3.delete_expired_tuple()
-    sqlite3.close()
+    db_table_check()
 
 
 if __name__ == '__main__':

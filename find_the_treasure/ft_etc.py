@@ -37,7 +37,6 @@ def is_exist_interesting_keyword(keyword):
 
 
 def get_onoffmix(ft):
-    result_msg = []
     driver = webdriver.Chrome(ft.chromedriver_path)
     driver.implicitly_wait(3)
 
@@ -58,16 +57,13 @@ def get_onoffmix(ft):
 
         result = '%s\n%s\n#onoffmix' % (short_url, s.text)
         result = ft.check_max_tweet_msg(result)
-        result_msg.append(result)
-
-    return result_msg
+        ft.post_tweet(result, 'Onoffmix')
 
 
 def get_coex_exhibition(ft):
     url = 'http://www.coex.co.kr/blog/event_exhibition?list_type=list'
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
-    result_msg = []
     exhibition_url = 'http://www.coex.co.kr/blog/event_exhibition'
     for a in soup.find_all('a', href=True):
         if a['href'].startswith(exhibition_url) is False:
@@ -91,9 +87,7 @@ def get_coex_exhibition(ft):
             exhibition[6],
             exhibition[5].lstrip('\\'))
         coex_result = ft.check_max_tweet_msg(coex_result)
-        result_msg.append(coex_result)
-
-    return result_msg
+        ft.post_tweet(coex_result, 'Stackoverflow')
 
 
 """
@@ -116,7 +110,7 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
         "site": "stackoverflow",
         "intitle": lang,
     }).json()
-    result_msg = []
+
     for i in range(len(r["items"])):
         if r["items"][i]["score"] <= 1:
             continue
@@ -127,13 +121,12 @@ def search_stackoverflow(ft, sort='activity', lang='python'):
         if short_url is None:
             short_url = r["items"][i]["link"]
 
-        so_result = '[▲ %s]\n%s\n%s' % (
+        result = '[▲ %s]\n%s\n%s\n#stackoverflow' % (
             r["items"][i]["score"],
             short_url,
             r["items"][i]["title"])
-        so_result = ft.check_max_tweet_msg(so_result)
-        result_msg.append(so_result)
-    return result_msg
+        result = ft.check_max_tweet_msg(result)
+        ft.post_tweet(result, 'Stackoverflow')
 
 
 def search_nate_ranking_news(ft):
@@ -193,7 +186,6 @@ def get_naver_popular_news(ft):
 
 def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
     MUSEUM_URL = 'https://www.museum.go.kr'
-    nm_result_msg = []
 
     url = 'https://www.museum.go.kr/site/korm/exhiSpecialTheme/list/current?listType=list'
     r = get(url)
@@ -220,8 +212,7 @@ def get_national_museum_exhibition(ft):  # NATIONAL MUSEUM OF KOREA
             if nm_short_url is None:
                 nm_short_url = ex_url
             nm_result = '%s\n%s\n%s' % (period, exhibition, nm_short_url)
-            nm_result_msg.append(nm_result)
-    return nm_result_msg
+            ft.post_tweet(nm_result, 'National museum')
 
 
 def get_realestate_daum(ft):
@@ -276,14 +267,11 @@ def get_rate_of_process_sgx(ft):
             msg = '%s(%s)\n%s\n%d' % (
                 item.addr.text, item.tpow_rt.text, item.bsu_nm.text,
                 int(time()))
-            return msg
+            ft.post_tweet(msg, 'rate of process')
 
 
 def get_hacker_news(ft):
-    hn_result_msg = []
-
-    # p=1, rank 16~30
-    # p=2, rank 31~45
+    # p=1, rank 16~30, p=2, rank 31~45
     url = 'https://news.ycombinator.com/news?p=0'  # rank 1~15
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
@@ -300,16 +288,13 @@ def get_hacker_news(ft):
             hn_short_url = ft.shortener_url(hn_url)
             if hn_short_url is None:
                 hn_short_url = hn_url
-            hn_result = '%s\nRank:%s\n#hacker_news' % (hn_short_url, hn_text)
-            hn_result = ft.check_max_tweet_msg(hn_result)
-            hn_result_msg.append(hn_result)
+            result = '%s\nRank:%s\n#hacker_news' % (hn_short_url, hn_text)
+            result = ft.check_max_tweet_msg(result)
+            ft.post_tweet(result, 'Hacker news')
             break
-
-    return hn_result_msg
 
 
 def get_recruit_people_info(ft):  # 각종 모집 공고
-    mz_result_msg = []
     root_url = 'http://goodmonitoring.com'
     url = 'http://goodmonitoring.com/xe/moi'
     r = get(url)
@@ -326,16 +311,13 @@ def get_recruit_people_info(ft):  # 각종 모집 공고
             if short_url is None:
                 short_url = mozip_url
             mz_result = '%s\n%s' % (short_url, mozip)
-            mz_result_msg.append(mz_result)
-
-    return mz_result_msg
+            ft.post_tweet(mz_result, 'monitoring')
 
 
 def get_rfc_draft_list(ft):  # get state 'AUTH48-DONE' only
     url = 'https://www.rfc-editor.org/current_queue.php'
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
-    rfc_draft_msg = []
 
     for n in soup.find_all(ft.match_soup_class(['narrowcolumn'])):
         for tr in n.find_all('tr'):
@@ -358,26 +340,23 @@ def get_rfc_draft_list(ft):  # get state 'AUTH48-DONE' only
                         if (check_duplicate(ft, 'rfc', b.a['href'])):
                             continue
                         short_url = ft.shortener_url(b.a['href'])
-                        rfc_draft = '[%s]\n%s(Ver:%s)\n%s' % (
+                        rfc_draft = '[%s]\n%s(Ver:%s)\n%s\n#rfc_draft' % (
                             state.strip(),
                             '-'.join(version[1:-1]), version[-1],
                             short_url)
 
                         if len(rfc_draft) > defaults.MAX_TWEET_MSG:
-                            rfc_draft = '[%s]\nVer:%s\n%s' % (
+                            rfc_draft = '[%s]\nVer:%s\n%s\n#rfc_draft' % (
                                 state.strip(), version[-1], short_url)
 
-                        rfc_draft_msg.append(rfc_draft)
+                        ft.post_tweet(rfc_draft, 'RFC draft')
                 cnt += 1
-    return rfc_draft_msg
 
 
 def get_raspberripy_news(ft):
-
     url = 'http://lifehacker.com/tag/raspberry-pi'
     r = get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
-    rb_news_msg = []
     for l in soup.find_all(ft.match_soup_class(['postlist__item'])):
         if len(l.a.text) == 0:
             continue
@@ -388,9 +367,7 @@ def get_raspberripy_news(ft):
         if rb_url is None:
             rb_url = l.a['href']
 
-        rb_news = '%s\n%s' % (rb_url, rb_title)
+        rb_news = '%s\n%s\n#lifehacker' % (rb_url, rb_title)
         if len(rb_news) > defaults.MAX_TWEET_MSG:
-            rb_news = '%s' % (rb_url)
-        rb_news_msg.append(rb_news)
-
-    return rb_news_msg
+            rb_news = '%s\n#lifehacker' % (rb_url)
+        ft.post_tweet(rb_news, 'Raspberri py news')
