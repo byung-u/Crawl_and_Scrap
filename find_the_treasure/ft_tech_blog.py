@@ -22,12 +22,22 @@ class TechBlog:
         result = ft.check_max_tweet_msg(result)
         return result
 
+    def request_and_get(self, ft, url, name):
+        try:
+            r = get(url)
+            if r.status_code != codes.ok:
+                ft.logger.error('[Tech blog %s] request error, code=%d', name, r.status_code)
+                return None
+            return r
+        except:
+            ft.logger.error('[Tech blog %s] connect fail', name)
+            return None
+
     def boxnwhisker(self, ft):
         send_msg = []
         url = 'http://www.boxnwhis.kr/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog boxnwhis] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'boxnwhisker')
+        if r is None:
             return
         soup = BeautifulSoup(r.content.decode('utf-8', 'replace'), 'html.parser')
         # body > section.recent-posts > ol > li:nth-child(5) > h2 > a
@@ -43,9 +53,8 @@ class TechBlog:
     def daliworks(self, ft):
         send_msg = []
         url = 'http://techblog.daliworks.net/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog daliworks] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'daliworks')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         #main > div > article:nth-child(3) > h1 > a
@@ -61,9 +70,8 @@ class TechBlog:
     def devpools(self, ft):
         send_msg = []
         url = 'http://devpools.kr/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog devpools] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'devpools')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         sessions = soup.select('div > div > header > h2 > a')
@@ -78,9 +86,8 @@ class TechBlog:
     def dramancompany(self, ft):
         send_msg = []
         url = 'http://blog.dramancompany.com/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog dramancompany] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'dramancompany')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         #masonry > article.post-749.post.type-post.status-publish.format-standard.hentry.category-develop.post-container.masonry-element.col-md-4 > div.post-article.post-title > h2 > a
@@ -96,9 +103,8 @@ class TechBlog:
     def goodoc(self, ft):
         send_msg = []
         url = 'http://dev.goodoc.co.kr/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog goodoc] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'goodoc')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         # post-233 > header > h2 > a
@@ -114,9 +120,8 @@ class TechBlog:
     def kakao(self, ft):
         send_msg = []
         url = 'http://tech.kakao.com'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog kakao] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'kakao')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         for p in soup.find_all(ft.match_soup_class(['post'])):
@@ -132,9 +137,8 @@ class TechBlog:
     def lezhin(self, ft):
         send_msg = []
         url = 'http://tech.lezhin.com'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog lezhin] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'lezhin')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         for p in soup.find_all(ft.match_soup_class(['post-item'])):
@@ -150,15 +154,13 @@ class TechBlog:
     def linchpinsoft(self, ft):
         send_msg = []
         url = 'http://www.linchpinsoft.com/blog/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog linchpinsoft] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'linchpinsoft')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         #main > div.posts-box.posts-box-8 > div > div:nth-child(1) > article > div.post-details > h2 > a
         sessions = soup.select('div > h2 > a')
         for s in sessions:
-            print(s.text.strip(), s['href'])
             result = self.create_result_msg(ft, s['href'], s.text.strip(), 'linchpinsoft')
             if result is None:
                 continue
@@ -169,9 +171,8 @@ class TechBlog:
         desc = ""
         send_msg = []
         url = 'http://d2.naver.com/d2.atom'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog naver] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'naver_d2')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         for idx, p in enumerate(soup.find_all(['title', 'link'])):
@@ -189,7 +190,9 @@ class TechBlog:
         send_msg = []
         base_url = 'http://nuli.navercorp.com'
         url = 'http://nuli.navercorp.com/sharing/blog/main'
-        r = get(url)
+        r = self.request_and_get(ft, url, 'naver_nuli')
+        if r is None:
+            return
         soup = BeautifulSoup(r.text, 'html.parser')
         # showList > ul > li:nth-child(1) > p.list_title > a
         sessions = soup.select('div > ul > li > p > a')
@@ -205,9 +208,8 @@ class TechBlog:
         send_msg = []
         base_url = 'http://www.netmanias.com'
         url = 'http://www.netmanias.com/ko/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog netmanias] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'netmanias')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         # body > div.clo_contents > div > div > div:nth-child(1) > div > div.mpw_frame.mps_netmanias.cmm_transbox > div.mpc_contents > div:nth-child(3) > div:nth-child(2) > div.mlp_contents > div.mlc_memo.cfs_malgun > div.mls_subject > a
@@ -238,9 +240,8 @@ class TechBlog:
         send_msg = []
         base_url = 'https://www.ridicorp.com/'
         url = 'https://www.ridicorp.com/blog/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog ridicorp] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'ridicorp')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         for l in soup.find_all(ft.match_soup_class(['list-item'])):
@@ -255,9 +256,8 @@ class TechBlog:
     def skplanet(self, ft):
         send_msg = []
         url = 'http://readme.skplanet.com/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog skplanet] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'skplanet')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         sessions = soup.select('header > h1 > a')
@@ -273,9 +273,8 @@ class TechBlog:
         send_msg = []
         base_url = 'https://spoqa.github.io/'
         url = 'https://spoqa.github.io/index.html'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog spoqa] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'spoqa')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         for p in soup.find_all(ft.match_soup_class(['posts'])):
@@ -292,9 +291,8 @@ class TechBlog:
     def tosslab(self, ft):
         send_msg = []
         url = 'http://tosslab.github.io/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog tooslab] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'tosslab')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         # body > div.container > div > section > ul.posts > li:nth-child(2) > h2 > a
@@ -310,9 +308,8 @@ class TechBlog:
     def tyle(self, ft):
         send_msg = []
         url = 'https://blog.tyle.io/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog tyle] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'tyle')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         sessions = soup.select('div > a')
@@ -331,9 +328,8 @@ class TechBlog:
     def whatap(self, ft):
         send_msg = []
         url = 'http://tech.whatap.io/'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog whatap] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'whatap')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         for w in soup.find_all(ft.match_soup_class(['widget_recent_entries'])):
@@ -349,9 +345,8 @@ class TechBlog:
         send_msg = []
         base_url = 'http://woowabros.github.io'
         url = 'http://woowabros.github.io/index.html'
-        r = get(url)
-        if r.status_code != codes.ok:
-            ft.logger.error('[Tech blog woowabros] request error, code=%d', r.status_code)
+        r = self.request_and_get(ft, url, 'woowabros')
+        if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         for l in soup.find_all(ft.match_soup_class(['list'])):
