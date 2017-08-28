@@ -1,8 +1,8 @@
-find_the_treasure
+Brute Web Crawler
 ----------------
 
-웹 스크롤링  
-openAPI 호출을 이용하여 의미있는 정보를 수집해보기 위한 파이썬 유틸리티.   
+웹 스크롤링
+openAPI 호출을 이용하여 의미있는 정보를 수집해보기 위한 파이썬 유틸리티.
 Oauth, 인증키가 너무 많이 필요한 번거로움이...
 
 - 140자 요약 가능한 정보는 url주소와 함께 트위터 전송
@@ -69,7 +69,12 @@ Quick Start
 
 Release
 -------
-- 0.6.1 (current)
+- 0.7.0 (current)
+  - Change projet name, find the treasure to brute web crwaler
+  - Change DB, SQLite3 to MongoDB
+  - Code Refactoring
+
+- 0.6.1 (Monday, 28 August 2017)
   - 중복함수 제거
 
 - 0.6.0 (Friday, 25 August 2017)
@@ -189,4 +194,4 @@ Test
 
 License
 -------
-Find_the_treasure is licensed under the terms of the MIT License (see the file LICENSE).
+brute_web_crawler is licensed under the terms of the MIT License (see the file LICENSE).
