@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+"""brute_web_crawler trying to find some good info with web crawling command line tool."""
+
+from brute_web_crawler.main import main
+
+main()

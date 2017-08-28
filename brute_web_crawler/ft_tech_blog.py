@@ -3,27 +3,22 @@
 
 from bs4 import BeautifulSoup
 
-from find_the_treasure.ft_sqlite3 import UseSqlite3
-
 
 class TechBlog:
-    def __init__(self, ft):
-        self.sqlite3 = UseSqlite3('tech_blog')
+    def __init__(self, bw):
+        pass
 
-    def create_result_msg(self, ft, result_url, msg, name):
-        if self.sqlite3.already_sent_tech_blog(result_url):
+    def create_result_msg(self, bw, result_url, msg, name):
+        if bw.is_already_sent('TECH', result_url):
             return None
 
-        self.sqlite3.insert_tech_blog(result_url)
-        result_url = ft.shortener_url(result_url)
-
+        result_url = bw.shortener_url(result_url)
         result = '%s\n%s\n#%s' % (result_url, msg, name)
-        result = ft.check_max_tweet_msg(result)
         return result
 
-    def boxnwhisker(self, ft):
+    def boxnwhisker(self, bw):
         url = 'http://www.boxnwhis.kr/'
-        r = ft.request_and_get(url, 'Tech blog boxnwhisker')
+        r = bw.request_and_get(url, 'Tech blog boxnwhisker')
         if r is None:
             return
         soup = BeautifulSoup(r.content.decode('utf-8', 'replace'), 'html.parser')
@@ -31,14 +26,14 @@ class TechBlog:
         sessions = soup.select('h2 > a')
         for s in sessions:
             result_url = '%s%s' % (url, s['href'])
-            result = self.create_result_msg(ft, result_url, s.text.strip(), 'boxnwhisker')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'boxnwhisker')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog boxnwhisker')
+            bw.post_tweet(result, 'Tech Blog boxnwhisker')
 
-    def daliworks(self, ft):
+    def daliworks(self, bw):
         url = 'http://techblog.daliworks.net/'
-        r = ft.request_and_get(url, 'Tech blog daliworks')
+        r = bw.request_and_get(url, 'Tech blog daliworks')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -46,28 +41,28 @@ class TechBlog:
         sessions = soup.select('div > article > h1 > a')
         for s in sessions:
             result_url = '%s%s' % (url, s['href'])
-            result = self.create_result_msg(ft, result_url, s.text.strip(), 'daliworks')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'daliworks')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog daliworks')
+            bw.post_tweet(result, 'Tech Blog daliworks')
 
-    def devpools(self, ft):
+    def devpools(self, bw):
         url = 'http://devpools.kr/'
-        r = ft.request_and_get(url, 'Tech blog devpools')
+        r = bw.request_and_get(url, 'Tech blog devpools')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         sessions = soup.select('div > div > header > h2 > a')
         for s in sessions:
             result_url = s['href']
-            result = self.create_result_msg(ft, result_url, s.text.strip(), 'devpools')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'devpools')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog devpools')
+            bw.post_tweet(result, 'Tech Blog devpools')
 
-    def dramancompany(self, ft):
+    def dramancompany(self, bw):
         url = 'http://blog.dramancompany.com/'
-        r = ft.request_and_get(url, 'Tech blog dramancompany')
+        r = bw.request_and_get(url, 'Tech blog dramancompany')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -75,14 +70,14 @@ class TechBlog:
         sessions = soup.select('div > h2 > a')
         for s in sessions:
             result_url = s['href']
-            result = self.create_result_msg(ft, result_url, s.text.strip(), 'devpools')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'devpools')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog dramancompany')
+            bw.post_tweet(result, 'Tech Blog dramancompany')
 
-    def goodoc(self, ft):
+    def goodoc(self, bw):
         url = 'http://dev.goodoc.co.kr/'
-        r = ft.request_and_get(url, 'Tech blog goodoc')
+        r = bw.request_and_get(url, 'Tech blog goodoc')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -90,76 +85,76 @@ class TechBlog:
         sessions = soup.select('header > h2 > a')
         for s in sessions:
             result_url = s['href']
-            result = self.create_result_msg(ft, result_url, s.text.strip(), 'goodoc')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'goodoc')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog goodoc')
+            bw.post_tweet(result, 'Tech Blog goodoc')
 
-    def kakao(self, ft):
+    def kakao(self, bw):
         url = 'http://tech.kakao.com'
-        r = ft.request_and_get(url, 'Tech blog kakao')
+        r = bw.request_and_get(url, 'Tech blog kakao')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        for p in soup.find_all(ft.match_soup_class(['post'])):
-            desc = p.find(ft.match_soup_class(['post-title']))
+        for p in soup.find_all(bw.match_soup_class(['post'])):
+            desc = p.find(bw.match_soup_class(['post-title']))
             result_url = '%s%s' % (url, p.a['href'])
 
-            result = self.create_result_msg(ft, result_url, desc.string, 'kakao')
+            result = self.create_result_msg(bw, result_url, desc.string, 'kakao')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog kakao')
+            bw.post_tweet(result, 'Tech Blog kakao')
 
-    def lezhin(self, ft):
+    def lezhin(self, bw):
         url = 'http://tech.lezhin.com'
-        r = ft.request_and_get(url, 'Tech blog lezhin')
+        r = bw.request_and_get(url, 'Tech blog lezhin')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        for p in soup.find_all(ft.match_soup_class(['post-item'])):
-            desc = p.find(ft.match_soup_class(['post-title']))
+        for p in soup.find_all(bw.match_soup_class(['post-item'])):
+            desc = p.find(bw.match_soup_class(['post-title']))
             result_url = '%s%s' % (url, p.a['href'])
 
-            result = self.create_result_msg(ft, result_url, desc.string, 'lezhin')
+            result = self.create_result_msg(bw, result_url, desc.string, 'lezhin')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog lezhin')
+            bw.post_tweet(result, 'Tech Blog lezhin')
 
-    def linchpinsoft(self, ft):
+    def linchpinsoft(self, bw):
         url = 'http://www.linchpinsoft.com/blog/'
-        r = ft.request_and_get(url, 'Tech blog linchpinsoft')
+        r = bw.request_and_get(url, 'Tech blog linchpinsoft')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         # main > div.posts-box.posts-box-8 > div > div:nth-child(1) > article > div.post-details > h2 > a
         sessions = soup.select('div > h2 > a')
         for s in sessions:
-            result = self.create_result_msg(ft, s['href'], s.text.strip(), 'linchpinsoft')
+            result = self.create_result_msg(bw, s['href'], s.text.strip(), 'linchpinsoft')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog linchpinsoft')
+            bw.post_tweet(result, 'Tech Blog linchpinsoft')
 
-    def naver(self, ft):
+    def naver(self, bw):
         desc = ""
         url = 'http://d2.naver.com/d2.atom'
-        r = ft.request_and_get(url, 'Tech blog naver_d2')
+        r = bw.request_and_get(url, 'Tech blog naver_d2')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         for idx, p in enumerate(soup.find_all(['title', 'link'])):
             if idx & 1:
                 result_url = p['href']
-                result = self.create_result_msg(ft, result_url, desc, 'naver_d2')
+                result = self.create_result_msg(bw, result_url, desc, 'naver_d2')
                 if result is None:
                     continue
-                ft.post_tweet(result, 'Tech Blog naver_d2')
+                bw.post_tweet(result, 'Tech Blog naver_d2')
             else:
                 desc = p.string
 
-    def naver_nuli(self, ft):
+    def naver_nuli(self, bw):
         base_url = 'http://nuli.navercorp.com'
         url = 'http://nuli.navercorp.com/sharing/blog/main'
-        r = ft.request_and_get(url, 'Tech blog naver_nuli')
+        r = bw.request_and_get(url, 'Tech blog naver_nuli')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -167,15 +162,15 @@ class TechBlog:
         sessions = soup.select('div > ul > li > p > a')
         for s in sessions:
             result_url = '%s%s' % (base_url, s['href'])
-            result = self.create_result_msg(ft, result_url, s.text.strip(), 'naver_nuli')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'naver_nuli')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog naver_nuli')
+            bw.post_tweet(result, 'Tech Blog naver_nuli')
 
-    def netmanias(self, ft):
+    def netmanias(self, bw):
         base_url = 'http://www.netmanias.com'
         url = 'http://www.netmanias.com/ko/'
-        r = ft.request_and_get(url, 'Tech blog netmanias')
+        r = bw.request_and_get(url, 'Tech blog netmanias')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -197,19 +192,19 @@ class TechBlog:
             if s['href'].find('no=') == -1:  # ignore subject page
                 continue
             result_url = '%s%s' % (base_url, s['href'])
-            result = self.create_result_msg(ft, result_url, s.text.strip(), 'netmanias')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'netmanias')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog netmanias')
+            bw.post_tweet(result, 'Tech Blog netmanias')
 
-    def realm(self, ft):
+    def realm(self, bw):
         base_url = 'https://academy.realm.io'
         url = 'https://academy.realm.io/kr/'
-        r = ft.request_and_get(url, 'Tech blog realm')
+        r = bw.request_and_get(url, 'Tech blog realm')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        #tweets-slider-wrap > div > div > div.article.col-xs-12.col-sm-2.card.micro.flex.center.js-post-toggle.slick-slide.slick-current.slick-active > div > div > a.news-headline.col-xs-12.col-sm-11.text-center
+        # tweets-slider-wrap > div > div > div.article.col-xs-12.col-sm-2.card.micro.flex.center.js-post-toggle.slick-slide.slick-current.slick-active > div > div > a.news-headline.col-xs-12.col-sm-11.text-center
         sessions = soup.select('div > div > div > div > a')
         # sessions = soup.select('div > div > a')
         for s in sessions:
@@ -217,60 +212,60 @@ class TechBlog:
                 continue
             # print(s)
             result_url = '%s%s' % (base_url, s['href'])
-            result = self.create_result_msg(ft, result_url, s.text.strip(), 'realm')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'realm')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog realm')
+            bw.post_tweet(result, 'Tech Blog realm')
 
-    def ridi(self, ft):
+    def ridi(self, bw):
         base_url = 'https://www.ridicorp.com/'
         url = 'https://www.ridicorp.com/blog/'
-        r = ft.request_and_get(url, 'Tech blog ridicorp')
+        r = bw.request_and_get(url, 'Tech blog ridicorp')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        for l in soup.find_all(ft.match_soup_class(['list-item'])):
-            desc = l.find(ft.match_soup_class(['desc']))
+        for l in soup.find_all(bw.match_soup_class(['list-item'])):
+            desc = l.find(bw.match_soup_class(['desc']))
             result_url = '%s%s' % (base_url, l['href'])
-            result = self.create_result_msg(ft, result_url, desc.string, 'ridicorp')
+            result = self.create_result_msg(bw, result_url, desc.string, 'ridicorp')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog ridi')
+            bw.post_tweet(result, 'Tech Blog ridi')
 
-    def skplanet(self, ft):
+    def skplanet(self, bw):
         url = 'http://readme.skplanet.com/'
-        r = ft.request_and_get(url, 'Tech blog skplanet')
+        r = bw.request_and_get(url, 'Tech blog skplanet')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
         sessions = soup.select('header > h1 > a')
         for s in sessions:
             result_url = '%s%s' % (url, s['href'])
-            result = self.create_result_msg(ft, result_url, s.text.strip(), 'skplanet')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'skplanet')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog skplanet')
+            bw.post_tweet(result, 'Tech Blog skplanet')
 
-    def spoqa(self, ft):
+    def spoqa(self, bw):
         base_url = 'https://spoqa.github.io/'
         url = 'https://spoqa.github.io/index.html'
-        r = ft.request_and_get(url, 'Tech blog spoqa')
+        r = bw.request_and_get(url, 'Tech blog spoqa')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        for p in soup.find_all(ft.match_soup_class(['posts'])):
-            for auth in p.find_all(ft.match_soup_class(['post-author-info'])):
-                post = auth.find(ft.match_soup_class(['post-title']))
-                desc = auth.find(ft.match_soup_class(['post-description']))
+        for p in soup.find_all(bw.match_soup_class(['posts'])):
+            for auth in p.find_all(bw.match_soup_class(['post-author-info'])):
+                post = auth.find(bw.match_soup_class(['post-title']))
+                desc = auth.find(bw.match_soup_class(['post-description']))
                 result_url = '%s%s' % (base_url, post.a['href'][1:])
-                result = self.create_result_msg(ft, result_url, desc.string, 'spoqa')
+                result = self.create_result_msg(bw, result_url, desc.string, 'spoqa')
                 if result is None:
                     continue
-                ft.post_tweet(result, 'Tech Blog spoqa')
+                bw.post_tweet(result, 'Tech Blog spoqa')
 
-    def tosslab(self, ft):
+    def tosslab(self, bw):
         url = 'http://tosslab.github.io/'
-        r = ft.request_and_get(url, 'Tech blog tosslab')
+        r = bw.request_and_get(url, 'Tech blog tosslab')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -278,14 +273,14 @@ class TechBlog:
         sessions = soup.select('div > div > section > ul > li > h2 > a')
         for s in sessions:
             result_url = '%s%s' % (url, s['href'])
-            result = self.create_result_msg(ft, result_url, s.text.strip(), 'tosslab')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'tosslab')
             if result is None:
                 continue
-            ft.post_tweet(result, 'Tech Blog tosslab')
+            bw.post_tweet(result, 'Tech Blog tosslab')
 
-    def tyle(self, ft):
+    def tyle(self, bw):
         url = 'https://blog.tyle.io/'
-        r = ft.request_and_get(url, 'Tech blog tyle')
+        r = bw.request_and_get(url, 'Tech blog tyle')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -294,41 +289,41 @@ class TechBlog:
             try:
                 desc = s.span.string
                 result_url = '%s%s' % (url, s['href'])
-                result = self.create_result_msg(ft, result_url, desc, 'tyle')
+                result = self.create_result_msg(bw, result_url, desc, 'tyle')
                 if result is None:
                     continue
-                ft.post_tweet(result, 'Tech Blog tyle')
+                bw.post_tweet(result, 'Tech Blog tyle')
             except:
                 continue
 
-    def whatap(self, ft):
+    def whatap(self, bw):
         url = 'http://tech.whatap.io/'
-        r = ft.request_and_get(url, 'Tech blog whatap')
+        r = bw.request_and_get(url, 'Tech blog whatap')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        for w in soup.find_all(ft.match_soup_class(['widget_recent_entries'])):
+        for w in soup.find_all(bw.match_soup_class(['widget_recent_entries'])):
             for a_tag in w.find_all('a'):
                 result_url = a_tag['href']
-                result = self.create_result_msg(ft, result_url, a_tag.text, 'whatap')
+                result = self.create_result_msg(bw, result_url, a_tag.text, 'whatap')
                 if result is None:
                     continue
-                ft.post_tweet(result, 'Tech Blog whatap')
+                bw.post_tweet(result, 'Tech Blog whatap')
 
-    def woowabros(self, ft):
+    def woowabros(self, bw):
         base_url = 'http://woowabros.github.io'
         url = 'http://woowabros.github.io/index.html'
-        r = ft.request_and_get(url, 'Tech blog woowabros')
+        r = bw.request_and_get(url, 'Tech blog woowabros')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        for l in soup.find_all(ft.match_soup_class(['list'])):
-            for lm in l.find_all(ft.match_soup_class(['list-module'])):
-                desc = lm.find(ft.match_soup_class(['post-description']))
+        for l in soup.find_all(bw.match_soup_class(['list'])):
+            for lm in l.find_all(bw.match_soup_class(['list-module'])):
+                desc = lm.find(bw.match_soup_class(['post-description']))
                 result_url = '%s%s' % (base_url, lm.a['href'])
                 if result_url is None or desc.string is None:
                     continue
-                result = self.create_result_msg(ft, result_url, desc.string, 'woowabros')
+                result = self.create_result_msg(bw, result_url, desc.string, 'woowabros')
                 if result is None:
                     continue
-                ft.post_tweet(result, 'Tech Blog woowabros')
+                bw.post_tweet(result, 'Tech Blog woowabros')

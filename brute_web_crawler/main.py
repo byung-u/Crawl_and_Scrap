@@ -1,14 +1,16 @@
-"""find_the_treasure web scrawling command line tool."""
+"""brute_web_crawler web scrawling command line tool."""
 # -*- coding: utf-8 -*-
 import cgitb
 import json
 import logging
 import os
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 from envparse import env
 from requests import codes, get, post
 from twython import Twython, TwythonError
+
+from pymongo import MongoClient
 
 # gmail
 import smtplib
@@ -16,15 +18,15 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 # custom
-from find_the_treasure.ft_github import UseGithub
-from find_the_treasure.ft_korea import (UseDataKorea)
-from find_the_treasure.ft_daum import UseDaum
-from find_the_treasure.ft_naver import UseNaver
-from find_the_treasure.ft_sqlite3 import UseSqlite3
-from find_the_treasure.ft_tech_blog import TechBlog
-from find_the_treasure import defaults
+from brute_web_crawler.ft_github import UseGithub
+from brute_web_crawler.ft_korea import UseDataKorea
+from brute_web_crawler.ft_daum import UseDaum
+from brute_web_crawler.ft_naver import UseNaver
+from brute_web_crawler.ft_sqlite3 import UseSqlite3
+from brute_web_crawler.ft_tech_blog import TechBlog
+from brute_web_crawler import defaults
 
-from find_the_treasure.ft_etc import (get_coex_exhibition,
+from brute_web_crawler.ft_etc import (get_coex_exhibition,
                                       search_stackoverflow,
                                       search_nate_ranking_news,
                                       get_naver_popular_news,
@@ -42,8 +44,10 @@ from find_the_treasure.ft_etc import (get_coex_exhibition,
 cgitb.enable(format='text')
 
 
-class FTbot:  # Find the Treasure
+class BW:  # Brute Web crawler
     def __init__(self):
+        self.mongodb_check_and_init()
+
         self.twit_post_limit = 180  # every 15min, https://dev.twitter.com/rest/public/rate-limiting
         self.twit_post = 0
         self.twitter_app_key = os.environ.get('TWITTER_APP_KEY')
@@ -90,8 +94,8 @@ class FTbot:  # Find the Treasure
         self.keyword = os.environ.get('ROP_KEYWORD')
 
         now = datetime.now()
-        log_file = '%s/log/ft_%4d%02d%02d.log' % (
-            os.getenv("HOME"), now.year, now.month, now.day)
+        self.current_date = '%4d%02d%02d' % (now.year, now.month, now.day)
+        log_file = '%s/log/bw_%s.log' % (os.getenv("HOME"), self.current_date)
         # Write file - DEBUG, INFO, WARN, ERROR, CRITICAL
         # Console display - ERROR, CRITICAL
         ch = logging.StreamHandler()
@@ -105,7 +109,31 @@ class FTbot:  # Find the Treasure
         self.logger = logging.getLogger('ft_logger')
         self.logger.addHandler(ch)
 
+    def mongodb_check_and_init(self):
+        self.db_client = MongoClient('localhost', 27017)
+        self.db = self.db_client.post_tweet
+        self.db_collections = self.db.sent_msg
+
+        exp = datetime.now() - timedelta(days=60)  # store data for 60 days
+        expire_date = '%04d%02d%02d' % (exp.year, exp.month, exp.day)
+        self.db_collections.remove({'post_time': {'$lt': expire_date}})
+
+    def is_already_sent(self, name, url):
+        colls = self.db_collections.find({'$and': [{'name': name}, {'url': url}]})
+        if colls.count() > 0:
+            self.logger.info('[Already Sent] %s', url)
+            return True  # already sent
+
+        try:
+            self.db_collections.insert_one({'name': name, 'url': url, 'post_time': self.current_date})
+        except BaseException as e:
+            self.logger.error('DB insert failed, [%s]:%s %s',  name, url, e)
+        return False
+
     def post_tweet(self, post_msg, subject='None'):
+        self.logger.info('[SEND] %s', post_msg)
+        return
+        #FIXME
         if post_msg is not None:
             try:
                 self.twit_post += 1
@@ -113,6 +141,7 @@ class FTbot:  # Find the Treasure
                     self.logger.error([self.twit_post], 'post failed, try after 15 minute')
                     time.sleep(960)  # 15 * 60 sec + 60
 
+                post_msg = self.check_max_tweet_msg(post_msg)
                 self.twitter.update_status(status=post_msg)
                 self.logger.info('Tweet: %s [%d/180]', post_msg, self.twit_post)
             except TwythonError as e:
@@ -213,110 +242,109 @@ def db_table_check():
     sqlite3.close()
 
 
-def find_tech_blogs(ft):
-    t = TechBlog(ft)
+def find_tech_blogs(bw):
+    t = TechBlog(bw)
 
-    t.boxnwhisker(ft)
-    t.daliworks(ft)
-    t.devpools(ft)
-    t.dramancompany(ft)
-    t.goodoc(ft)
-    t.kakao(ft)
-    t.lezhin(ft)
-    t.linchpinsoft(ft)
-    t.naver(ft)
-    t.naver_nuli(ft)
-    t.netmanias(ft)
-    t.ridi(ft)
-    t.skplanet(ft)
-    t.spoqa(ft)
-    t.tosslab(ft)
-    t.tyle(ft)
-    t.whatap(ft)
-    t.woowabros(ft)
+    t.boxnwhisker(bw)
+    t.daliworks(bw)
+    t.devpools(bw)
+    t.dramancompany(bw)
+    t.goodoc(bw)
+    t.kakao(bw)
+    t.lezhin(bw)
+    t.linchpinsoft(bw)
+    t.naver(bw)
+    t.naver_nuli(bw)
+    t.netmanias(bw)
+    t.ridi(bw)
+    t.skplanet(bw)
+    t.spoqa(bw)
+    t.tosslab(bw)
+    t.tyle(bw)
+    t.whatap(bw)
+    t.woowabros(bw)
 
 
-def deprecated(ft, run_type):
+def deprecated(bw, run_type):
     if run_type is False:
         return
 
     # Popular twitter keyword search
     try:
-        timeline_pop = ft.twitter.search(
+        timeline_pop = bw.twitter.search(
             q='python', result_type='popular', count=1)
-        ft.post_with_raw_timeline(timeline_pop)
+        bw.post_with_raw_timeline(timeline_pop)
     except TwythonError as e:
-        ft.logger.error('TwythonError %s', e)
+        bw.logger.error('TwythonError %s', e)
 
-    naver_popular_news = get_naver_popular_news(ft)
+    naver_popular_news = get_naver_popular_news(bw)
     if (type(naver_popular_news) is list) and (len(naver_popular_news) > 0):
-        ft.send_gmail('Naver popular news', naver_popular_news)
+        bw.send_gmail('Naver popular news', naver_popular_news)
 
-    rd = get_realestate_daum(ft)
+    rd = get_realestate_daum(bw)
     if (type(rd) is list) and (len(rd) > 0):
-        ft.send_gmail('Daum realestate', rd)
+        bw.send_gmail('Daum realestate', rd)
 
-    n = UseNaver(ft)
-    naver_news = n.search_today_information_and_technology(ft)
+    n = UseNaver(bw)
+    naver_news = n.search_today_information_and_technology(bw)
     if (type(naver_news) is list) and (len(naver_news) > 0):
-        ft.send_gmail('NAVER IT news', naver_news)
+        bw.send_gmail('NAVER IT news', naver_news)
 
 
-def finding_and_mail(ft):
-    rmk = get_realestate_mk(ft)
-    if (type(rmk) is list) and (len(rmk) > 0):
-        ft.send_gmail('MBN realestate', rmk)
+def finding_and_mail(bw):
+    #rmk = get_realestate_mk(bw)
+    #if (type(rmk) is list) and (len(rmk) > 0):
+    #    bw.send_gmail('MBN realestate', rmk)
 
-    daum = UseDaum(ft)
-    daum_blog = daum.request_search_data(ft, req_str="마포")
+    daum = UseDaum(bw)
+    daum_blog = daum.request_search_data(bw, req_str="마포")
     if (type(daum_blog) is list) and (len(daum_blog) > 0):
-        ft.send_gmail('Daum Blogs', daum_blog)
+        bw.send_gmail('Daum Blogs', daum_blog)
 
-    nate_rank_news = search_nate_ranking_news(ft)
-    if (type(nate_rank_news) is list) and (len(nate_rank_news) > 0):
-        ft.send_gmail('NATE IT news rank', nate_rank_news)
+    #nate_rank_news = search_nate_ranking_news(bw)
+    #if (type(nate_rank_news) is list) and (len(nate_rank_news) > 0):
+    #    bw.send_gmail('NATE IT news rank', nate_rank_news)
 
 
-def finding_and_tweet(ft):
+def finding_and_tweet(bw):
     # Tech
-    find_tech_blogs(ft)
+    find_tech_blogs(bw)
 
-    g = UseGithub(ft)
-    g.get_github_great_repo(ft, 'hot', 'python', 10)
-    g.get_github_great_repo(ft, 'new', 'python', 0)
-    g.get_github_great_repo(ft, 'new', None, 3)  # all languages
+    g = UseGithub(bw)
+    g.get_repo(bw, lang='python', min_star=3, past=1)
+    g.get_repo(bw, lang='javascript', min_star=3, past=1)
+    g.get_repo(bw, lang=None, min_star=3, past=1)  # all languages
 
-    search_stackoverflow(ft, "activity", "python")
-    search_stackoverflow(ft, "activity", "racket")
+    search_stackoverflow(bw, "activity", "python")
+    search_stackoverflow(bw, "activity", "javascript")
+    search_stackoverflow(bw, "activity", "racket")
 
-    get_hacker_news(ft)
-    get_rfc_draft_list(ft)
-    get_raspberripy_news(ft)
+    get_hacker_news(bw)
+    get_rfc_draft_list(bw)
+    get_raspberripy_news(bw)
 
     # Exhibition
-    get_onoffmix(ft)
-    get_coex_exhibition(ft)
-    get_national_museum_exhibition(ft)
+    get_onoffmix(bw)
+    get_coex_exhibition(bw)
+    get_national_museum_exhibition(bw)
 
     # ETC
-    dg = UseDataKorea(ft)
-    dg.get_molit_news(ft)   # 국토교통부
-    dg.get_tta_news(ft)     # 한국정보통신기술협회
-    dg.realstate_trade(ft)
-    dg.realstate_rent(ft)
+    dg = UseDataKorea(bw)
+    dg.get_molit_news(bw)   # 국토교통부
+    dg.get_tta_news(bw)     # 한국정보통신기술협회
+    dg.realstate_trade(bw)
+    dg.realstate_rent(bw)
 
-    get_recruit_people_info(ft)  # 모니터링 요원 모집공고ㅓ
-    get_rate_of_process_sgx(ft)  # 공정률 확인
+    get_recruit_people_info(bw)  # 모니터링 요원 모집공고ㅓ
+    get_rate_of_process_sgx(bw)  # 공정률 확인
 
 
 def main():
-    ft = FTbot()
+    bw = BW()  # Brute Webcrawler
 
-    finding_and_tweet(ft)
-    finding_and_mail(ft)
-    deprecated(ft, False)
-
-    db_table_check()
+    #finding_and_tweet(bw)
+    finding_and_mail(bw)
+    deprecated(bw, False)
 
 
 if __name__ == '__main__':
