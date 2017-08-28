@@ -18,28 +18,26 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 # custom
-from brute_web_crawler.ft_github import UseGithub
-from brute_web_crawler.ft_korea import UseDataKorea
-from brute_web_crawler.ft_daum import UseDaum
-from brute_web_crawler.ft_naver import UseNaver
-from brute_web_crawler.ft_sqlite3 import UseSqlite3
-from brute_web_crawler.ft_tech_blog import TechBlog
+from brute_web_crawler.crawl_github import UseGithub
+from brute_web_crawler.crawl_korea import UseDataKorea
+from brute_web_crawler.crawl_daum import UseDaum
+from brute_web_crawler.crawl_naver import UseNaver
+from brute_web_crawler.crawl_tech_blog import TechBlog
 from brute_web_crawler import defaults
 
-from brute_web_crawler.ft_etc import (get_coex_exhibition,
-                                      search_stackoverflow,
-                                      search_nate_ranking_news,
-                                      get_naver_popular_news,
-                                      get_national_museum_exhibition,
-                                      get_onoffmix,
-                                      get_realestate_daum,
-                                      get_realestate_mk,
-                                      get_rate_of_process_sgx,
-                                      get_hacker_news,
-                                      get_recruit_people_info,
-                                      get_rfc_draft_list,
-                                      get_raspberripy_news,
-                                      )
+from brute_web_crawler.crawl_etc import (get_coex_exhibition,
+                                         search_stackoverflow,
+                                         search_nate_ranking_news,
+                                         get_naver_popular_news,
+                                         get_national_museum_exhibition,
+                                         get_onoffmix,
+                                         get_realestate_daum,
+                                         get_realestate_mk,
+                                         get_rate_of_process_sgx,
+                                         get_hacker_news,
+                                         get_recruit_people_info,
+                                         get_rfc_draft_list,
+                                         get_raspberripy_news,)
 
 cgitb.enable(format='text')
 
@@ -131,24 +129,20 @@ class BW:  # Brute Web crawler
         return False
 
     def post_tweet(self, post_msg, subject='None'):
-        self.logger.info('[SEND] %s', post_msg)
-        return
-        #FIXME
-        if post_msg is not None:
-            try:
-                self.twit_post += 1
-                if self.twit_post >= self.twit_post_limit:
-                    self.logger.error([self.twit_post], 'post failed, try after 15 minute')
-                    time.sleep(960)  # 15 * 60 sec + 60
-
-                post_msg = self.check_max_tweet_msg(post_msg)
-                self.twitter.update_status(status=post_msg)
-                self.logger.info('Tweet: %s [%d/180]', post_msg, self.twit_post)
-            except TwythonError as e:
-                self.logger.error('TwythonError: %s [%s]', e, post_msg)
-        else:
+        if post_msg is None:
             self.logger.info('[%s] no posting message', subject)
             return
+        try:
+            self.twit_post += 1
+            if self.twit_post >= self.twit_post_limit:
+                self.logger.error([self.twit_post], 'post failed, try after 15 minute')
+                time.sleep(960)  # 15 * 60 sec + 60
+
+            post_msg = self.check_max_tweet_msg(post_msg)
+            self.twitter.update_status(status=post_msg)
+            self.logger.info('Tweet: %s [%d/180]', post_msg, self.twit_post)
+        except TwythonError as e:
+            self.logger.error('TwythonError: %s [%s]', e, post_msg)
 
     def match_soup_class(self, target, mode='class'):
         def do_match(tag):
@@ -236,12 +230,6 @@ class BW:  # Brute Web crawler
             return None
 
 
-def db_table_check():
-    sqlite3 = UseSqlite3()
-    sqlite3.delete_expired_tuple()
-    sqlite3.close()
-
-
 def find_tech_blogs(bw):
     t = TechBlog(bw)
 
@@ -292,18 +280,18 @@ def deprecated(bw, run_type):
 
 
 def finding_and_mail(bw):
-    #rmk = get_realestate_mk(bw)
-    #if (type(rmk) is list) and (len(rmk) > 0):
-    #    bw.send_gmail('MBN realestate', rmk)
+    rmk = get_realestate_mk(bw)
+    if (type(rmk) is list) and (len(rmk) > 0):
+        bw.send_gmail('MBN realestate', rmk)
 
     daum = UseDaum(bw)
     daum_blog = daum.request_search_data(bw, req_str="마포")
     if (type(daum_blog) is list) and (len(daum_blog) > 0):
         bw.send_gmail('Daum Blogs', daum_blog)
 
-    #nate_rank_news = search_nate_ranking_news(bw)
-    #if (type(nate_rank_news) is list) and (len(nate_rank_news) > 0):
-    #    bw.send_gmail('NATE IT news rank', nate_rank_news)
+    nate_rank_news = search_nate_ranking_news(bw)
+    if (type(nate_rank_news) is list) and (len(nate_rank_news) > 0):
+        bw.send_gmail('NATE IT news rank', nate_rank_news)
 
 
 def finding_and_tweet(bw):
@@ -342,7 +330,7 @@ def finding_and_tweet(bw):
 def main():
     bw = BW()  # Brute Webcrawler
 
-    #finding_and_tweet(bw)
+    finding_and_tweet(bw)
     finding_and_mail(bw)
     deprecated(bw, False)
 
