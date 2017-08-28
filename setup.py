@@ -10,19 +10,19 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
-from find_the_treasure.version import __version__
+from brute_web_crawler.version import __version__
 
 version = __version__
 description = 'Trying to find some good information with Python'
 long_description = '''
-find_the_treasure -- Trying to find some good information with Python
+brute_web_crawler -- Web crawling with Python
 =================================================================
 TODO: add long desc
 '''.lstrip()
 
 here = path.abspath(path.dirname(__file__))
 
-scripts = ['scripts/find_the_treasure']
+scripts = ['scripts/brute_web_crawler']
 #if os.name == 'nt':
 #    scripts.append('scripts/mypy.bat')
 
@@ -30,7 +30,7 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 setup(
-    name='find_the_treasure',
+    name='brute_web_crawler',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
@@ -41,7 +41,7 @@ setup(
     long_description=long_description,
 
     # The project's main homepage.
-    url='https://github.com/byung-u/find_the_treasure',
+    url='https://github.com/byung-u/brute_web_crawler',
 
     # Author details
     author='Byungwoo Jeon',
@@ -82,7 +82,7 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=['find_the_treasure'],
+    packages=['brute_web_crawler'],
 
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
