@@ -114,7 +114,7 @@ class UseDataKorea:  # www.data.go.kr
                 short_url = bw.shortener_url(href)
                 if short_url is None:
                     short_url = href
-                ret_msg = '%s\n%s\n#molit' % (short_url, tr.a.text)
+                ret_msg = '%s\n%s\n#국토부' % (short_url, tr.a.text)
                 ret_msg = bw.check_max_tweet_msg(ret_msg)
                 bw.post_tweet(ret_msg, 'molit')
 
