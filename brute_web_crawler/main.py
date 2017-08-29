@@ -18,26 +18,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 # custom
+from brute_web_crawler import defaults
+from brute_web_crawler.crawl_daum import UseDaum
+from brute_web_crawler.crawl_etc import ETC
 from brute_web_crawler.crawl_github import UseGithub
 from brute_web_crawler.crawl_korea import UseDataKorea
-from brute_web_crawler.crawl_daum import UseDaum
 from brute_web_crawler.crawl_naver import UseNaver
 from brute_web_crawler.crawl_tech_blog import TechBlog
-from brute_web_crawler import defaults
-
-from brute_web_crawler.crawl_etc import (get_coex_exhibition,
-                                         search_stackoverflow,
-                                         search_nate_ranking_news,
-                                         get_naver_popular_news,
-                                         get_national_museum_exhibition,
-                                         get_onoffmix,
-                                         get_realestate_daum,
-                                         get_realestate_mk,
-                                         get_rate_of_process_sgx,
-                                         get_hacker_news,
-                                         get_recruit_people_info,
-                                         get_rfc_draft_list,
-                                         get_raspberripy_news,)
 
 cgitb.enable(format='text')
 
@@ -265,11 +252,12 @@ def deprecated(bw, run_type):
     except TwythonError as e:
         bw.logger.error('TwythonError %s', e)
 
-    naver_popular_news = get_naver_popular_news(bw)
+    E = ETC(bw)
+    naver_popular_news = E.get_naver_popular_news(bw)
     if (type(naver_popular_news) is list) and (len(naver_popular_news) > 0):
         bw.send_gmail('Naver popular news', naver_popular_news)
 
-    rd = get_realestate_daum(bw)
+    rd = E.get_realestate_daum(bw)
     if (type(rd) is list) and (len(rd) > 0):
         bw.send_gmail('Daum realestate', rd)
 
@@ -280,18 +268,19 @@ def deprecated(bw, run_type):
 
 
 def finding_and_mail(bw):
-    rmk = get_realestate_mk(bw)
+    E = ETC(bw)
+    rmk = E.get_realestate_mk(bw)
     if (type(rmk) is list) and (len(rmk) > 0):
         bw.send_gmail('MBN realestate', rmk)
+
+    nate_rank_news = E.search_nate_ranking_news(bw)
+    if (type(nate_rank_news) is list) and (len(nate_rank_news) > 0):
+        bw.send_gmail('NATE IT news rank', nate_rank_news)
 
     daum = UseDaum(bw)
     daum_blog = daum.request_search_data(bw, req_str="마포")
     if (type(daum_blog) is list) and (len(daum_blog) > 0):
         bw.send_gmail('Daum Blogs', daum_blog)
-
-    nate_rank_news = search_nate_ranking_news(bw)
-    if (type(nate_rank_news) is list) and (len(nate_rank_news) > 0):
-        bw.send_gmail('NATE IT news rank', nate_rank_news)
 
 
 def finding_and_tweet(bw):
@@ -303,18 +292,19 @@ def finding_and_tweet(bw):
     g.get_repo(bw, lang='javascript', min_star=3, past=1)
     g.get_repo(bw, lang=None, min_star=3, past=1)  # all languages
 
-    search_stackoverflow(bw, "activity", "python")
-    search_stackoverflow(bw, "activity", "javascript")
-    search_stackoverflow(bw, "activity", "racket")
+    E = ETC(bw)
+    E.search_stackoverflow(bw, "activity", "python")
+    E.search_stackoverflow(bw, "activity", "javascript")
+    E.search_stackoverflow(bw, "activity", "racket")
 
-    get_hacker_news(bw)
-    get_rfc_draft_list(bw)
-    get_raspberripy_news(bw)
+    E.get_hacker_news(bw)
+    E.get_rfc_draft_list(bw)
+    E.get_raspberripy_news(bw)
 
     # Exhibition
-    get_onoffmix(bw)
-    get_coex_exhibition(bw)
-    get_national_museum_exhibition(bw)
+    E.get_onoffmix(bw)
+    E.get_coex_exhibition(bw)
+    E.get_national_museum_exhibition(bw)
 
     # ETC
     dg = UseDataKorea(bw)
@@ -323,8 +313,8 @@ def finding_and_tweet(bw):
     dg.realstate_trade(bw)
     dg.realstate_rent(bw)
 
-    get_recruit_people_info(bw)  # 모니터링 요원 모집공고ㅓ
-    get_rate_of_process_sgx(bw)  # 공정률 확인
+    E.get_recruit_people_info(bw)  # 모니터링 요원 모집공고ㅓ
+    E.get_rate_of_process_sgx(bw)  # 공정률 확인
 
 
 def main():
