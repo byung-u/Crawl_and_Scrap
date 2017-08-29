@@ -7,10 +7,11 @@ import os
 import time
 from datetime import datetime, timedelta
 from envparse import env
+from pymongo import MongoClient
+from random import choice
 from requests import codes, get, post
 from twython import Twython, TwythonError
-
-from pymongo import MongoClient
+from urllib.request import getproxies
 
 # gmail
 import smtplib
@@ -27,6 +28,13 @@ from brute_web_crawler.crawl_naver import UseNaver
 from brute_web_crawler.crawl_tech_blog import TechBlog
 
 cgitb.enable(format='text')
+USER_AGENTS = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:11.0) Gecko/20100101 Firefox/11.0',
+               'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100 101 Firefox/22.0',
+               'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0',
+               ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.5 (KHTML, like Gecko) '
+                'Chrome/19.0.1084.46 Safari/536.5'),
+               ('Mozilla/5.0 (Windows; Windows NT 6.1) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.46'
+                'Safari/536.5'), )
 
 
 class BW:  # Brute Web crawler
@@ -205,9 +213,23 @@ class BW:  # Brute Web crawler
                     continue
             self.post_tweet(result, 'raw_timeline')
 
+    def get_proxies(self):
+        proxies = getproxies()
+        filtered_proxies = {}
+        for key, value in proxies.items():
+            if key.startswith('http'):
+                if not value.startswith('http'):
+                    filtered_proxies[key] = 'http://%s' % value
+                else:
+                    filtered_proxies[key] = value
+        return filtered_proxies
+
+    # Referrence from
+    # https://github.com/gleitz/howdoi/blob/master/howdoi/howdoi.py
+    # http://docs.python-requests.org/en/master/user/advanced/
     def request_and_get(self, url, name):
         try:
-            r = get(url)
+            r = get(url, headers={'User-Agent': choice(USER_AGENTS)}, proxies=self.get_proxies(), verify=False)
             if r.status_code != codes.ok:
                 self.logger.error('[%s] request error, code=%d', name, r.status_code)
                 return None
@@ -220,6 +242,7 @@ class BW:  # Brute Web crawler
 def find_tech_blogs(bw):
     t = TechBlog(bw)
 
+    t.awskr(bw)
     t.boxnwhisker(bw)
     t.daliworks(bw)
     t.devpools(bw)
