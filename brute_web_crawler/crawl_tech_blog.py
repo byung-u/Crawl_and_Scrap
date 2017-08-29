@@ -55,7 +55,7 @@ class TechBlog:
         sessions = soup.select('div > div > header > h2 > a')
         for s in sessions:
             result_url = s['href']
-            result = self.create_result_msg(bw, result_url, s.text.strip(), 'devpools')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), '개발바보들')
             if result is None:
                 continue
             bw.post_tweet(result, 'Tech Blog devpools')
