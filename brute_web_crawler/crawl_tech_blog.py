@@ -16,6 +16,21 @@ class TechBlog:
         result = '%s\n%s\n#%s' % (result_url, msg, name)
         return result
 
+    def awskr(self, bw):
+        url = 'http://www.awskr.org/'
+        r = bw.request_and_get(url, 'Tech blog awskr')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        #post-9481 > header > h1 > a
+        sessions = soup.select('header > h1 > a')
+        for s in sessions:
+            result_url = s['href']
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'awskr')
+            if result is None:
+                continue
+            bw.post_tweet(result, 'Tech Blog awskr')
+
     def boxnwhisker(self, bw):
         url = 'http://www.boxnwhis.kr/'
         r = bw.request_and_get(url, 'Tech blog boxnwhisker')
