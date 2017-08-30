@@ -118,6 +118,30 @@ class UseDataKorea:  # www.data.go.kr
                 ret_msg = bw.check_max_tweet_msg(ret_msg)
                 bw.post_tweet(ret_msg, 'molit')
 
+    def get_kostat_news(self, bw):  # 통계청
+
+        base_url = 'http://kostat.go.kr'
+        url = 'http://kostat.go.kr/portal/korea/kor_nw/2/1/index.board'
+        r = bw.request_and_get(url, 'KOSTAT')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        # ct_board > fieldset > table > tbody > tr:nth-child(1) > td.title > a
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            # print(s)
+            result_url = '%s%s' % (base_url, s['href'])
+            if len(s.text.strip()) == 0:
+                    continue
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#통계청' % (short_url, s.text.strip())
+            bw.post_tweet(ret_msg, 'KOSTAT')
+
     def get_tta_news(self, bw):  # 한국정보통신기술협회 입찰공고
         base_url = 'http://www.tta.or.kr/news/'
         url = 'http://www.tta.or.kr/news/tender.jsp'
