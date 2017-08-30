@@ -332,6 +332,7 @@ def finding_and_tweet(bw):
     # ETC
     dg = UseDataKorea(bw)
     dg.get_molit_news(bw)   # 국토교통부
+    dg.get_kostat_news(bw)  # 통계청
     dg.get_tta_news(bw)     # 한국정보통신기술협회
     dg.realstate_trade(bw)
     dg.realstate_rent(bw)
