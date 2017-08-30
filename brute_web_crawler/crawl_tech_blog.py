@@ -22,11 +22,11 @@ class TechBlog:
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
-        #post-9481 > header > h1 > a
+        # post-9481 > header > h1 > a
         sessions = soup.select('header > h1 > a')
         for s in sessions:
             result_url = s['href']
-            result = self.create_result_msg(bw, result_url, s.text.strip(), 'awskr')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'AWS_kr')
             if result is None:
                 continue
             bw.post_tweet(result, 'Tech Blog awskr')
@@ -85,7 +85,7 @@ class TechBlog:
         sessions = soup.select('div > h2 > a')
         for s in sessions:
             result_url = s['href']
-            result = self.create_result_msg(bw, result_url, s.text.strip(), 'devpools')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), '드라마앤컴퍼니')
             if result is None:
                 continue
             bw.post_tweet(result, 'Tech Blog dramancompany')
@@ -100,7 +100,7 @@ class TechBlog:
         sessions = soup.select('header > h2 > a')
         for s in sessions:
             result_url = s['href']
-            result = self.create_result_msg(bw, result_url, s.text.strip(), 'goodoc')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), '굿닥')
             if result is None:
                 continue
             bw.post_tweet(result, 'Tech Blog goodoc')
@@ -207,7 +207,7 @@ class TechBlog:
             if s['href'].find('no=') == -1:  # ignore subject page
                 continue
             result_url = '%s%s' % (base_url, s['href'])
-            result = self.create_result_msg(bw, result_url, s.text.strip(), 'netmanias')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), '넷매니아즈')
             if result is None:
                 continue
             bw.post_tweet(result, 'Tech Blog netmanias')
@@ -256,7 +256,7 @@ class TechBlog:
         sessions = soup.select('header > h1 > a')
         for s in sessions:
             result_url = '%s%s' % (url, s['href'])
-            result = self.create_result_msg(bw, result_url, s.text.strip(), 'skplanet')
+            result = self.create_result_msg(bw, result_url, s.text.strip(), 'sk플래닛')
             if result is None:
                 continue
             bw.post_tweet(result, 'Tech Blog skplanet')
@@ -273,7 +273,7 @@ class TechBlog:
                 post = auth.find(bw.match_soup_class(['post-title']))
                 desc = auth.find(bw.match_soup_class(['post-description']))
                 result_url = '%s%s' % (base_url, post.a['href'][1:])
-                result = self.create_result_msg(bw, result_url, desc.string, 'spoqa')
+                result = self.create_result_msg(bw, result_url, desc.string, '스포카')
                 if result is None:
                     continue
                 bw.post_tweet(result, 'Tech Blog spoqa')
@@ -320,7 +320,7 @@ class TechBlog:
         for w in soup.find_all(bw.match_soup_class(['widget_recent_entries'])):
             for a_tag in w.find_all('a'):
                 result_url = a_tag['href']
-                result = self.create_result_msg(bw, result_url, a_tag.text, 'whatap')
+                result = self.create_result_msg(bw, result_url, a_tag.text, '와탭')
                 if result is None:
                     continue
                 bw.post_tweet(result, 'Tech Blog whatap')
@@ -338,7 +338,7 @@ class TechBlog:
                 result_url = '%s%s' % (base_url, lm.a['href'])
                 if result_url is None or desc.string is None:
                     continue
-                result = self.create_result_msg(bw, result_url, desc.string, 'woowabros')
+                result = self.create_result_msg(bw, result_url, desc.string, '우아한형제들')
                 if result is None:
                     continue
                 bw.post_tweet(result, 'Tech Blog woowabros')
