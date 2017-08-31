@@ -235,7 +235,7 @@ class BW:  # Brute Web crawler
     # http://docs.python-requests.org/en/master/user/advanced/
     def request_and_get(self, url, name):
         try:
-            r = get(url, headers={'User-Agent': choice(USER_AGENTS)}, proxies=self.get_proxies(), verify=False)
+            r = get(url, headers={'User-Agent': choice(USER_AGENTS)}, proxies=self.get_proxies())
             if r.status_code != codes.ok:
                 self.logger.error('[%s] request error, code=%d', name, r.status_code)
                 return None
