@@ -1,7 +1,7 @@
 Brute Web Crawler
 ----------------
 
-적당하게 웹 스크롤링
+웹 스크롤링
   - openAPI 호출, 웹 스크롤을 이용하여 의미있는 정보를 자동으로 수집하기 위한 파이썬 유틸리티.
   - Oauth, 인증키가 너무 많이 필요한 번거로움이...
   - 140자 요약 가능한 정보는 url주소와 함께 트위터 전송
@@ -13,6 +13,7 @@ Quick Start
 
   - Python 3.x
   - Gmail account
+  - Oauth
 
 - Authorization
 
@@ -34,6 +35,7 @@ Quick Start
   - 국가부처
     - 국토교통부 보도자료
     - 한국정보통신협회 입찰공고
+    - 통계청 보도자료
     - data.go.kr 공정률 정보
   - 전시, 모임
     - 국립중앙박물관(이촌) 전시 정보 
@@ -48,6 +50,7 @@ Quick Start
   - daum 부동산 뉴스
 
 - 기술블로그(A to Z)
+  - [AWS한국](http://www.awskr.org/)
   - [박스엔휘스커](http://www.boxnwhis.kr/)
   - [달리웍스](http://techblog.daliworks.net/)
   - [개발바보들](http://devpools.kr/)
