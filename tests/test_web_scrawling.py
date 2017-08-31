@@ -151,5 +151,10 @@ class TestUrlConn(unittest.TestCase):
         r = get(url)
         self.assertIs(r.status_code, codes.ok)
 
+    def test_kostat(self):
+        url = 'http://kostat.go.kr/portal/korea/kor_nw/2/1/index.board'
+        r = get(url)
+        self.assertIs(r.status_code, codes.ok)
+
 if __name__ == '__main__':
     unittest.main()
