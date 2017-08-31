@@ -77,7 +77,10 @@ class BW:  # Brute Web crawler
         self.apt_rent_url = os.environ.get('DATA_APT_RENT_URL')
         self.apt_trade_url = os.environ.get('DATA_APT_TRADE_URL')
         self.apt_svc_key = os.environ.get('DATA_APT_API_KEY')
-        self.apt_dong = env('REALESTATE_DONG', cast=list)
+        try:
+            self.apt_dong = env('REALESTATE_DONG', cast=list)
+        except:
+            pass
         self.apt_district_code = env('REALESTATE_DISTRICT_CODE', cast=list)
         # self.apt_trade_apt = os.environ.get('DATA_GO_KR', 'apt', raw=True)
         # self.apt_trade_size = os.environ.get('DATA_GO_KR', 'size', raw=True)
