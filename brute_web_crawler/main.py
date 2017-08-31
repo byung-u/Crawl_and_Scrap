@@ -88,7 +88,10 @@ class BW:  # Brute Web crawler
 
         now = datetime.now()
         self.current_date = '%4d%02d%02d' % (now.year, now.month, now.day)
-        log_file = '%s/log/bw_%s.log' % (os.getenv("HOME"), self.current_date)
+        log_path = '%s/log' % (os.getenv("HOME"))
+        if not os.path.isdir(log_path):
+            os.mkdir(log_path)
+        log_file = '%s/bw_%s.log' % (log_path, self.current_date)
         # Write file - DEBUG, INFO, WARN, ERROR, CRITICAL
         # Console display - ERROR, CRITICAL
         ch = logging.StreamHandler()
