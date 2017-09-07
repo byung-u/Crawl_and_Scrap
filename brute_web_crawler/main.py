@@ -4,6 +4,7 @@ import cgitb
 import json
 import logging
 import os
+import schedule
 import time
 from datetime import datetime, timedelta
 from envparse import env
@@ -347,12 +348,20 @@ def finding_and_tweet(bw):
     E.get_rate_of_process_sgx(bw)  # 공정률 확인
 
 
-def main():
-    bw = BW()  # Brute Webcrawler
-
+def job(bw):
+    bw.logger.info('start job')
     finding_and_tweet(bw)
     finding_and_mail(bw)
     deprecated(bw, False)
+    bw.logger.info('stop job')
+
+def main():
+    bw = BW()  # Brute Webcrawler
+
+    schedule.every().hour.do(job, bw)
+    while True:
+        schedule.run_pending()
+        time.sleep(60)
 
 
 if __name__ == '__main__':
