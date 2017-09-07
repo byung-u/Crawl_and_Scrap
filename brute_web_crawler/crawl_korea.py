@@ -5,7 +5,6 @@ import re
 
 from bs4 import BeautifulSoup
 from datetime import datetime
-from requests import get
 
 
 class UseDataKorea:  # www.data.go.kr
@@ -95,6 +94,46 @@ class UseDataKorea:  # www.data.go.kr
                 continue
             bw.post_tweet(ret_msg, 'Realestate')
 
+    def get_mfds_news(self, bw):  # 식약처
+        base_url = 'http://www.mfds.go.kr'
+        url = 'http://www.mfds.go.kr/index.do?mid=675'
+        r = bw.request_and_get(url, 'mfds')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            result_url = '%s%s' % (base_url, s['href'])
+            if len(s.text.strip()) == 0:
+                    continue
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#식약처' % (short_url, s.text.strip())
+            bw.post_tweet(ret_msg, 'MFDS')
+
+        url = 'http://www.mfds.go.kr/index.do?mid=676'
+        r = bw.request_and_get(url, 'mfds')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            result_url = '%s%s' % (base_url, s['href'])
+            if len(s.text.strip()) == 0:
+                    continue
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#식약처' % (short_url, s.text.strip())
+            bw.post_tweet(ret_msg, 'MFDS')
+
     def get_molit_news(self, bw):  # 국토교통부 보도자료
         url = 'http://www.molit.go.kr/USR/NEWS/m_71/lst.jsp'
         r = bw.request_and_get(url, 'molit')
@@ -148,7 +187,6 @@ class UseDataKorea:  # www.data.go.kr
         r = bw.request_and_get(url, 'TTA')
         if r is None:
             return
-        r = get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
         # s_container > div.scontent > div.content > table > tbody > tr:nth-child(2) > td.t_left > a
         sessions = soup.select('div > table > tbody > tr > td > a')
