@@ -302,7 +302,10 @@ def deprecated(bw, run_type):
         bw.send_gmail('NAVER IT news', naver_news)
 
 
-def finding_and_mail(bw):
+def finding_and_mail(bw, onoff=True):
+    if onoff is False:
+        return
+
     E = ETC(bw)
     rmk = E.get_realestate_mk(bw)
     if (type(rmk) is list) and (len(rmk) > 0):
@@ -356,9 +359,10 @@ def finding_and_tweet(bw):
 def job(bw):
     bw.logger.info('start job')
     finding_and_tweet(bw)
-    finding_and_mail(bw)
+    finding_and_mail(bw, False)
     deprecated(bw, False)
     bw.logger.info('stop job')
+
 
 def main():
     bw = BW()  # Brute Webcrawler
