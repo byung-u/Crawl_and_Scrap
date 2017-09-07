@@ -81,8 +81,13 @@ class BW:  # Brute Web crawler
         try:
             self.apt_dong = env('REALESTATE_DONG', cast=list)
         except:
+            self.logger.error('REALESTATE_DONG getenv failed')
             pass
-        self.apt_district_code = env('REALESTATE_DISTRICT_CODE', cast=list)
+        try:
+            self.apt_district_code = env('REALESTATE_DISTRICT_CODE', cast=list)
+        except:
+            self.logger.error('REALESTATE_DISTRICT_CODE getenv failed')
+            pass
         # self.apt_trade_apt = os.environ.get('DATA_GO_KR', 'apt', raw=True)
         # self.apt_trade_size = os.environ.get('DATA_GO_KR', 'size', raw=True)
 
