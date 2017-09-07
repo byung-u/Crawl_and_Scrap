@@ -341,11 +341,12 @@ def finding_and_tweet(bw):
     dg.get_molit_news(bw)   # 국토교통부
     dg.get_kostat_news(bw)  # 통계청
     dg.get_tta_news(bw)     # 한국정보통신기술협회
+    dg.get_mfds_news(bw)    # 식품의약품안전처
     dg.realstate_trade(bw)
     dg.realstate_rent(bw)
 
-    E.get_recruit_people_info(bw)  # 모니터링 요원 모집공고ㅓ
-    E.get_rate_of_process_sgx(bw)  # 공정률 확인
+    E.get_recruit_people_info(bw)  # 모니터링 요원 모집공고
+    # E.get_rate_of_process_sgx(bw)  # 공정률 확인
 
 
 def job(bw):
