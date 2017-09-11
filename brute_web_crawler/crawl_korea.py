@@ -94,10 +94,90 @@ class UseDataKorea:  # www.data.go.kr
                 continue
             bw.post_tweet(ret_msg, 'Realestate')
 
+    def get_cha_news(self, bw):  # 문화재청
+        base_url = 'http://www.cha.go.kr'
+        url = 'http://www.cha.go.kr/newsBbz/selectNewsBbzList.do?sectionId=b_sec_1&mn=NS_01_02_01'
+        r = bw.request_and_get(url, 'CHA')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            result_url = '%s%s' % (base_url, s['href'])
+            if len(s.text.strip()) == 0:
+                    continue
+            if bw.is_already_sent('KOREA', s.text.strip()):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#문화재청(보도)' % (short_url, s.text.strip())
+            bw.post_tweet(ret_msg, 'CHA')
+
+        url = 'http://www.cha.go.kr/newsBbz/selectNewsBbzList.do?sectionId=b_sec_1&mn=NS_01_02_02'
+        r = bw.request_and_get(url, 'CHA')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            result_url = '%s%s' % (base_url, s['href'])
+            if len(s.text.strip()) == 0:
+                    continue
+            if bw.is_already_sent('KOREA', s.text.strip()):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#문화재청(해명)' % (short_url, s.text.strip())
+            bw.post_tweet(ret_msg, 'CHA')
+
+    def get_ftc_news(self, bw):  # 공정관리위원회
+        base_url = 'http://www.ftc.go.kr/news/ftc/'
+        url = 'http://www.ftc.go.kr/news/ftc/reportboList.jsp'
+        r = bw.request_and_get(url, 'FTC')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            result_url = '%s%s' % (base_url, s['href'])
+            if len(s.text.strip()) == 0:
+                    continue
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#공정위(보도)' % (short_url, s.text.strip())
+            bw.post_tweet(ret_msg, 'FTC')
+
+        url = 'http://www.ftc.go.kr/news/ftc/reportheList.jsp'
+        r = bw.request_and_get(url, 'FTC')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            result_url = '%s%s' % (base_url, s['href'])
+            if len(s.text.strip()) == 0:
+                    continue
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#공정위(해명)' % (short_url, s.text.strip())
+            bw.post_tweet(ret_msg, 'FTC')
+
     def get_mfds_news(self, bw):  # 식약처
         base_url = 'http://www.mfds.go.kr'
         url = 'http://www.mfds.go.kr/index.do?mid=675'
-        r = bw.request_and_get(url, 'mfds')
+        r = bw.request_and_get(url, 'MFDS')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -112,11 +192,11 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#식약처' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#식약처(보도자료)' % (short_url, s.text.strip())
             bw.post_tweet(ret_msg, 'MFDS')
 
         url = 'http://www.mfds.go.kr/index.do?mid=676'
-        r = bw.request_and_get(url, 'mfds')
+        r = bw.request_and_get(url, 'MFDS')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -131,12 +211,12 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#식약처' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#식약처(해명자료)' % (short_url, s.text.strip())
             bw.post_tweet(ret_msg, 'MFDS')
 
     def get_molit_news(self, bw):  # 국토교통부 보도자료
         url = 'http://www.molit.go.kr/USR/NEWS/m_71/lst.jsp'
-        r = bw.request_and_get(url, 'molit')
+        r = bw.request_and_get(url, 'MOLIT')
         if r is None:
             return
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -156,6 +236,47 @@ class UseDataKorea:  # www.data.go.kr
                 ret_msg = '%s\n%s\n#국토부' % (short_url, tr.a.text)
                 ret_msg = bw.check_max_tweet_msg(ret_msg)
                 bw.post_tweet(ret_msg, 'molit')
+
+    def get_mss_news(self, bw):  # 중소벤처기업부
+        url = 'http://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=86'
+        r = bw.request_and_get(url, 'MSS')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            if s.get('onclick') is None:
+                continue
+            idx = s.get('onclick').replace("'", '').split(',')[1]
+            result_url = 'http://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=86&bcIdx=%s&parentSeq=%s' % (idx, idx)
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#중소벤처기업부(보도)' % (short_url, s.text.strip())
+            bw.post_tweet(ret_msg, 'MSS')
+
+        url = 'http://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=87'
+        r = bw.request_and_get(url, 'MSS')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            if s.get('onclick') is None:
+                continue
+            idx = s.get('onclick').replace("'", '').split(',')[1]
+            result_url = 'http://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=87&bcIdx=%s&parentSeq=%s' % (idx, idx)
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#중소벤처기업부(해명)' % (short_url, s.text.strip())
+            bw.post_tweet(ret_msg, 'MSS')
 
     def get_kostat_news(self, bw):  # 통계청
 
