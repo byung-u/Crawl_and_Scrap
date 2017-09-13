@@ -319,12 +319,12 @@ def finding_and_tweet(bw):
 
     g = UseGithub(bw)
     g.get_repo(bw, lang='python', min_star=3, past=1)
-    g.get_repo(bw, lang='javascript', min_star=3, past=1)
+    # g.get_repo(bw, lang='javascript', min_star=3, past=1)
     g.get_repo(bw, lang=None, min_star=3, past=1)  # all languages
 
     E = ETC(bw)
     E.search_stackoverflow(bw, "activity", "python")
-    E.search_stackoverflow(bw, "activity", "javascript")
+    # E.search_stackoverflow(bw, "activity", "javascript")
     E.search_stackoverflow(bw, "activity", "racket")
 
     E.get_hacker_news(bw)
@@ -345,6 +345,7 @@ def finding_and_tweet(bw):
     dg.get_cha_news(bw)     # 문화재청
     dg.get_ftc_news(bw)     # 공정거래위원회
     dg.get_mss_news(bw)     # 중소벤처기업부
+    dg.get_visit_korea(bw)  # 대한민국 구석구석 행복여행
     dg.realstate_trade(bw)
     dg.realstate_rent(bw)
 
