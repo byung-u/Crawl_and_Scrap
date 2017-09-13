@@ -192,7 +192,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#식약처(보도자료)' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#식약처(보도)' % (short_url, s.text.strip())
             bw.post_tweet(ret_msg, 'MFDS')
 
         url = 'http://www.mfds.go.kr/index.do?mid=676'
@@ -211,7 +211,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#식약처(해명자료)' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#식약처(해명)' % (short_url, s.text.strip())
             bw.post_tweet(ret_msg, 'MFDS')
 
     def get_molit_news(self, bw):  # 국토교통부 보도자료
@@ -321,3 +321,27 @@ class UseDataKorea:  # www.data.go.kr
                 short_url = result_url
             ret_msg = '%s\n%s\n#TTA' % (short_url, sess.text.strip())
             bw.post_tweet(ret_msg, 'TTA')
+
+    def get_visit_korea(self, bw):  # 대한민국 구석구석 행복여행
+        base_url = 'http://korean.visitkorea.or.kr/kor/bz15/where/festival'
+        url = 'http://korean.visitkorea.or.kr/kor/bz15/where/festival/festival.jsp'
+        r = bw.request_and_get(url, 'VISIT_KOREA')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        for s in soup.find_all(bw.match_soup_class(['item'])):
+            if s.h3 is None:
+                continue
+            result_url = '%s/%s' % (base_url, s.a['href'])
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            desc = repr(s.h3)[4: -6]
+            for info in s.find_all(bw.match_soup_class(['info2'])):
+                for span in info.find_all('span', {'class': 'date'}):
+                    short_url = bw.shortener_url(result_url)
+                    if short_url is None:
+                        short_url = result_url
+                    ret_msg = '%s\n%s\n%s\n#visitkorea' % (short_url, span.text, desc)
+                    bw.post_tweet(ret_msg, 'VISIT_KOREA')
+                    break
