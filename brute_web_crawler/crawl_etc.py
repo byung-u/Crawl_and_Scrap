@@ -74,7 +74,7 @@ class ETC:
                 exhibition[4],
                 exhibition[6],
                 exhibition[5].lstrip('\\'))
-            bw.post_tweet(coex_result, 'Stackoverflow')
+            bw.post_tweet(coex_result, 'Coex')
 
     """
     sort :
