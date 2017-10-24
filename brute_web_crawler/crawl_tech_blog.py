@@ -335,6 +335,8 @@ class TechBlog:
         for l in soup.find_all(bw.match_soup_class(['list'])):
             for lm in l.find_all(bw.match_soup_class(['list-module'])):
                 desc = lm.find(bw.match_soup_class(['post-description']))
+                if desc is None:
+                    continue
                 result_url = '%s%s' % (base_url, lm.a['href'])
                 if result_url is None or desc.string is None:
                     continue
