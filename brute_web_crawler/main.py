@@ -135,6 +135,7 @@ class BW:  # Brute Web crawler
             self.twit_post += 1
             if self.twit_post >= self.twit_post_limit:
                 self.logger.error([self.twit_post], 'post failed, try after 15 minute')
+                self.twit_post = 0
                 time.sleep(960)  # 15 * 60 sec + 60
 
             post_msg = self.check_max_tweet_msg(post_msg)
