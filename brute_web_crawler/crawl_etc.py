@@ -320,10 +320,8 @@ class ETC:
         max_try = 1000
         while result is False and max_try != 0:
             result = self._get_rfc_random_info(soup, rn)
+            rn = randrange(1, max_rfc_num)
             max_try -= 1
-        print(result)
-        if bw.is_already_sent('ETC', result):
-            return
         bw.post_tweet(result, 'RFC info')
 
     def get_rfc_draft_list(self, bw):  # get state 'AUTH48-DONE' only
