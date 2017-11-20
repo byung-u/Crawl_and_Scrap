@@ -72,7 +72,12 @@ Quick Start
 
 Release
 -------
-- 0.7.0 (current)
+- 0.7.1 (current)
+  - Change check items
+  - Add 입찰공고 정보
+
+
+- 0.7.0 (Monday, 20 November 2017)
   - Change projet name, find the treasure to brute web crwaler
   - Change DB, SQLite3 to MongoDB
   - Code Refactoring
