@@ -7,7 +7,6 @@ import os
 import schedule
 import time
 from datetime import datetime, timedelta
-from envparse import env
 from pymongo import MongoClient
 from random import choice
 from requests import codes, get, post
@@ -244,7 +243,7 @@ class BW:  # Brute Web crawler
             return None
 
 
-def find_tech_blogs(bw):
+def search_tech_blogs(bw):
     t = TechBlog(bw)
 
     t.awskr(bw)
@@ -314,23 +313,24 @@ def finding_and_mail(bw, onoff=True):
         bw.send_gmail('Daum Blogs', daum_blog)
 
 
-def finding_and_tweet(bw):
+def searching_and_tweet(bw):
     # Tech
-    find_tech_blogs(bw)
+    search_tech_blogs(bw)
 
     g = UseGithub(bw)
     g.get_repo(bw, lang='python', min_star=3, past=1)
-    # g.get_repo(bw, lang='javascript', min_star=3, past=1)
     g.get_repo(bw, lang=None, min_star=3, past=1)  # all languages
+    # g.get_repo(bw, lang='javascript', min_star=3, past=1)
 
     E = ETC(bw)
     E.search_stackoverflow(bw, "activity", "python")
     # E.search_stackoverflow(bw, "activity", "javascript")
-    E.search_stackoverflow(bw, "activity", "racket")
+    # E.search_stackoverflow(bw, "activity", "racket")
 
     E.get_hacker_news(bw)
-    E.get_rfc_draft_list(bw)
-    E.get_raspberripy_news(bw)
+    E.get_rfc_random_title(bw)
+    # E.get_rfc_draft_list(bw)
+    # E.get_raspberripy_news(bw)
 
     # Exhibition
     E.get_onoffmix(bw)
@@ -339,24 +339,36 @@ def finding_and_tweet(bw):
 
     # ETC
     dg = UseDataKorea(bw)
-    dg.get_molit_news(bw)   # 국토교통부
-    dg.get_kostat_news(bw)  # 통계청
-    dg.get_tta_news(bw)     # 한국정보통신기술협회
-    dg.get_mfds_news(bw)    # 식품의약품안전처
-    dg.get_cha_news(bw)     # 문화재청
+
+    # 입찰공고
+    dg.get_molit_tender(bw)   # 국토교통부
+    dg.get_tta_tender(bw)     # 한국정보통신기술협회
+    dg.get_cha_tender(bw)     # 문화재청
+
+    # 공지사항
+    dg.get_mss_noti(bw)      # 중소벤처기업부
+
     dg.get_ftc_news(bw)     # 공정거래위원회
-    dg.get_mss_news(bw)     # 중소벤처기업부
     dg.get_visit_korea(bw)  # 대한민국 구석구석 행복여행
     dg.realstate_trade(bw)
-    dg.realstate_rent(bw)
 
-    E.get_recruit_people_info(bw)  # 모니터링 요원 모집공고
+    # 보도자료, 해명자료
+    # dg.get_mss_news(bw)     # 중소벤처기업부
+    # dg.get_mfds_news(bw)    # 식품의약품안전처
+    # dg.realstate_rent(bw)
+    # dg.get_kostat_news(bw)  # 통계청
+    # dg.get_molit_news(bw)   # 국토교통부
+    # dg.get_cha_news(bw)     # 문화재청
+
+    # E.get_recruit_people_info(bw)  # 모니터링 요원 모집공고
     # E.get_rate_of_process_sgx(bw)  # 공정률 확인
 
 
 def job(bw):
     bw.logger.info('start job')
-    finding_and_tweet(bw)
+
+    searching_and_tweet(bw)
+
     finding_and_mail(bw, False)
     deprecated(bw, False)
     bw.logger.info('stop job')
