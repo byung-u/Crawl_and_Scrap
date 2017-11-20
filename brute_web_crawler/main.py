@@ -341,15 +341,20 @@ def searching_and_tweet(bw):
     dg = UseDataKorea(bw)
 
     # 입찰공고
-    dg.get_molit_tender(bw)   # 국토교통부
-    dg.get_tta_tender(bw)     # 한국정보통신기술협회
-    dg.get_cha_tender(bw)     # 문화재청
+    dg.get_tender_cha(bw)     # 문화재청
+    dg.get_tender_kdata(bw)   # 한국데이터진흥원
+    dg.get_tender_kisa(bw)    # 한국인터넷진흥원
+    dg.get_tender_molit(bw)   # 국토교통부
+    dg.get_tender_nia(bw)     # 한국정보화진흥원
+    dg.get_tender_nst(bw)     # 국가과학기술연구회 소관 25개 정부출연연구기관
+    dg.get_tender_tta(bw)     # 한국정보통신기술협회
 
     # 공지사항
-    dg.get_mss_noti(bw)      # 중소벤처기업부
+    dg.get_noti_mss(bw)       # 중소벤처기업부
+    dg.get_recruit_nst(bw)    # 국가과학기술연구회 소관 25개 정부출연연구기관
 
-    dg.get_ftc_news(bw)     # 공정거래위원회
-    dg.get_visit_korea(bw)  # 대한민국 구석구석 행복여행
+    dg.get_ftc_news(bw)       # 공정거래위원회
+    dg.get_visit_korea(bw)    # 대한민국 구석구석 행복여행
     dg.realstate_trade(bw)
 
     # 보도자료, 해명자료
@@ -376,6 +381,7 @@ def job(bw):
 
 def main():
     bw = BW()  # Brute Webcrawler
+    searching_and_tweet(bw)
 
     schedule.every().hour.do(job, bw)
     while True:
