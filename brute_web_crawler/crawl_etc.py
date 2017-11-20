@@ -4,6 +4,7 @@
 from bs4 import BeautifulSoup
 from requests import get
 from time import gmtime, strftime, time
+from random import randrange
 from selenium import webdriver
 
 from brute_web_crawler import defaults
@@ -282,6 +283,48 @@ class ETC:
                     short_url = mozip_url
                 mz_result = '%s\n%s' % (short_url, mozip)
                 bw.post_tweet(mz_result, 'monitoring')
+
+    def _get_rfc_random_info(self, soup, rfc_num):
+        this_msg = False
+        for tr in soup.find_all('tr'):
+            try:
+                href = tr.a['href']
+            except TypeError:
+                continue
+            for idx, td in enumerate(tr.find_all('td')):
+                if idx == 0:
+                    ts = td.text.strip().split()
+                    try:
+                        num = int(ts[1])
+                    except ValueError:
+                        continue
+                    if num == rfc_num:
+                        this_msg = True
+                if this_msg:
+                    if idx == 2:
+                        title = td.text
+                        return '[RFC %d]\n%s\n%s' % (num, title.strip(), href)
+        return False
+
+    def get_rfc_random_title(self, bw):  # get rfc info random
+        url = 'https://www.rfc-editor.org/search/rfc_search_detail.php?page=All&pubstatus[]=Any&pub_date_type=any&sortkey=Number&sorting=ASC'
+        max_rfc_num = 8172  # 2017/11/20 total 8172 results
+        rn = randrange(1, max_rfc_num)
+
+        r = get(url)
+        r = bw.request_and_get(url, 'ETC RFC')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        result = False
+        max_try = 1000
+        while result is False and max_try != 0:
+            result = self._get_rfc_random_info(soup, rn)
+            max_try -= 1
+        print(result)
+        if bw.is_already_sent('ETC', result):
+            return
+        bw.post_tweet(result, 'RFC info')
 
     def get_rfc_draft_list(self, bw):  # get state 'AUTH48-DONE' only
         url = 'https://www.rfc-editor.org/current_queue.php'
