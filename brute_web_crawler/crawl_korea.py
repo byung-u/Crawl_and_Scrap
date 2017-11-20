@@ -5,6 +5,7 @@ import re
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+from requests import get
 
 
 class UseDataKorea:  # www.data.go.kr
@@ -94,7 +95,7 @@ class UseDataKorea:  # www.data.go.kr
                 continue
             bw.post_tweet(ret_msg, 'Realestate')
 
-    def get_cha_tender(self, bw):  # 문화재청
+    def get_tender_cha(self, bw):  # 문화재청
         base_url = 'http://www.cha.go.kr'
         url = 'http://www.cha.go.kr/tenderBbz/selectTenderBbzList.do?mn=NS_01_05'
         r = bw.request_and_get(url, 'CHA')
@@ -236,7 +237,7 @@ class UseDataKorea:  # www.data.go.kr
             ret_msg = '%s\n%s\n#식약처(해명)' % (short_url, s.text.strip())
             bw.post_tweet(ret_msg, 'MFDS')
 
-    def get_tta_tender(self, bw):  # 한국정보통신기술협회 입찰공고
+    def get_tender_tta(self, bw):  # 한국정보통신기술협회 입찰공고
         base_url = 'http://www.tta.or.kr/news/'
         url = 'http://www.tta.or.kr/news/tender.jsp'
         r = bw.request_and_get(url, 'TTA')
@@ -259,7 +260,7 @@ class UseDataKorea:  # www.data.go.kr
             ret_msg = bw.check_max_tweet_msg(ret_msg)
             bw.post_tweet(ret_msg, 'TTA')
 
-    def get_molit_tender(self, bw):  # 국토교통부 입찰공고
+    def get_tender_molit(self, bw):  # 국토교통부 입찰공고
         url = 'http://www.molit.go.kr/USR/tender/m_83/lst.jsp'
         r = bw.request_and_get(url, 'MOLIT')
         if r is None:
@@ -305,7 +306,7 @@ class UseDataKorea:  # www.data.go.kr
                 ret_msg = bw.check_max_tweet_msg(ret_msg)
                 bw.post_tweet(ret_msg, 'molit')
 
-    def get_mss_noti(self, bw):  # 중소벤처기업부
+    def get_noti_mss(self, bw):  # 중소벤처기업부
         url = 'http://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=81'
         r = bw.request_and_get(url, 'MSS')
         if r is None:
@@ -392,26 +393,6 @@ class UseDataKorea:  # www.data.go.kr
             ret_msg = '%s\n%s\n#통계청' % (short_url, s.text.strip())
             bw.post_tweet(ret_msg, 'KOSTAT')
 
-    def get_tta_news(self, bw):  # 한국정보통신기술협회 입찰공고
-        base_url = 'http://www.tta.or.kr/news/'
-        url = 'http://www.tta.or.kr/news/tender.jsp'
-        r = bw.request_and_get(url, 'TTA')
-        if r is None:
-            return
-        soup = BeautifulSoup(r.text, 'html.parser')
-        # s_container > div.scontent > div.content > table > tbody > tr:nth-child(2) > td.t_left > a
-        sessions = soup.select('div > table > tbody > tr > td > a')
-        for sess in sessions:
-            result_url = '%s%s' % (base_url, sess['href'])
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#TTA' % (short_url, sess.text.strip())
-            bw.post_tweet(ret_msg, 'TTA')
-
     def get_visit_korea(self, bw):  # 대한민국 구석구석 행복여행
         base_url = 'http://korean.visitkorea.or.kr/kor/bz15/where/festival'
         url = 'http://korean.visitkorea.or.kr/kor/bz15/where/festival/festival.jsp'
@@ -435,3 +416,142 @@ class UseDataKorea:  # www.data.go.kr
                     ret_msg = '%s\n%s\n%s\n#visitkorea' % (short_url, span.text, desc)
                     bw.post_tweet(ret_msg, 'VISIT_KOREA')
                     break
+
+    def get_tender_kisa(self, bw):  # 한국인터넷진흥원
+        base_url = 'https://www.kisa.or.kr/'
+        url = 'https://www.kisa.or.kr/notice/bid_List.jsp'
+        r = bw.request_and_get(url, 'KISA')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            result_url = '%s%s' % (base_url, s['href'])
+            if len(s.text.strip()) == 0:
+                continue
+
+            if bw.is_already_sent('KOREA', s.text.strip()):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#한국인터넷진흥원' % (s.text.strip(), short_url)
+            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            bw.post_tweet(ret_msg, 'KISA')
+
+    def get_tender_nia(self, bw):  # 한국정보화진흥원
+        url = 'http://www.nia.or.kr/site/nia_kor/ex/bbs/List.do?cbIdx=78336'
+        r = bw.request_and_get(url, 'NIA')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('div > ul > li > a')
+        for s in sessions:
+            if s.get('onclick') is None:
+                continue
+            title = s.text.replace('\r\n', '').split()
+            idx = s.get('onclick').replace("'", '').split(',')[1]
+
+            result_url = 'http://www.nia.or.kr/site/nia_kor/ex/bbs/View.do?cbIdx=78336&bcIdx=%s&parentSeq=%s' % (idx, idx)
+
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#한국정보화진흥원' % (' '.join(title), short_url)
+            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            bw.post_tweet(ret_msg, 'NIA')
+
+    def get_tender_kdata(self, bw):  # 한국데이터진흥원
+        base_url = 'http://www.kdata.or.kr/board'
+        url = 'http://www.kdata.or.kr/board/notice_01.html'
+        r = bw.request_and_get(url, 'KDATA')
+        if r is None:
+            return
+
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('table > tbody > tr > td > a')
+        for s in sessions:
+            result_url = '%s/%s' % (base_url, s['href'])
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#한국데이터진흥원' % (s.text.strip(), short_url)
+            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            bw.post_tweet(ret_msg, 'KDATA')
+
+    def get_tender_kitech(self, bw):  # 한국생산기술연구원
+        base_url = 'https://www.kitech.re.kr/bbs'
+        url = 'https://www.kitech.re.kr/bbs/page2-1.php'
+        r = get(url, verify=False)
+        if r is None:
+            return
+
+        soup = BeautifulSoup(r.content.decode('euc-kr', 'replace'), 'html.parser')
+        for tr in soup.find_all('tr'):
+            try:
+                tr.a['href']
+            except TypeError:
+                continue
+            result_url = '%s/%s' % (base_url, tr.a['href'])
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#한국생산기술연구원' % (tr.a.text, short_url)
+            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            bw.post_tweet(ret_msg, 'KITECH')
+
+    def get_tender_nst(self, bw):  # 국가과학기술연구회 소관 25개 정부출연연구기관
+        url = 'http://www.nst.re.kr/nst/notice/02_02.jsp'
+        r = bw.request_and_get(url, 'NST')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('div > ul > li > a')
+        for s in sessions:
+            title = s.text.replace('\r\n', '').split()
+            if len(title) < 6:  # ignore ['통합검색'] /nst/utill/search.jsp
+                continue
+            result_url = '%s%s' % (url, s['href'])
+            # print(' '.join(title[3:]), result_url)
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#정부출연연구기관' % (' '.join(title[3:]), short_url)
+            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            bw.post_tweet(ret_msg, 'NST')
+
+    def get_recruit_nst(self, bw):  # 국가과학기술연구회 소관 25개 정부출연연구기관
+        url = 'http://www.nst.re.kr/nst/notice/02_04.jsp'
+        r = bw.request_and_get(url, 'NST')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('div > ul > li > a')
+        for s in sessions:
+            title = s.text.replace('\r\n', '').split()
+            if len(title) < 6:  # ignore ['통합검색'] /nst/utill/search.jsp
+                continue
+            result_url = '%s%s' % (url, s['href'])
+            # print(' '.join(title[3:]), result_url)
+            if bw.is_already_sent('KOREA', result_url):
+                bw.logger.info('Already sent: %s', result_url)
+                continue
+            short_url = bw.shortener_url(result_url)
+            if short_url is None:
+                short_url = result_url
+            ret_msg = '%s\n%s\n#정부출연연구기관' % (' '.join(title[3:]), short_url)
+            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            bw.post_tweet(ret_msg, 'NST')
