@@ -461,7 +461,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국정보화진흥원' % (' '.join(title), short_url)
+            ret_msg = '%s\n%s\n#한국정보화진흥원' % (' '.join(title[:-5]), short_url)
             ret_msg = bw.check_max_tweet_msg(ret_msg)
             bw.post_tweet(ret_msg, 'NIA')
 
