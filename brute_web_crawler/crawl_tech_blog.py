@@ -294,7 +294,7 @@ class TechBlog:
             bw.post_tweet(result, 'Tech Blog tosslab')
 
     def tyle(self, bw):
-        url = 'https://blog.tyle.io/'
+        url = 'https://tyle.io/blog'
         r = bw.request_and_get(url, 'Tech blog tyle')
         if r is None:
             return
