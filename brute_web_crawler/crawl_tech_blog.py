@@ -13,7 +13,7 @@ class TechBlog:
             return None
 
         result_url = bw.shortener_url(result_url)
-        result = '%s\n%s\n#%s' % (result_url, msg, name)
+        result = '%s\n%s\n#%s' % (msg, result_url, name)
         return result
 
     def awskr(self, bw):
