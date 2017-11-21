@@ -318,12 +318,12 @@ def searching_and_tweet(bw):
     search_tech_blogs(bw)
 
     g = UseGithub(bw)
-    g.get_repo(bw, lang='python', min_star=3, past=1)
+    # g.get_repo(bw, lang='python', min_star=3, past=1)
     g.get_repo(bw, lang=None, min_star=3, past=1)  # all languages
     # g.get_repo(bw, lang='javascript', min_star=3, past=1)
 
     E = ETC(bw)
-    E.search_stackoverflow(bw, "activity", "python")
+    # E.search_stackoverflow(bw, "activity", "python")
     # E.search_stackoverflow(bw, "activity", "javascript")
     # E.search_stackoverflow(bw, "activity", "racket")
 
