@@ -327,7 +327,7 @@ def searching_and_tweet(bw):
     # E.search_stackoverflow(bw, "activity", "javascript")
     # E.search_stackoverflow(bw, "activity", "racket")
 
-    E.get_hacker_news(bw)
+    # E.get_hacker_news(bw)
     E.get_rfc_random_title(bw)
     # E.get_rfc_draft_list(bw)
     # E.get_raspberripy_news(bw)
