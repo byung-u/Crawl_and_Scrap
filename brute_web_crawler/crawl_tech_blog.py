@@ -294,6 +294,7 @@ class TechBlog:
             bw.post_tweet(result, 'Tech Blog tosslab')
 
     def tyle(self, bw):
+        base_url = 'https://tyle.io'
         url = 'https://tyle.io/blog'
         r = bw.request_and_get(url, 'Tech blog tyle')
         if r is None:
@@ -303,7 +304,7 @@ class TechBlog:
         for s in sessions:
             try:
                 desc = s.span.string
-                result_url = '%s%s' % (url, s['href'])
+                result_url = '%s%s' % (base_url, s['href'])
                 result = self.create_result_msg(bw, result_url, desc, 'tyle')
                 if result is None:
                     continue
