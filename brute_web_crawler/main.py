@@ -140,6 +140,7 @@ class BW:  # Brute Web crawler
             post_msg = self.check_max_tweet_msg(post_msg)
             self.twitter.update_status(status=post_msg)
             self.logger.info('Tweet: %s [%d/180]', post_msg, self.twit_post)
+            time.sleep(3)  # 3 sec delay for prevent tweeter lock
         except TwythonError as e:
             self.logger.error('TwythonError: %s [%s]', e, post_msg)
 
@@ -323,6 +324,9 @@ def searching_and_tweet(bw):
     # g.get_repo(bw, lang='javascript', min_star=3, past=1)
 
     E = ETC(bw)
+
+    E.get_wishket(bw)
+
     # E.search_stackoverflow(bw, "activity", "python")
     # E.search_stackoverflow(bw, "activity", "javascript")
     # E.search_stackoverflow(bw, "activity", "racket")
