@@ -25,27 +25,66 @@ class ETC:
         else:
             return False
 
+    def get_wishket(self, bw):
+        driver = webdriver.Chrome(bw.chromedriver_path)
+        driver.implicitly_wait(3)
+
+        url = 'https://www.wishket.com/project/'
+        driver.get(url)
+        html = driver.page_source
+        soup = BeautifulSoup(html, 'html.parser')
+        short_url = ''
+        for p in soup.find_all(bw.match_soup_class(['project-list-box'])):
+            for i, div in enumerate(p.find_all('div')):
+                if i % 10 == 0:
+                    title = div.text
+                    try:
+                        link = 'https://www.wishket.com/%s' % div.a['href']
+                        short_url = bw.shortener_url(link)
+                        if short_url is None:
+                            short_url = ''
+                    except:
+                        pass
+                if i % 10 == 2:
+                    if bw.is_already_sent('ETC', short_url):
+                        continue
+                    info = div.text.split(' ')
+                    result = '%s\n%s\n%s\n%s\n#wishket' % (short_url, title, info[1], info[3])
+                    bw.post_tweet(result, 'Wishket')
+
+        driver.quit()
+
     def get_onoffmix(self, bw):
         driver = webdriver.Chrome(bw.chromedriver_path)
         driver.implicitly_wait(3)
 
-        url = 'https://www.onoffmix.com/event'
-        driver.get(url)
-        html = driver.page_source
-        soup = BeautifulSoup(html, 'html.parser')
-        session = soup.select('div > div.sideLeft > div.contentBox.todayEventArea > ul > li > a')
-        for s in session:
-            if len(s.text) == 0:
-                # print(s['href'], s.text)
-                continue
-            if bw.is_already_sent('ETC', s['href']):
-                continue
-            short_url = bw.shortener_url(s['href'])
-            if short_url is None:
-                short_url = s['href']
+        # 'https://onoffmix.com/event?c=86' 강연
+        # 'https://onoffmix.com/event?c=87' 세미나/컨퍼런스
+        # 'https://onoffmix.com/event?c=91' 소모임/친목행사
+        # 'https://onoffmix.com/event?c=96' 기타
+        urls = ['https://www.onoffmix.com/event',
+                'https://onoffmix.com/event?c=86',
+                'https://onoffmix.com/event?c=87',
+                'https://onoffmix.com/event?c=91',
+                'https://onoffmix.com/event?c=96', ]
+        for url in urls:
+            driver.get(url)
+            html = driver.page_source
+            soup = BeautifulSoup(html, 'html.parser')
+            session = soup.select('div > div.sideLeft > div.contentBox.todayEventArea > ul > li > a')
+            for s in session:
+                if len(s.text) == 0:
+                    # print(s['href'], s.text)
+                    continue
+                if bw.is_already_sent('ETC', s['href']):
+                    continue
+                short_url = bw.shortener_url(s['href'])
+                if short_url is None:
+                    short_url = s['href']
 
-            result = '%s\n%s\n#onoffmix' % (short_url, s.text)
-            bw.post_tweet(result, 'Onoffmix')
+                result = '%s\n%s\n#onoffmix' % (short_url, s.text)
+                bw.post_tweet(result, 'Onoffmix')
+        driver.quit()
 
     def get_coex_exhibition(self, bw):
         url = 'http://www.coex.co.kr/blog/event_exhibition?list_type=list'
@@ -187,7 +226,7 @@ class ETC:
                 nm_short_url = bw.shortener_url(ex_url)
                 if nm_short_url is None:
                     nm_short_url = ex_url
-                nm_result = '%s\n%s\n%s' % (period, exhibition, nm_short_url)
+                nm_result = '%s\n%s\n%s' % (nm_short_url, period, exhibition)
                 bw.post_tweet(nm_result, 'National museum')
 
     def get_realestate_daum(self, bw):

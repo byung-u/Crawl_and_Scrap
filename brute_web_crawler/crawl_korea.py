@@ -114,7 +114,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#문화재청' % (s.text.strip(), short_url)
+            ret_msg = '%s\n%s\n#문화재청' % (short_url, s.text.strip())
             bw.post_tweet(ret_msg, 'CHA')
 
     def get_cha_news(self, bw):  # 문화재청
@@ -256,7 +256,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국정보통신기술협회' % (s.text.strip(), short_url)
+            ret_msg = '%s\n%s\n#한국정보통신기술협회' % (short_url, s.text.strip())
             ret_msg = bw.check_max_tweet_msg(ret_msg)
             bw.post_tweet(ret_msg, 'TTA')
 
@@ -279,7 +279,7 @@ class UseDataKorea:  # www.data.go.kr
                 short_url = bw.shortener_url(href)
                 if short_url is None:
                     short_url = href
-                ret_msg = '%s\n%s\n#국토부' % (tr.a.text, short_url)
+                ret_msg = '%s\n%s\n#국토부' % (short_url, tr.a.text)
                 ret_msg = bw.check_max_tweet_msg(ret_msg)
                 bw.post_tweet(ret_msg, 'molit')
 
@@ -325,7 +325,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#중소벤처기업부' % (s.text.strip(), short_url)
+            ret_msg = '%s\n%s\n#중소벤처기업부' % (short_url, s.text.strip())
             bw.post_tweet(ret_msg, 'MSS')
 
     def get_mss_news(self, bw):  # 중소벤처기업부
@@ -436,7 +436,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국인터넷진흥원' % (s.text.strip(), short_url)
+            ret_msg = '%s\n%s\n#한국인터넷진흥원' % (short_url, s.text.strip())
             ret_msg = bw.check_max_tweet_msg(ret_msg)
             bw.post_tweet(ret_msg, 'KISA')
 
@@ -461,7 +461,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국정보화진흥원' % (' '.join(title[:-5]), short_url)
+            ret_msg = '%s\n%s\n#한국정보화진흥원' % (short_url, ' '.join(title[:-5]))
             ret_msg = bw.check_max_tweet_msg(ret_msg)
             bw.post_tweet(ret_msg, 'NIA')
 
@@ -482,7 +482,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국데이터진흥원' % (s.text.strip(), short_url)
+            ret_msg = '%s\n%s\n#한국데이터진흥원' % (short_url, s.text.strip())
             ret_msg = bw.check_max_tweet_msg(ret_msg)
             bw.post_tweet(ret_msg, 'KDATA')
 
@@ -506,7 +506,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국생산기술연구원' % (tr.a.text, short_url)
+            ret_msg = '%s\n%s\n#한국생산기술연구원' % (short_url, tr.a.text)
             ret_msg = bw.check_max_tweet_msg(ret_msg)
             bw.post_tweet(ret_msg, 'KITECH')
 
@@ -529,7 +529,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#정부출연연구기관' % (' '.join(title[3:]), short_url)
+            ret_msg = '%s\n%s\n#정부출연연구기관' % (short_url, ' '.join(title[3:]))
             ret_msg = bw.check_max_tweet_msg(ret_msg)
             bw.post_tweet(ret_msg, 'NST')
 
@@ -552,6 +552,6 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#정부출연연구기관' % (' '.join(title[3:]), short_url)
+            ret_msg = '%s\n%s\n#정부출연연구기관' % (short_url, ' '.join(title[3:]))
             ret_msg = bw.check_max_tweet_msg(ret_msg)
             bw.post_tweet(ret_msg, 'NST')
