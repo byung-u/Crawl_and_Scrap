@@ -334,6 +334,7 @@ def searching_and_tweet(bw):
     E = ETC(bw)
 
     E.get_wishket(bw)
+    E.get_sacticket(bw)
 
     # E.search_stackoverflow(bw, "activity", "python")
     # E.search_stackoverflow(bw, "activity", "javascript")
