@@ -28,21 +28,54 @@ Quick Start
 수집 정보
 ---------
 - 트위터 전송
-  - TECH 
-    - 기술 블로그
-    - Github repository star 개수 갱신 체크해서 개수가 증가한 것
-    - Stackoverflow upvote 갱신 체크 개수가 증가한 것
-  - 국가부처
-    - 국토교통부 보도자료
-    - 한국정보통신협회 입찰공고
-    - 통계청 보도자료
-    - 식품의약품안전처 보도자료, 해명자료
-    - data.go.kr 공정률 정보
-  - 전시, 모임
-    - 국립중앙박물관(이촌) 전시 정보 
-    - onoffmix 이벤트 정보
-    - Coex 전시 정보
+  - 기술 블로그
+    - [AWS한국](http://www.awskr.org/)
+    - [박스엔휘스커](http://www.boxnwhis.kr/)
+    - [달리웍스](http://techblog.daliworks.net/)
+    - [개발바보들](http://devpools.kr/)
+    - [드라마엔컴퍼니](http://blog.dramancompany.com/)
+    - [굿닥](http://dev.goodoc.co.kr/)
+    - [카카오](http://tech.kakao.com)
+    - [레진](http://tech.lezhin.com)
+    - [네이버D2](http://d2.naver.com/d2.atom)
+    - [네이버널리](http://nuli.navercorp.com/sharing/blog/main)
+    - [넷매니아즈](http://www.netmanias.com/ko/)
+    - [리디북스](https://www.ridicorp.com/blog/)
+    - [SK플래닛](http://readme.skplanet.com/)
+    - [스포카](https://spoqa.github.io/index.html)
+    - [토스랩](http://tosslab.github.io/)
+    - [타일](https://blog.tyle.io/)
+    - [와탭](http://tech.whatap.io/)
+    - [우아한형제들](http://woowabros.github.io/index.html)
 
+  - 국가부처
+    - [문화재청](http://www.cha.go.kr)
+    - [공정관리위원회](http://www.ftc.go.kr)
+    - [식품의약품안전처](http://www.mfds.go.kr)
+    - [한국정보통신협회](http://www.tta.or.kr)
+    - [국토교통부](http://www.molit.go.kr)
+    - [중소벤처기업부](http://www.mss.go.kr)
+    - [통계청](http://kostat.go.kr)
+    - [Visit Korea](http://korean.visitkorea.or.kr)
+    - [한국인터넷진흥원](https://www.kisa.or.kr)
+    - [한국데이터진흥원](http://www.kdata.or.kr)
+    - [한국생산기술연구원](https://www.kitech.re.kr)
+    - [국가과학기술연구회 소관](http://www.nst.re.kr)
+    - [주택도시보증공사](http://www.khug.or.kr) 공정률
+
+  - 전시, 모임
+    - [국립중앙박물관(이촌)](https://www.museum.go.kr)
+    - [onoffmix 이벤트 정보](https://www.onoffmix.com)
+    - [Coex 전시 정보](http://www.coex.co.kr)
+    - [예술의 전당](https://www.sacticket.co.kr)
+
+  - 기타
+    - [RFC 문서](https://www.rfc-editor.org)
+    - [HackerNews](https://news.ycombinator.com)
+    - [Github](https://github.com) repository star 개수 갱신 체크해서 개수가 증가한 것
+    - [Stackoverflow](https://stackoverflow.com/) upvote 갱신 체크 개수가 증가한 것
+    - [LifeHacker](http://lifehacker.com) 라즈베리파이 뉴스
+    - [굿모니터링](http://goodmonitoring.com) 모집공고
 
 - 이메일 전송
   - MBN 부동산 news  
@@ -50,31 +83,13 @@ Quick Start
   - naver IT 뉴스
   - daum 부동산 뉴스
 
-- 기술블로그(A to Z)
-  - [AWS한국](http://www.awskr.org/)
-  - [박스엔휘스커](http://www.boxnwhis.kr/)
-  - [달리웍스](http://techblog.daliworks.net/)
-  - [개발바보들](http://devpools.kr/)
-  - [드라마엔컴퍼니](http://blog.dramancompany.com/)
-  - [굿닥](http://dev.goodoc.co.kr/)
-  - [카카오](http://tech.kakao.com)
-  - [레진](http://tech.lezhin.com)
-  - [네이버D2](http://d2.naver.com/d2.atom)
-  - [네이버널리](http://nuli.navercorp.com/sharing/blog/main)
-  - [넷매니아즈](http://www.netmanias.com/ko/)
-  - [리디북스](https://www.ridicorp.com/blog/)
-  - [SK플래닛](http://readme.skplanet.com/)
-  - [스포카](https://spoqa.github.io/index.html)
-  - [토스랩](http://tosslab.github.io/)
-  - [타일](https://blog.tyle.io/)
-  - [와탭](http://tech.whatap.io/)
-  - [우아한형제들](http://woowabros.github.io/index.html)
 
 Release
 -------
 - 0.7.1 (current)
   - Change check items
   - Add 입찰공고 정보
+  - Add 예술의 전당 공연/전시
 
 
 - 0.7.0 (Monday, 20 November 2017)
