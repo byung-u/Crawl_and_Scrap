@@ -86,6 +86,52 @@ class ETC:
                 bw.post_tweet(result, 'Onoffmix')
         driver.quit()
 
+    def get_sacticket(self, bw):  # 예술의 전당
+        driver = webdriver.Chrome(bw.chromedriver_path)
+        driver.implicitly_wait(3)
+
+        url = 'https://www.sacticket.co.kr/SacHome/ticket/reservation'
+        driver.get(url)
+        html = driver.page_source
+        soup = BeautifulSoup(html, 'html.parser')
+        for p in soup.find_all(bw.match_soup_class(['ticket_list_con'])):
+            for content in p.find_all(bw.match_soup_class(['content'])):
+                try:
+                    c_info = content.a['onclick'].split("'")
+                    page_id = c_info[1]
+                    page_type = c_info[3]
+                    if page_type == 'E':
+                        result_msg = "[전시]"
+                        result_url = 'https://www.sacticket.co.kr/SacHome/exhibit/detail?searchSeq=%s' % page_id
+                    elif page_type == 'P':
+                        result_msg = "[공연]"
+                        result_url = 'https://www.sacticket.co.kr/SacHome/perform/detail?searchSeq=%s' % page_id
+                    else:
+                        continue
+                    if bw.is_already_sent('ETC', result_url):
+                        continue
+                    short_url = bw.shortener_url(result_url)
+                    if short_url is None:
+                        short_url = result_url
+                    result_msg = '%s\n%s' % (result_msg, short_url)
+
+                    for idx, ca in enumerate(content.find_all('a')):
+                        if idx == 0:
+                            result_msg = '%s\n%s' % (result_msg, ca.text)
+                        elif idx == 1:
+                            if ca.text != '무료':
+                                result_msg = '%s\n%s' % (result_msg, '유료')
+                            else:
+                                result_msg = '%s\n%s' % (result_msg, ca.text)
+                    for idx, cp in enumerate(content.find_all('p')):
+                        if idx > 1:
+                            break
+                        result_msg = '%s\n%s' % (result_msg, cp.text)
+                    bw.post_tweet(result_msg, 'sacticket')
+                except:
+                    continue
+        driver.quit()
+
     def get_coex_exhibition(self, bw):
         url = 'http://www.coex.co.kr/blog/event_exhibition?list_type=list'
         r = bw.request_and_get(url, 'ETC Coex')
