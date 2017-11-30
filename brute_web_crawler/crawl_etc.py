@@ -49,7 +49,7 @@ class ETC:
                     if bw.is_already_sent('ETC', short_url):
                         continue
                     info = div.text.split(' ')
-                    result = '%s\n%s\n%s\n%s\n#wishket' % (short_url, title, info[1], info[3])
+                    result = '%s\n%s\n%s\n%s\n#wishket' % (title, info[1], info[3], short_url)
                     bw.post_tweet(result, 'Wishket')
 
         driver.quit()
@@ -82,7 +82,7 @@ class ETC:
                 if short_url is None:
                     short_url = s['href']
 
-                result = '%s\n%s\n#onoffmix' % (short_url, s.text)
+                result = '%s\n%s\n#onoffmix' % (s.text, short_url)
                 bw.post_tweet(result, 'Onoffmix')
         driver.quit()
 
@@ -110,10 +110,9 @@ class ETC:
                         continue
                     if bw.is_already_sent('ETC', result_url):
                         continue
-                    short_url = bw.shortener_url(result_url)
+                    short_url = bw.shortener_url(result_url)  # append last line of message
                     if short_url is None:
                         short_url = result_url
-                    result_msg = '%s\n%s' % (result_msg, short_url)
 
                     for idx, ca in enumerate(content.find_all('a')):
                         if idx == 0:
@@ -127,6 +126,7 @@ class ETC:
                         if idx > 1:
                             break
                         result_msg = '%s\n%s' % (result_msg, cp.text)
+                    result_msg = '%s\n%s' % (result_msg, short_url)
                     bw.post_tweet(result_msg, 'sacticket')
                 except:
                     continue
@@ -192,10 +192,10 @@ class ETC:
             if short_url is None:
                 short_url = r["items"][i]["link"]
 
-            result = '[▲ %s]\n%s\n%s\n#stackoverflow' % (
+            result = '[▲ %s]\n%s\n%s\n#SO' % (
                 r["items"][i]["score"],
-                short_url,
-                r["items"][i]["title"])
+                r["items"][i]["title"],
+                short_url)
             bw.post_tweet(result, 'Stackoverflow')
 
     def search_nate_ranking_news(self, bw):
@@ -366,7 +366,7 @@ class ETC:
                 short_url = bw.shortener_url(mozip_url)
                 if short_url is None:
                     short_url = mozip_url
-                mz_result = '%s\n%s' % (short_url, mozip)
+                mz_result = '%s\n%s' % (mozip, short_url)
                 bw.post_tweet(mz_result, 'monitoring')
 
     def _get_rfc_random_info(self, soup, rfc_num):
@@ -459,11 +459,9 @@ class ETC:
             rb_title = l.a.text
             if bw.is_already_sent('ETC', l.a['href']):
                 continue
-            rb_url = bw.shortener_url(l.a['href'])
-            if rb_url is None:
-                rb_url = l.a['href']
+            short_url = bw.shortener_url(l.a['href'])
+            if short_url is None:
+                short_url = l.a['href']
 
-            rb_news = '%s\n%s\n#lifehacker' % (rb_url, rb_title)
-            if len(rb_news) > defaults.MAX_TWEET_MSG:
-                rb_news = '%s\n#lifehacker' % (rb_url)
+            rb_news = '%s\n%s\n#lifehacker' % (rb_title, short_url)
             bw.post_tweet(rb_news, 'Raspberri py news')
