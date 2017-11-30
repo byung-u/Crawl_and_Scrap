@@ -43,7 +43,6 @@ class UseGithub:
                                                          repo.stargazers_count,
                                                          short_url,
                                                          repo.description)
-                msg = bw.check_max_tweet_msg(msg)
                 bw.post_tweet(msg, 'Github')
             except:
                 bw.logger.error('[GITHUB] repo_process failed: %s %s',
