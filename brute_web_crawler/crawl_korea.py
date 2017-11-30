@@ -38,17 +38,36 @@ class UseDataKorea:  # www.data.go.kr
 
         items = soup.findAll('item')
         for item in items:
-            item = item.text
-            item = re.sub('<.*?>', ' ', item)
-            info = item.split()
-            if info[3] not in bw.apt_dong:
+
+            infos = re.split('<', item)
+            result = []
+            for idx, info in enumerate(infos):
+                if idx == 9 or idx == 10:
+                    continue
+                info = info.replace('>', ' ')
+                if len(info) == 0:
+                    continue
+                info = info.split()
+                if idx == 1:
+                    price = info[1].split(',')
+                    if price[1] == '000':
+                        d, m = divmod(int(price[0]), 10)
+                        temp = '%d억 %d천' % (d, m)
+                        result.append(temp)
+                    else:
+                        result.append(' '.join(info[1:]))
+                else:
+                    result.append(' '.join(info[1:]))
+
+            if result[3] not in bw.apt_dong:
                 continue
-            # if info[5].find(bw.apt_trade_apt) == -1:
+            # if info[4].find(bw.apt_trade_apt) == -1:
             #     continue
-            ret_msg = '%s %s(%sm²) %s층 %s만원 준공:%s 거래:%s년%s월%s일\n#매매' % (
-                      info[3], info[4], info[7],
-                      info[10], info[0], info[1],
-                      info[2], info[5], info[6])
+            ret_msg = '%s %s %s층(%sm²)\n\n[매매] %s만원\n[준공] %s년\n[거래] %s년 %s월 %s\n' % (
+                result[3], result[4], result[8], result[7],
+                result[0],
+                result[1],
+                result[2], result[5], result[6])
 
             if bw.is_already_sent('KOREA', ret_msg):
                 continue
@@ -114,7 +133,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#문화재청' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#문화재청' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'CHA')
 
     def get_cha_news(self, bw):  # 문화재청
@@ -135,7 +154,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#문화재청(보도)' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#문화재청(보도)' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'CHA')
 
         url = 'http://www.cha.go.kr/newsBbz/selectNewsBbzList.do?sectionId=b_sec_1&mn=NS_01_02_02'
@@ -154,7 +173,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#문화재청(해명)' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#문화재청(해명)' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'CHA')
 
     def get_ftc_news(self, bw):  # 공정관리위원회
@@ -175,7 +194,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#공정위(보도)' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#공정위(보도)' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'FTC')
 
         url = 'http://www.ftc.go.kr/news/ftc/reportheList.jsp'
@@ -194,7 +213,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#공정위(해명)' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#공정위(해명)' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'FTC')
 
     def get_mfds_news(self, bw):  # 식약처
@@ -215,7 +234,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#식약처(보도)' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#식약처(보도)' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'MFDS')
 
         url = 'http://www.mfds.go.kr/index.do?mid=676'
@@ -234,7 +253,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#식약처(해명)' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#식약처(해명)' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'MFDS')
 
     def get_tender_tta(self, bw):  # 한국정보통신기술협회 입찰공고
@@ -256,8 +275,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국정보통신기술협회' % (short_url, s.text.strip())
-            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            ret_msg = '%s\n%s\n#한국정보통신기술협회' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'TTA')
 
     def get_tender_molit(self, bw):  # 국토교통부 입찰공고
@@ -279,8 +297,7 @@ class UseDataKorea:  # www.data.go.kr
                 short_url = bw.shortener_url(href)
                 if short_url is None:
                     short_url = href
-                ret_msg = '%s\n%s\n#국토부' % (short_url, tr.a.text)
-                ret_msg = bw.check_max_tweet_msg(ret_msg)
+                ret_msg = '%s\n%s\n#국토부' % (tr.a.text, short_url)
                 bw.post_tweet(ret_msg, 'molit')
 
     def get_molit_news(self, bw):  # 국토교통부 보도자료
@@ -302,8 +319,7 @@ class UseDataKorea:  # www.data.go.kr
                 short_url = bw.shortener_url(href)
                 if short_url is None:
                     short_url = href
-                ret_msg = '%s\n%s\n#국토부' % (short_url, tr.a.text)
-                ret_msg = bw.check_max_tweet_msg(ret_msg)
+                ret_msg = '%s\n%s\n#국토부' % (tr.a.text, short_url)
                 bw.post_tweet(ret_msg, 'molit')
 
     def get_noti_mss(self, bw):  # 중소벤처기업부
@@ -325,7 +341,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#중소벤처기업부' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#중소벤처기업부' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'MSS')
 
     def get_mss_news(self, bw):  # 중소벤처기업부
@@ -346,7 +362,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#중소벤처기업부(보도)' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#중소벤처기업부(보도)' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'MSS')
 
         url = 'http://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=87'
@@ -366,7 +382,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#중소벤처기업부(해명)' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#중소벤처기업부(해명)' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'MSS')
 
     def get_kostat_news(self, bw):  # 통계청
@@ -390,7 +406,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#통계청' % (short_url, s.text.strip())
+            ret_msg = '%s\n%s\n#통계청' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'KOSTAT')
 
     def get_visit_korea(self, bw):  # 대한민국 구석구석 행복여행
@@ -413,7 +429,7 @@ class UseDataKorea:  # www.data.go.kr
                     short_url = bw.shortener_url(result_url)
                     if short_url is None:
                         short_url = result_url
-                    ret_msg = '%s\n%s\n%s\n#visitkorea' % (short_url, span.text, desc)
+                    ret_msg = '%s\n%s\n%s\n#visitkorea' % (span.text, desc, short_url)
                     bw.post_tweet(ret_msg, 'VISIT_KOREA')
                     break
 
@@ -436,8 +452,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국인터넷진흥원' % (short_url, s.text.strip())
-            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            ret_msg = '%s\n%s\n#한국인터넷진흥원' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'KISA')
 
     def get_tender_nia(self, bw):  # 한국정보화진흥원
@@ -461,8 +476,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국정보화진흥원' % (short_url, ' '.join(title[:-5]))
-            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            ret_msg = '%s\n%s\n#한국정보화진흥원' % (' '.join(title[:-5]), short_url)
             bw.post_tweet(ret_msg, 'NIA')
 
     def get_tender_kdata(self, bw):  # 한국데이터진흥원
@@ -482,8 +496,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국데이터진흥원' % (short_url, s.text.strip())
-            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            ret_msg = '%s\n%s\n#한국데이터진흥원' % (s.text.strip(), short_url)
             bw.post_tweet(ret_msg, 'KDATA')
 
     def get_tender_kitech(self, bw):  # 한국생산기술연구원
@@ -506,8 +519,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#한국생산기술연구원' % (short_url, tr.a.text)
-            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            ret_msg = '%s\n%s\n#한국생산기술연구원' % (tr.a.text, short_url)
             bw.post_tweet(ret_msg, 'KITECH')
 
     def get_tender_nst(self, bw):  # 국가과학기술연구회 소관 25개 정부출연연구기관
@@ -529,8 +541,7 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#정부출연연구기관' % (short_url, ' '.join(title[3:]))
-            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            ret_msg = '%s\n%s\n#정부출연연구기관' % (' '.join(title[3:]), short_url)
             bw.post_tweet(ret_msg, 'NST')
 
     def get_recruit_nst(self, bw):  # 국가과학기술연구회 소관 25개 정부출연연구기관
@@ -552,6 +563,5 @@ class UseDataKorea:  # www.data.go.kr
             short_url = bw.shortener_url(result_url)
             if short_url is None:
                 short_url = result_url
-            ret_msg = '%s\n%s\n#정부출연연구기관' % (short_url, ' '.join(title[3:]))
-            ret_msg = bw.check_max_tweet_msg(ret_msg)
+            ret_msg = '%s\n%s\n#정부출연연구기관' % (' '.join(title[3:]), short_url)
             bw.post_tweet(ret_msg, 'NST')
