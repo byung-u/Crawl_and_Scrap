@@ -150,7 +150,14 @@ class BW:  # Brute Web crawler
             return all(c in classes for c in target)
         return do_match
 
-    def check_max_tweet_msg(self, msg):
+    def check_max_tweet_msg(self, msg, limit_len=defaults.MAX_TWEET_MSG):
+        msg_len = len(msg)
+        if msg_len > limit_len:
+            over_len = msg_len - limit_len + 3 + 2  # ... + margin
+            msg = '%s ...' % msg[:-over_len]
+            self.logger.info('[Over 140, reduce message]%s', msg)
+        return msg
+        '''
         msg_encode = msg.encode('utf-8')
         msg_len = len(msg_encode)
         if msg_len > defaults.MAX_TWEET_MSG:
@@ -158,6 +165,7 @@ class BW:  # Brute Web crawler
             msg_encode = msg_encode[0:(msg_len - over_len)]
             msg = '%s...' % msg_encode.decode("utf-8", "ignore")
             self.logger.info('[Over 140 omitting]%s', msg)
+        '''
         return msg
 
     def shortener_url(self, url):
