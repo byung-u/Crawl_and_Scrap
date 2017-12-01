@@ -49,7 +49,7 @@ class ETC:
                     if short_url is None:
                         short_url = ''
                     info = div.text.split(' ')
-                    result = '%s\n%s\n%s\n%s\n#wishket' % (title, info[1], info[3], short_url)
+                    result = '%s\n%s\n%s\n%s\n\n#wishket' % (title, info[1], info[3], short_url)
                     bw.post_tweet(result, 'Wishket')
 
         driver.quit()
