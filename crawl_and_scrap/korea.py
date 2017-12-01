@@ -12,6 +12,19 @@ class UseDataKorea:  # www.data.go.kr
     def __init__(self, bw):
         pass
 
+    def result_tweet(self, bw, msg, result_url, name):
+        if bw.is_already_sent('KOREA', result_url):
+            bw.logger.info('Already sent: %s', result_url)
+            return
+
+        short_url = bw.shortener_url(result_url)
+        if short_url is None:
+            short_url = result_url
+
+        result = '%s\n%s\n\n#%s' % (msg, short_url, name)
+        bw.post_tweet(result, name)
+        return
+
     def realstate_trade(self, bw):
         now = datetime.now()
         time_str = '%4d%02d' % (now.year, now.month)
@@ -70,6 +83,7 @@ class UseDataKorea:  # www.data.go.kr
                 result[2], result[5], result[6])
 
             if bw.is_already_sent('KOREA', ret_msg):
+                bw.logger.info('Already sent: %s', ret_msg)
                 continue
             bw.post_tweet(ret_msg, 'Realestate')
 
@@ -111,6 +125,7 @@ class UseDataKorea:  # www.data.go.kr
                       info[1], info[5], info[7])
 
             if bw.is_already_sent('KOREA', ret_msg):
+                bw.logger.info('Already sent: %s', ret_msg)
                 continue
             bw.post_tweet(ret_msg, 'Realestate')
 
@@ -127,14 +142,7 @@ class UseDataKorea:  # www.data.go.kr
             result_url = '%s%s' % (base_url, s['href'])
             if len(s.text.strip()) == 0:
                     continue
-            if bw.is_already_sent('KOREA', s.text.strip()):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#문화재청' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'CHA')
+            self.result_tweet(bw, s.text.strip(), result_url, '문화재청')
 
     def get_cha_news(self, bw):  # 문화재청
         base_url = 'http://www.cha.go.kr'
@@ -148,14 +156,7 @@ class UseDataKorea:  # www.data.go.kr
             result_url = '%s%s' % (base_url, s['href'])
             if len(s.text.strip()) == 0:
                     continue
-            if bw.is_already_sent('KOREA', s.text.strip()):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#문화재청(보도)' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'CHA')
+            self.result_tweet(bw, s.text.strip(), result_url, '문화재청(보도)')
 
         url = 'http://www.cha.go.kr/newsBbz/selectNewsBbzList.do?sectionId=b_sec_1&mn=NS_01_02_02'
         r = bw.request_and_get(url, 'CHA')
@@ -167,14 +168,7 @@ class UseDataKorea:  # www.data.go.kr
             result_url = '%s%s' % (base_url, s['href'])
             if len(s.text.strip()) == 0:
                     continue
-            if bw.is_already_sent('KOREA', s.text.strip()):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#문화재청(해명)' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'CHA')
+            self.result_tweet(bw, s.text.strip(), result_url, '문화재청(해명)')
 
     def get_ftc_news(self, bw):  # 공정관리위원회
         base_url = 'http://www.ftc.go.kr/news/ftc/'
@@ -188,14 +182,7 @@ class UseDataKorea:  # www.data.go.kr
             result_url = '%s%s' % (base_url, s['href'])
             if len(s.text.strip()) == 0:
                     continue
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#공정위(보도)' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'FTC')
+            self.result_tweet(bw, s.text.strip(), result_url, '공정위(보도)')
 
         url = 'http://www.ftc.go.kr/news/ftc/reportheList.jsp'
         r = bw.request_and_get(url, 'FTC')
@@ -207,14 +194,7 @@ class UseDataKorea:  # www.data.go.kr
             result_url = '%s%s' % (base_url, s['href'])
             if len(s.text.strip()) == 0:
                     continue
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#공정위(해명)' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'FTC')
+            self.result_tweet(bw, s.text.strip(), result_url, '공정위(해명)')
 
     def get_mfds_news(self, bw):  # 식약처
         base_url = 'http://www.mfds.go.kr'
@@ -228,14 +208,7 @@ class UseDataKorea:  # www.data.go.kr
             result_url = '%s%s' % (base_url, s['href'])
             if len(s.text.strip()) == 0:
                     continue
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#식약처(보도)' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'MFDS')
+            self.result_tweet(bw, s.text.strip(), result_url, '식약처(보도)')
 
         url = 'http://www.mfds.go.kr/index.do?mid=676'
         r = bw.request_and_get(url, 'MFDS')
@@ -247,14 +220,7 @@ class UseDataKorea:  # www.data.go.kr
             result_url = '%s%s' % (base_url, s['href'])
             if len(s.text.strip()) == 0:
                     continue
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#식약처(해명)' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'MFDS')
+            self.result_tweet(bw, s.text.strip(), result_url, '식약처(해명)')
 
     def get_tender_tta(self, bw):  # 한국정보통신기술협회 입찰공고
         base_url = 'http://www.tta.or.kr/news/'
@@ -269,14 +235,7 @@ class UseDataKorea:  # www.data.go.kr
             # print(s)
             result_url = '%s%s' % (base_url, s['href'])
             # print(s.text.strip(), result_url)
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#한국정보통신기술협회' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'TTA')
+            self.result_tweet(bw, s.text.strip(), result_url, '한국정보통신기술협회')
 
     def get_tender_molit(self, bw):  # 국토교통부 입찰공고
         url = 'http://www.molit.go.kr/USR/tender/m_83/lst.jsp'
@@ -291,14 +250,7 @@ class UseDataKorea:  # www.data.go.kr
                 except TypeError:
                     continue
                 href = 'http://www.molit.go.kr/USR/tender/m_83/%s' % tr.a['href'][1:]
-                if bw.is_already_sent('KOREA', href):
-                    bw.logger.info('Already sent: %s', href)
-                    continue
-                short_url = bw.shortener_url(href)
-                if short_url is None:
-                    short_url = href
-                ret_msg = '%s\n%s\n#국토부' % (tr.a.text, short_url)
-                bw.post_tweet(ret_msg, 'molit')
+                self.result_tweet(bw, tr.a.text, href, '국토부')
 
     def get_molit_news(self, bw):  # 국토교통부 보도자료
         url = 'http://www.molit.go.kr/USR/NEWS/m_71/lst.jsp'
@@ -313,14 +265,7 @@ class UseDataKorea:  # www.data.go.kr
                 except TypeError:
                     continue
                 href = 'http://www.molit.go.kr/USR/NEWS/m_71/%s' % tr.a['href']
-                if bw.is_already_sent('KOREA', href):
-                    bw.logger.info('Already sent: %s', href)
-                    continue
-                short_url = bw.shortener_url(href)
-                if short_url is None:
-                    short_url = href
-                ret_msg = '%s\n%s\n#국토부' % (tr.a.text, short_url)
-                bw.post_tweet(ret_msg, 'molit')
+                self.result_tweet(bw, tr.a.text, href, '국토부')
 
     def get_noti_mss(self, bw):  # 중소벤처기업부
         url = 'http://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=81'
@@ -334,15 +279,7 @@ class UseDataKorea:  # www.data.go.kr
                 continue
             idx = s.get('onclick').replace("'", '').split(',')[1]
             result_url = 'http://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=81&bcIdx=%s&parentSeqa%s' % (idx, idx)
-
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#중소벤처기업부' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'MSS')
+            self.result_tweet(bw, s.text.strip(), result_url, '중소벤처기업부')
 
     def get_mss_news(self, bw):  # 중소벤처기업부
         url = 'http://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=86'
@@ -356,14 +293,7 @@ class UseDataKorea:  # www.data.go.kr
                 continue
             idx = s.get('onclick').replace("'", '').split(',')[1]
             result_url = 'http://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=86&bcIdx=%s&parentSeq=%s' % (idx, idx)
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#중소벤처기업부(보도)' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'MSS')
+            self.result_tweet(bw, s.text.strip(), result_url, '중소벤처기업부(보도)')
 
         url = 'http://www.mss.go.kr/site/smba/ex/bbs/List.do?cbIdx=87'
         r = bw.request_and_get(url, 'MSS')
@@ -376,14 +306,7 @@ class UseDataKorea:  # www.data.go.kr
                 continue
             idx = s.get('onclick').replace("'", '').split(',')[1]
             result_url = 'http://www.mss.go.kr/site/smba/ex/bbs/View.do?cbIdx=87&bcIdx=%s&parentSeq=%s' % (idx, idx)
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#중소벤처기업부(해명)' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'MSS')
+            self.result_tweet(bw, s.text.strip(), result_url, '중소벤처기업부(해명)')
 
     def get_kostat_news(self, bw):  # 통계청
 
@@ -400,14 +323,7 @@ class UseDataKorea:  # www.data.go.kr
             result_url = '%s%s' % (base_url, s['href'])
             if len(s.text.strip()) == 0:
                     continue
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#통계청' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'KOSTAT')
+            self.result_tweet(bw, s.text.strip(), result_url, '통계청')
 
     def get_visit_korea(self, bw):  # 대한민국 구석구석 행복여행
         base_url = 'http://korean.visitkorea.or.kr/kor/bz15/where/festival'
@@ -445,15 +361,7 @@ class UseDataKorea:  # www.data.go.kr
             result_url = '%s%s' % (base_url, s['href'])
             if len(s.text.strip()) == 0:
                 continue
-
-            if bw.is_already_sent('KOREA', s.text.strip()):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#한국인터넷진흥원' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'KISA')
+            self.result_tweet(bw, s.text.strip(), result_url, '한국인터넷진흥원')
 
     def get_tender_nia(self, bw):  # 한국정보화진흥원
         url = 'http://www.nia.or.kr/site/nia_kor/ex/bbs/List.do?cbIdx=78336'
@@ -469,15 +377,7 @@ class UseDataKorea:  # www.data.go.kr
             idx = s.get('onclick').replace("'", '').split(',')[1]
 
             result_url = 'http://www.nia.or.kr/site/nia_kor/ex/bbs/View.do?cbIdx=78336&bcIdx=%s&parentSeq=%s' % (idx, idx)
-
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#한국정보화진흥원' % (' '.join(title[:-5]), short_url)
-            bw.post_tweet(ret_msg, 'NIA')
+            self.result_tweet(bw, ' '.join(title[:-5]), result_url, '한국정보화진흥원')
 
     def get_tender_kdata(self, bw):  # 한국데이터진흥원
         base_url = 'http://www.kdata.or.kr/board'
@@ -490,14 +390,7 @@ class UseDataKorea:  # www.data.go.kr
         sessions = soup.select('table > tbody > tr > td > a')
         for s in sessions:
             result_url = '%s/%s' % (base_url, s['href'])
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#한국데이터진흥원' % (s.text.strip(), short_url)
-            bw.post_tweet(ret_msg, 'KDATA')
+            self.result_tweet(bw, s.text.strip(), result_url, '한국데이터진흥원')
 
     def get_tender_kitech(self, bw):  # 한국생산기술연구원
         base_url = 'https://www.kitech.re.kr/bbs'
@@ -535,14 +428,7 @@ class UseDataKorea:  # www.data.go.kr
                 continue
             result_url = '%s%s' % (url, s['href'])
             # print(' '.join(title[3:]), result_url)
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
-                continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#정부출연연구기관' % (' '.join(title[3:]), short_url)
-            bw.post_tweet(ret_msg, 'NST')
+            self.result_tweet(bw, ' '.join(title[3:]), result_url, '정부출연연구기관')
 
     def get_recruit_nst(self, bw):  # 국가과학기술연구회 소관 25개 정부출연연구기관
         url = 'http://www.nst.re.kr/nst/notice/02_04.jsp'
@@ -556,12 +442,25 @@ class UseDataKorea:  # www.data.go.kr
             if len(title) < 6:  # ignore ['통합검색'] /nst/utill/search.jsp
                 continue
             result_url = '%s%s' % (url, s['href'])
-            # print(' '.join(title[3:]), result_url)
-            if bw.is_already_sent('KOREA', result_url):
-                bw.logger.info('Already sent: %s', result_url)
+            self.result_tweet(bw, ' '.join(title[3:]), result_url, '정부출연연구기관')
+
+    def get_kdi_research(self, bw):  # 한국개발연구원
+        '''
+        Thema A to J
+        거시/금융, 재정/복지, 노동/교육, 국제/무역, 산업조직,
+        경제발전/성장, 북한경제/경제체계, 농업/환경/자원, 지역경제, 기타
+        '''
+        thema = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+        base_url = 'http://www.kdi.re.kr'
+        for t in thema:
+            url = 'http://www.kdi.re.kr/research/subjects_list.jsp?tema=%s' % t
+            r = bw.request_and_get(url, 'KDI')
+            if r is None:
                 continue
-            short_url = bw.shortener_url(result_url)
-            if short_url is None:
-                short_url = result_url
-            ret_msg = '%s\n%s\n#정부출연연구기관' % (' '.join(title[3:]), short_url)
-            bw.post_tweet(ret_msg, 'NST')
+
+            soup = BeautifulSoup(r.text, 'html.parser')
+            sessions = soup.select('li > div > a')
+            # li.Js_AjaxParents:nth-child(1) > div:nth-child(1) > a:nth-child(3)
+            for s in sessions:
+                result_url = '%s%s' % (base_url, s['href'])
+                self.result_tweet(bw, s.text.strip(), result_url, 'KDI')
