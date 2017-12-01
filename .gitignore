@@ -89,3 +89,8 @@ ENV/
 .ropeproject
 
 *.db
+
+scripts
+tags
+TODO
+tests
