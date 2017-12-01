@@ -1,4 +1,4 @@
-"""brute_web_crawler web scrawling command line tool."""
+"""crwal_and_scrap web scrawling and tweeting or mailing."""
 # -*- coding: utf-8 -*-
 import cgitb
 import json
@@ -19,13 +19,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 # custom
-from brute_web_crawler import defaults
-from brute_web_crawler.crawl_daum import UseDaum
-from brute_web_crawler.crawl_etc import ETC
-from brute_web_crawler.crawl_github import UseGithub
-from brute_web_crawler.crawl_korea import UseDataKorea
-from brute_web_crawler.crawl_naver import UseNaver
-from brute_web_crawler.crawl_tech_blog import TechBlog
+from crwal_and_scrap import defaults
+from crwal_and_scrap.daum import UseDaum
+from crwal_and_scrap.etc import ETC
+from crwal_and_scrap.github import UseGithub
+from crwal_and_scrap.korea import UseDataKorea
+from crwal_and_scrap.naver import UseNaver
+from crwal_and_scrap.tech_blog import TechBlog
 
 cgitb.enable(format='text')
 USER_AGENTS = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:11.0) Gecko/20100101 Firefox/11.0',

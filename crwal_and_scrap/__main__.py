@@ -1,5 +1,5 @@
-"""brute_web_crawler trying to find some good info with web scrawl command line tool."""
+"""crwal_and_scrap trying to gathering news with web scrawl"""
 
-from brute_web_crawler.main import main
+from crwal_and_scrap.main import main
 
 main()
