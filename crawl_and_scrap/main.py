@@ -362,6 +362,9 @@ def searching_and_tweet(bw):
     dg.get_tender_nst(bw)     # 국가과학기술연구회 소관 25개 정부출연연구기관
     dg.get_tender_tta(bw)     # 한국정보통신기술협회
 
+    # 자료, 보고서
+    dg.get_kdi_research(bw)   # KDI 한국개발연구원
+
     # 공지사항
     dg.get_noti_mss(bw)       # 중소벤처기업부
     dg.get_recruit_nst(bw)    # 국가과학기술연구회 소관 25개 정부출연연구기관
