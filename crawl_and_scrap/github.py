@@ -33,20 +33,18 @@ class UseGithub:
                 lang = repo.get_languages()
                 if len(lang) == 0:
                     continue
-                ret = bw.already_sent_github('GITHUB', repo.html_url)
-                if ret:
-                    bw.logger.info('Already sent: %s', repo.html_url)
+                if bw.is_already_sent('GITHUB', repo.html_url):
                     continue
                 short_url = bw.shortener_url(repo.html_url)
                 # https://developer.github.com/v3/repos/
-                msg = '[%s]\n★ %s\n\n%s\n%s\n#github' % (list(lang.keys())[0],
+                msg = '[%s]\n★ %s\n%s\n%s\n\n#github' % (list(lang.keys())[0],
                                                          repo.stargazers_count,
-                                                         short_url,
-                                                         repo.description)
+                                                         repo.description,
+                                                         short_url)
                 bw.post_tweet(msg, 'Github')
             except:
-                bw.logger.error('[GITHUB] repo_process failed: %s %s',
-                                repo, sys.exc_info()[0])
+                bw.logger.error('[GITHUB] repo_process failed: %s %s %s\n %s',
+                                repo, sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
 
     # Search range yesterday & today just 2 days.
     # If use over 2days, then occur rate-limiting.
