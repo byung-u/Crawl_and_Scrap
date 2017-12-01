@@ -40,14 +40,14 @@ class ETC:
                     title = div.text
                     try:
                         link = 'https://www.wishket.com/%s' % div.a['href']
-                        short_url = bw.shortener_url(link)
-                        if short_url is None:
-                            short_url = ''
                     except:
                         pass
                 if i % 10 == 2:
-                    if bw.is_already_sent('ETC', short_url):
+                    if bw.is_already_sent('ETC', link):
                         continue
+                    short_url = bw.shortener_url(link)
+                    if short_url is None:
+                        short_url = ''
                     info = div.text.split(' ')
                     result = '%s\n%s\n%s\n%s\n#wishket' % (title, info[1], info[3], short_url)
                     bw.post_tweet(result, 'Wishket')
