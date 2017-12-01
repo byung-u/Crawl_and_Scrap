@@ -7,7 +7,7 @@ from time import gmtime, strftime, time
 from random import randrange
 from selenium import webdriver
 
-from brute_web_crawler import defaults
+from crawl_and_scrap import defaults
 
 
 class ETC:

@@ -1,4 +1,4 @@
-Brute Web Crawler
+Crawl and Scrap
 ----------------
 
 웹 스크롤링
@@ -90,7 +90,7 @@ Release
   - Change check items
   - Add 입찰공고 정보
   - Add 예술의 전당 공연/전시
-
+  - Change projet name, brute_web_crawler to crawl_and_scrap
 
 - 0.7.0 (Monday, 20 November 2017)
   - Change projet name, find the treasure to brute web crwaler
