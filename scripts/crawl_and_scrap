@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+"""crawl_and_scrap"""
+
+from crawl_and_scrap.main import main
+
+main()
