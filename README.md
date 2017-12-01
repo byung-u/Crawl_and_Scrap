@@ -62,6 +62,7 @@ Quick Start
     - [한국생산기술연구원](https://www.kitech.re.kr)
     - [국가과학기술연구회 소관](http://www.nst.re.kr)
     - [주택도시보증공사](http://www.khug.or.kr) 공정률
+    - [한국개발연구원](http://www.kdi.re.kr)
 
   - 전시, 모임
     - [국립중앙박물관(이촌)](https://www.museum.go.kr)
