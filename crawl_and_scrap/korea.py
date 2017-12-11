@@ -25,13 +25,34 @@ class UseDataKorea:  # www.data.go.kr
         bw.post_tweet(result, name)
         return
 
+    def didimdol_interesting(self, bw):
+        url = 'http://api.hf.go.kr:8090/service/rest/didimdolrat/getDidimdolLoanRat?serviceKey=%s' % bw.data_svc_key
+        r = bw.request_and_get(url, 'DIDIMDOL')
+        if r is None:
+            return
+        soup = BeautifulSoup(r.text, 'html.parser')
+        result = '디딤돌 대출금리(단위: %%)\n소득 2000만 이하\n10년: %s\n15년: %s\n20년: %s\n30년: %s\n' % (
+                  soup.interest_10y_2000.text, soup.interest_15y_2000.text,
+                  soup.interest_20y_2000.text, soup.interest_30y_2000.text)
+        bw.post_tweet(result, "디딤돌")
+
+        result = '디딤돌 대출금리(단위: %%)\n소득 4000만 이하\n10년: %s\n15년: %s\n20년: %s\n30년: %s\n' % (
+                  soup.interest_10y_4000.text, soup.interest_15y_4000.text,
+                  soup.interest_20y_4000.text, soup.interest_30y_4000.text)
+        bw.post_tweet(result, "디딤돌")
+
+        result = '디딤돌 대출금리(단위: %%)\n소득 6000만 이하\n10년: %s\n15년: %s\n20년: %s\n30년: %s\n' % (
+                  soup.interest_10y_6000.text, soup.interest_15y_6000.text,
+                  soup.interest_20y_6000.text, soup.interest_30y_6000.text)
+        bw.post_tweet(result, "디딤돌")
+
     def realstate_trade(self, bw):
         now = datetime.now()
         time_str = '%4d%02d' % (now.year, now.month)
 
         for district_code in bw.apt_district_code:
             request_url = '%s?LAWD_CD=%s&DEAL_YMD=%s&serviceKey=%s' % (
-                          bw.apt_trade_url, district_code, time_str, bw.apt_svc_key)
+                          bw.apt_trade_url, district_code, time_str, bw.data_svc_key)
             self.request_realstate_trade(bw, request_url)
 
     def request_realstate_trade(self, bw, request_url):
@@ -53,6 +74,10 @@ class UseDataKorea:  # www.data.go.kr
         for item in items:
 
             infos = re.split('<', item)
+            try:
+                infos = re.split('<', item)
+            except:
+                continue
             result = []
             for idx, info in enumerate(infos):
                 if idx == 9 or idx == 10:
@@ -93,7 +118,7 @@ class UseDataKorea:  # www.data.go.kr
 
         for district_code in bw.apt_district_code:
             request_url = '%s?LAWD_CD=%s&DEAL_YMD=%s&serviceKey=%s' % (
-                          bw.apt_rent_url, district_code, time_str, bw.apt_svc_key)
+                          bw.apt_rent_url, district_code, time_str, bw.data_svc_key)
             self.request_realstate_rent(bw, request_url)
 
     def request_realstate_rent(self, bw, request_url):
@@ -345,7 +370,7 @@ class UseDataKorea:  # www.data.go.kr
                     short_url = bw.shortener_url(result_url)
                     if short_url is None:
                         short_url = result_url
-                    ret_msg = '%s\n%s\n%s\n#visitkorea' % (span.text, desc, short_url)
+                    ret_msg = '%s\n%s\n%s\n\n#visitkorea' % (span.text, desc, short_url)
                     bw.post_tweet(ret_msg, 'VISIT_KOREA')
                     break
 
