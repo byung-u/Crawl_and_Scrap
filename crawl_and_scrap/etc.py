@@ -26,7 +26,8 @@ class ETC:
             return False
 
     def get_wishket(self, bw):
-        driver = webdriver.Chrome(bw.chromedriver_path)
+        # driver = webdriver.Chrome(bw.chromedriver_path)
+        driver = webdriver.PhantomJS()
         driver.implicitly_wait(3)
 
         url = 'https://www.wishket.com/project/'
@@ -55,7 +56,8 @@ class ETC:
         driver.quit()
 
     def get_onoffmix(self, bw):
-        driver = webdriver.Chrome(bw.chromedriver_path)
+        # driver = webdriver.Chrome(bw.chromedriver_path)
+        driver = webdriver.PhantomJS()
         driver.implicitly_wait(3)
 
         # 'https://onoffmix.com/event?c=86' 강연
@@ -87,7 +89,8 @@ class ETC:
         driver.quit()
 
     def get_sacticket(self, bw):  # 예술의 전당
-        driver = webdriver.Chrome(bw.chromedriver_path)
+        # driver = webdriver.Chrome(bw.chromedriver_path)
+        driver = webdriver.PhantomJS()
         driver.implicitly_wait(3)
 
         url = 'https://www.sacticket.co.kr/SacHome/ticket/reservation'
