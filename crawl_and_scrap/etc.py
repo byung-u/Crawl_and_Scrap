@@ -84,7 +84,7 @@ class ETC:
                 if short_url is None:
                     short_url = s['href']
 
-                result = '%s\n%s\n#onoffmix' % (s.text, short_url)
+                result = '%s\n%s\n\n#onoffmix' % (s.text, short_url)
                 bw.post_tweet(result, 'Onoffmix')
         driver.quit()
 
@@ -396,7 +396,7 @@ class ETC:
 
     def get_rfc_random_title(self, bw):  # get rfc info random
         url = 'https://www.rfc-editor.org/search/rfc_search_detail.php?page=All&pubstatus[]=Any&pub_date_type=any&sortkey=Number&sorting=ASC'
-        max_rfc_num = 8172  # 2017/11/20 total 8172 results
+        max_rfc_num = 8179  # 2017/12/01 total results
         rn = randrange(1, max_rfc_num)
 
         r = get(url)
