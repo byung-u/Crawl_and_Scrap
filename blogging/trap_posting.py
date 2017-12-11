@@ -288,9 +288,9 @@ def main():
 
     token = get_tistory_token()
 
-    # title = '[%s] Reddit에서 인기있는 게시글 (1~30위)' % cur_time
-    # content = reddit_popular()
-    # tistory_post(token, title, content, '766775')
+    title = '[%s] Reddit에서 인기있는 게시글 (1~30위)' % cur_time
+    content = reddit_popular()
+    tistory_post(token, title, content, '766775')
 
     content = nikkei_japan()
     title = '[%s] 니케이신문에서 인기있는 간추린 뉴스(1~10위)' % cur_time
