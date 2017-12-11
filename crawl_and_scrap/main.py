@@ -76,7 +76,7 @@ class BW:  # Brute Web crawler
 
         self.apt_rent_url = os.environ.get('DATA_APT_RENT_URL')
         self.apt_trade_url = os.environ.get('DATA_APT_TRADE_URL')
-        self.apt_svc_key = os.environ.get('DATA_APT_API_KEY')
+        self.data_svc_key = os.environ.get('DATA_APT_API_KEY')
         self.apt_dong = os.environ.get('REALESTATE_DONG').replace(' ', '').split(',')
         self.apt_district_code = os.environ.get('REALESTATE_DISTRICT_CODE').replace(' ', '').split(',')
         # self.apt_trade_apt = os.environ.get('DATA_GO_KR', 'apt', raw=True)
@@ -371,7 +371,9 @@ def searching_and_tweet(bw):
 
     dg.get_ftc_news(bw)       # 공정거래위원회
     dg.get_visit_korea(bw)    # 대한민국 구석구석 행복여행
+    # ETC
     dg.realstate_trade(bw)
+    # dg.didimdol_interesting(bw)
 
     # 보도자료, 해명자료
     # dg.get_mss_news(bw)     # 중소벤처기업부
