@@ -365,7 +365,7 @@ def realestate_news2(cur_time):
     result = '%s<br><br><br>%s' % (result, content)
     content = get_realestate_nate(cur_time)
     result = '%s<br><br><br>%s' % (result, content)
-    
+
     return result
 
 
