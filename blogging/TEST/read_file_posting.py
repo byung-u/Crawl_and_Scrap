@@ -2,6 +2,7 @@
 import os
 import re
 
+from bs4 import BeautifulSoup
 from googletrans import Translator
 from selenium import webdriver
 from seleniumrequests import Chrome
@@ -34,9 +35,9 @@ def translate_text(t, article, src='en', dest='ko'):
     return '<br>'.join(result)
 
 
-def tistory_post(token, title, content, category):
+def tistory_post(token, title, content, category, blog_name='trab'):
     webdriver = Chrome()
-    response = webdriver.request('POST', 'https://www.tistory.com/apis/post/write', data={"access_token": token, "blogName": "trab", 'title': title, 'content': content, 'category': category, 'visibility': '3'})
+    response = webdriver.request('POST', 'https://www.tistory.com/apis/post/write', data={"access_token": token, "blogName": blog_name, 'title': title, 'content': content, 'category': category, 'visibility': '3'})
     webdriver.quit()
     print(response)
 
@@ -109,14 +110,70 @@ def statement_on_crypto():
     return translate_text(t, article, 'en', 'ko')
 
 
+def korea_childcare_center():
+    result = ''
+    f = open('childcare_center.text', 'r')
+    soup = BeautifulSoup(f, 'html.parser')
+    # for i1, table in enumerate(soup.find_all('table')):
+    for table in soup.find_all('table'):
+        for i1, tr in enumerate(table.find_all('tr')):
+            for i2, td in enumerate(tr.find_all('td')):
+                # print([i1, i2], td)
+                if i1 == 0 and i2 == 0:
+                    if td.text.strip() == '사이트명':
+                        return result
+                    result = '%s<br><br><br><strong><font color="red">%s</font></strong><br>' % (
+                             result, td.text.strip())
+                elif i2 % 2 == 0:
+                    try:
+                        href = td.a['href']
+                        result = '%s<br><strong>%s</strong><a href="%s" target="_blank">(%s)</a>' % (result, td.text.strip(), href, href)
+                        # print(href, td.text.strip())
+                    except TypeError:
+                        break
+                else:
+                    result = '%s, %s' % (result, td.text.strip())
+                    # print(td.text.strip())
+    result = '%s<br><br><br>' % result
+    return result
+
+
+def korea_childcare_center_etc():
+    result = '<strong><font color="red">보육, 특수교육관련 기관, 단체, 학회 웹사이트</font></strong><br><br>'
+    f = open('childcare_center_etc.text', 'r')
+    soup = BeautifulSoup(f, 'html.parser')
+    for table in soup.find_all('table'):
+        for i1, tr in enumerate(table.find_all('tr')):
+            for i2, td in enumerate(tr.find_all('td')):
+                if (i1 == 0 and i2 == 0) or (i1 == 0 and i2 == 1):
+                    continue
+                elif i2 % 2 == 0:
+                    # print([i1, i2], td)
+                    try:
+                        href = td.a['href']
+                        result = '%s<br><strong>%s</strong><a href="%s" target="_blank">(%s)</a>' % (result, td.text.strip(), href, href)
+                        # print(href, td.text.strip())
+                    except TypeError:
+                        break
+    result = '%s<br><br><br>' % result
+    return result
+
+
 if __name__ == '__main__':
     # title = '[20171022] 스타트업의 시대가 끝난 이후(After the end of the startup era)'
     # content = startup_era_end()
 
-    title = '[20171211] 암호화폐, 초기 코인 공개에 대한 성명(Statement on Cryptocurrencies and Initial Coin Offerings)'
-    result = '<a href="https://www.sec.gov/news/public-statement/statement-clayton-2017-12-11" target="_blank">원본: https://www.sec.gov/news/public-statement/statement-clayton-2017-12-11</a> [참고용어] Initial Public Offering은 기업공개<br><br>'
-    content = statement_on_crypto()
-    result = '%s<br>%s' % (result, content)
+    # title = '[20171211] 암호화폐, 초기 코인 공개에 대한 성명(Statement on Cryptocurrencies and Initial Coin Offerings)'
+    # result = '<a href="https://www.sec.gov/news/public-statement/statement-clayton-2017-12-11" target="_blank">원본: https://www.sec.gov/news/public-statement/statement-clayton-2017-12-11</a> [참고용어] Initial Public Offering은 기업공개<br><br>'
+    # content = statement_on_crypto()
+    # result = '%s<br>%s' % (result, content)
+    # tistory_post(token, title, result, '766214')  # trab 기타 지난 과거 글
+
+    # title = '[20171212] 전국 육아종합지원센터 웹사이트, 연락처 정보'
+    # content = korea_childcare_center()
+    # tistory_post(token, title, content, '252369', 'makpum')
 
     token = get_tistory_token()
-    tistory_post(token, title, result, '766214')
+    title = '[20171212] 기타 보육관련 웹사이트, 연락처 정보'
+    content = korea_childcare_center_etc()
+    tistory_post(token, title, content, '252369', 'makpum')
