@@ -896,9 +896,49 @@ def nikkei():
 
             # print(idx, atag)
 
-    
+def cryptocoins():
+    url = 'https://www.cryptocoinsnews.com/news/'
+    r = get(url, headers={'User-Agent': choice(USER_AGENTS)})
+    soup = BeautifulSoup(r.text, 'html.parser')
+    now = datetime.now() - timedelta(days=1)
+    yesterday = '%02d/%02d/%4d' % (now.day, now.month, now.year)
+    for gt in soup.find_all(match_soup_class(['grid-text'])):
+        title = gt.text.strip().split('\n')
+        if title[-1] != yesterday:
+            continue
+        print(gt.a['href'], title[0], title[-1])
+
+
+def vic_market():
+    base_url = 'http://company.lottemart.com'
+    url = 'http://company.lottemart.com/vc/info/branch.do?SITELOC=DK013'
+    r = get(url, headers={'User-Agent': choice(USER_AGENTS)})
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for i1, vic in enumerate(soup.find_all(match_soup_class(['vicmarket_normal_box']))):
+        if i1 != 1:
+            continue
+        for i2, li in enumerate(vic.find_all('li')):
+            if i2 % 5 != 0:
+                continue
+            for img in li.find_all('img'):
+                thumbnail = '%s%s' % (base_url, img['src'])
+                break
+            button = str(li.button).split("'")
+            href = '%s%s' % (base_url, button[1])
+            print(li.h3.text, thumbnail, href)
+            for ul in li.find_all('ul'):
+                for li2 in ul.find_all('li'):
+                    temp = li2.text.strip().replace('\t', '').replace('\r', '')
+                    temp_info = temp.split('\n')
+                    infos = [t for t in temp_info if len(t) != 0]
+                    print(infos)
+    # 신영통점
+    # http://company.lottemart.com/vc/branch/branch02.do?brnchCd=0400135&SITELOC=DK016
+
 if __name__ == '__main__':
-    nikkei()
+    vic_market()
+    # cryptocoins()
+    # nikkei()
     # hackernoon()
     # medium_post_search()
     # medium_post()
