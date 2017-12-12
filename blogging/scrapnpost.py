@@ -607,6 +607,33 @@ def get_aladin_book(query_type='ItemNewAll', max_result=30):  # max 50
     return content
 
 
+def get_kdi_research():  # 한국개발연구원
+    result = ''
+    thema = {'A': '거시/금융',
+             'B': '재정/복지',
+             'C': '노동/교육',
+             'D': '국제/무역',
+             'E': '산업조직',
+             'F': '경제발전/성장',
+             'G': '북한경제/경제체계',
+             'H': '농업/환경/자원',
+             'I': '지역경제',
+             'J': '기타'}
+
+    base_url = 'http://www.kdi.re.kr'
+    for t, value in thema.items():
+        result = '%s<br><br><strong><font color="red">[%s]</font></strong>' % (result, value)
+        url = 'http://www.kdi.re.kr/research/subjects_list.jsp?tema=%s' % t
+        r = get(url)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        sessions = soup.select('li > div > a')
+        # li.Js_AjaxParents:nth-child(1) > div:nth-child(1) > a:nth-child(3)
+        for s in sessions:
+            result_url = '%s%s' % (base_url, s['href'])
+            result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, result_url, s.text.strip())
+    return result
+
+
 def get_domestic_exhibition():
     content = ''
     coex = get_coex_exhibition()
@@ -667,6 +694,7 @@ def everyday(token):
     title = '[%s] Hacker News (Ranking 1~30)' % cur_time
     tistory_post(token, title, content, '765668')  # IT news
 
+
 def main():
     now = datetime.now()
     cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
@@ -675,6 +703,10 @@ def main():
 
     once_a_3days(token)
     everyday(token)
+
+    # content = get_kdi_research()
+    # title = '[%s] KDI 한국개발연구원 연구주제별 보고서' % cur_time
+    # tistory_post(token, title, content, '766948')  # korea department
 
 
 if __name__ == '__main__':
