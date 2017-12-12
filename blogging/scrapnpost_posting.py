@@ -409,7 +409,12 @@ def naver_papago_smt(words):
     request = urllib.request.Request(url)
     request.add_header('X-Naver-Client-Id', client_id)
     request.add_header('X-Naver-Client-Secret', client_secret)
-    response = urllib.request.urlopen(request, data=data.encode("utf-8"))
+    try:
+        response = urllib.request.urlopen(request, data=data.encode("utf-8"))
+    except urllib.error.HTTPError as e:
+        print('urlopen failed', str(e))
+        return ' '
+
     rescode = response.getcode()
     if(rescode == 200):
         response_body = response.read()
@@ -417,6 +422,7 @@ def naver_papago_smt(words):
         return (translated['message']['result']['translatedText'])
     else:
         print('Error Code:' + rescode)
+        return ' '
 
 
 def get_exhibit_image(href):
