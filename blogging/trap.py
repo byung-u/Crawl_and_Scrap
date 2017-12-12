@@ -316,8 +316,10 @@ def wired_popular(token, cur_time):
                 article.append(body_p.text)
         if len(article) == 0:
             continue
+        result = '<a href="%s" target="_blank"><font color="red">🔗  원문: %s</font></a><br>' % (href, href)
         content = translate_text(t, article)
-        tistory_post(token, post_title, content, '766972')
+        result = '%s<br>%s' % (result, content)
+        tistory_post(token, post_title, result, '766972')
     return
 
 
