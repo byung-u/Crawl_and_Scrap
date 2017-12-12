@@ -618,12 +618,7 @@ def get_domestic_exhibition():
     return content
 
 
-def main():
-    now = datetime.now()
-    cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
-
-    token = get_tistory_token()
-
+def once_a_3days(token):
     # every 3 days
     if now.day % 3 == 0:
         title = '[%s] 전체 신간 리스트 - 국내도서 30권(알라딘)' % cur_time
@@ -646,7 +641,8 @@ def main():
         content = get_domestic_exhibition()
         tistory_post(token, title, content, '765395')
 
-    # every day
+
+def everyday(token):
     title = '[%s] 부동산 뉴스 모음(Daum, 매일경제, 한국경제, Naver)' % cur_time
     content = realestate_news1()
     tistory_post(token, title, content, '765348')
@@ -670,6 +666,15 @@ def main():
     content = get_hacker_news()
     title = '[%s] Hacker News (Ranking 1~30)' % cur_time
     tistory_post(token, title, content, '765668')  # IT news
+
+def main():
+    now = datetime.now()
+    cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
+
+    token = get_tistory_token()
+
+    once_a_3days(token)
+    everyday(token)
 
 
 if __name__ == '__main__':
