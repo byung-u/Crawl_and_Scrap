@@ -2,10 +2,7 @@
 import os
 import re
 
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
 from googletrans import Translator
-from requests import get
 from selenium import webdriver
 from seleniumrequests import Chrome
 
@@ -15,6 +12,26 @@ def match_soup_class(target, mode='class'):
         classes = tag.get(mode, [])
         return all(c in classes for c in target)
     return do_match
+
+
+def translate_text(t, article, src='en', dest='ko'):
+    result, text = [], []
+    total_len = 0
+    request_txt = ''
+    for line in article:
+        total_len += len(line)
+        text.append(line)
+        if total_len > 4000:
+            request_txt = '<br>'.join(text)
+            ko_text = t.translate(request_txt, src=src, dest=dest).text
+            result.append(ko_text)
+            del text[:]
+            total_len = 0
+
+    request_txt = '<br>'.join(text)
+    ko_text = t.translate(request_txt, dest='ko').text
+    result.append(ko_text)
+    return '<br>'.join(result)
 
 
 def tistory_post(token, title, content, category):
@@ -32,7 +49,7 @@ def get_tistory_token():
     driver.get('https://www.tistory.com/auth/login?redirectUrl=http%3A%2F%2Fwww.tistory.com%2F')
     # <input type="email" id="loginId" name="loginId" class="tf_g" value="" placeholder="이메일 아이디" required="">
     tid = os.environ.get('TISTORY_ID')
-    tpw = os.environ.get('TISTORY_PW')
+    tpw = os.environ.get('TISTORY_PAW')
     driver.find_element_by_name('loginId').send_keys(tid)
     # <input type="password" id="loginPw" name="password" class="tf_g" placeholder="비밀번호" required="">
     driver.find_element_by_name('password').send_keys(tpw)
@@ -57,46 +74,6 @@ def get_tistory_token():
     return token
 
 
-def linux_today():
-    result = ''
-    yesterday = datetime.now() - timedelta(days=1)
-    # lt_cur_time = '%4d%02d%02d' % (yesterday.year, yesterday.month, yesterday.day)
-    lt_today = '%02d' % yesterday.day  # laughly time difference Korea and USA
-    t = Translator()
-
-    url = 'https://www.linuxtoday.com/'
-    r = get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
-    sessions = soup.select('table > tbody > tr > td > div > div')
-    import sys
-    for s in sessions:
-        try:
-            span = s.span.text
-        except AttributeError:
-            continue
-        if lt_today != span.split()[1][0:2]:
-            continue
-        try:
-            href = s.a['href']
-        except AttributeError:
-            continue
-        # print(href, s.a.text)
-        r_article = get(href)
-        soup_article = BeautifulSoup(r_article.text, 'html.parser')
-        for article in soup_article.find_all(match_soup_class(['article'])):
-            for idx, ps in enumerate(article.find_all('p')):
-                if idx == 0:
-                    summary = ps.text
-                elif idx == 1:
-                    complete_href = ps.a['href']
-                    break
-        ko_title = t.translate(s.a.text, dest='ko').text
-        ko_article = t.translate(summary, dest='ko').text
-        temp = '<a href="%s" target="_blank"><font color="blue">%s</font></a><br>%s<br><a href="%s" target="_blank"><font color="red">🔗 전체내용 Link</font></a><br><div style="border:1px solid grey"><br>%s<br><br>"%s"</div><br><br>' % (href, s.a.text, summary, complete_href, ko_title, ko_article)
-        result = '%s<br>%s' % (result, temp)
-    return result
-
-
 def startup_era_end():
     t = Translator()
 
@@ -114,8 +91,6 @@ def startup_era_end():
                 result.append(ko_text)
                 del text[:]
                 total_len = 0
-
-
     request_txt = '<br>'.join(text)
     ko_text = t.translate(request_txt, dest='ko').text
     result.append(ko_text)
@@ -124,8 +99,24 @@ def startup_era_end():
     return '<br>'.join(result)
 
 
+def statement_on_crypto():
+    t = Translator()
+    article = []
+    with open('statement_on_crypto') as f:
+        for line in f:
+            article.append(line)
+    f.closed
+    return translate_text(t, article, 'en', 'ko')
+
+
 if __name__ == '__main__':
-    title = '[20171022] 스타트업의 시대가 끝난 이후(After the end of the startup era)'
-    content = startup_era_end()
+    # title = '[20171022] 스타트업의 시대가 끝난 이후(After the end of the startup era)'
+    # content = startup_era_end()
+
+    title = '[20171211] 암호화폐, 초기 코인 공개에 대한 성명(Statement on Cryptocurrencies and Initial Coin Offerings)'
+    result = '<a href="https://www.sec.gov/news/public-statement/statement-clayton-2017-12-11" target="_blank">원본: https://www.sec.gov/news/public-statement/statement-clayton-2017-12-11</a> [참고용어] Initial Public Offering은 기업공개<br><br>'
+    content = statement_on_crypto()
+    result = '%s<br>%s' % (result, content)
+
     token = get_tistory_token()
-    tistory_post(token, title, content, '766214')
+    tistory_post(token, title, result, '766214')
