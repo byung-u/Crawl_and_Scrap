@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-import json
 from bs4 import BeautifulSoup
 from requests import get
 
 from datetime import datetime
-# from requests import get, codes
 from selenium import webdriver
 from seleniumrequests import Chrome
 
@@ -158,31 +156,6 @@ def get_korea_sw_corp_rank():
     return content
 
 
-def get_aladin_book(query_type='ItemNewAll', max_result=30):  # max 50
-    tkey = os.environ.get('ALADIN_TTB_KEY')
-    url = 'http://www.aladin.co.kr/ttb/api/ItemList.aspx?ttbkey=%s&QueryType=%s&MaxResults=%d&start=1&SearchTarget=Book&output=js&Cover=big&Version=20131101' % (tkey, query_type, max_result)
-
-    content = ''
-    r = get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
-    books = json.loads(str(soup))
-
-    for book in books['item']:
-        title = book['title']
-        link = book['link']
-        desc = book['description']
-        img_link = book['cover']
-        publisher = book['publisher']
-        priceSales = book['priceSales']
-        # priceStandard = book['priceStandard']
-        categoryName = book['categoryName']
-        author = book['author']
-
-        temp = '<font color="red">%s</font><br>%s, %s, %s 원<br>%s<br><br>%s<br><br><center><a href="%s"> <img border="0" align="middle" src="%s" width="200" height="250"></a></center>' % (title, author, publisher, priceSales, categoryName, desc, link, img_link)
-        content = '%s<br><br>%s' % (content, temp)
-    return content
-
-
 def get_world_openbooks(page):
     result = ''
     url = 'http://www.openbooks.co.kr/html/open/world_02.html?open_gl_id=2&PHPSESSID=c27e1668b6b783a8c97f530f51a1e219&page=%d' % page
@@ -205,7 +178,7 @@ def get_world_openbooks(page):
                         try:
                             href = td.a['href']
                             href = 'http://www.openbooks.co.kr/html/open/%s' % href
-                        except:
+                        except TypeError:
                             pass
                     if idx == 2:
                         if len(infos) == 0:
@@ -255,113 +228,17 @@ def naver_webtoon():
     return result
 
 
-def get_sacticket():  # 예술의 전당
-    result = '<h2>예술의 전당</h2>'
-    chromedriver_path = os.environ.get('CHROMEDRIVER_PATH')
-    driver = webdriver.Chrome(chromedriver_path)
-    driver.implicitly_wait(3)
-
-    url = 'https://www.sacticket.co.kr/SacHome/ticket/reservation'
-    driver.get(url)
-    html = driver.page_source
-    soup = BeautifulSoup(html, 'html.parser')
-    for p in soup.find_all(match_soup_class(['ticket_list_con'])):
-        for poster in p.find_all(match_soup_class(['poster'])):
-            for pa in poster.find_all('img'):
-                thumbnail = (pa['src'])
-        if thumbnail.endswith('no_result.png'):
-            continue
-        # print(thumbnail)
-
-        for content in p.find_all(match_soup_class(['content'])):
-            try:
-                c_info = content.a['onclick'].split("'")
-                page_id = c_info[1]
-                page_type = c_info[3]
-                if page_type == 'E':
-                    category = "[전시]"
-                    link = 'https://www.sacticket.co.kr/SacHome/exhibit/detail?searchSeq=%s' % page_id
-                elif page_type == 'P':
-                    category = "[공연]"
-                    link = 'https://www.sacticket.co.kr/SacHome/perform/detail?searchSeq=%s' % page_id
-                else:
-                    continue
-
-                for idx, ca in enumerate(content.find_all('a')):
-                    if idx == 0:
-                        title = ca.text
-                    elif idx == 1:
-                        if ca.text != '무료':
-                            price = '유료'
-                        else:
-                            price = ca.text
-
-                temp = '<font color="red">%s</font><br>%s %s<br><br><center><a href="%s"> <img border="0" src="%s" width="250" height="250"></a></center>' % (title, category, price, link, thumbnail)
-                result = '%s<br>%s' % (result, temp)
-            except:
-                continue
-    driver.quit()
-    return result
-
-
-def get_coex_exhibition():
-    result = '<h2>코엑스</h2>'
-    url = 'http://www.coex.co.kr/blog/event_exhibition?list_type=list'
-    r = get(url)
-    if r is None:
-        return
-    soup = BeautifulSoup(r.text, 'html.parser')
-    exhibition_url = 'http://www.coex.co.kr/blog/event_exhibition'
-    for a in soup.find_all('a', href=True):
-        thumbnail = ''
-        if a['href'].startswith(exhibition_url) is False:
-            continue
-
-        for img in a.find_all('img'):
-            thumbnail = img['src']
-
-        if len(thumbnail) == 0:
-            continue
-
-        for idx, li in enumerate(a.find_all('li')):
-            if idx % 5 == 0:
-                category = li.text
-            elif idx % 5 == 1:
-                spans = li.find_all('span', attrs={'class': 'subject'})
-                for span in spans:
-                    subject = span.text
-                spans = li.find_all('span', attrs={'class': 'url'})
-                for span in spans:
-                    url = span.text
-                url = 'http://%s' % url
-            elif idx % 5 == 2:
-                period = li.text
-            elif idx % 5 == 3:
-                price = li.text
-            elif idx % 5 == 4:
-                location = li.text
-                temp = '<font color="red">%s (%s)</font><br>%s, %s, %s<br><br><center><a href="%s"> <img border="0" src="%s" width="250" height="250"></a></center>' % (subject, category, period, location, price, url, thumbnail)
-                result = '%s<br>%s' % (result, temp)
-    return result
-
-
-def get_exhibition():
-    content = ''
-    coex = get_coex_exhibition()
-    content = '%s<br><br>%s' % (content, coex)
-    sac = get_sacticket()
-    content = '%s<br><br>%s' % (content, sac)
-    return content
-
-
 def main():
     # 765385 coding
     # 765668 IT news
     # 765395 ETC
+    now = datetime.now()
+    cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
+    token = get_tistory_token()
 
     # ######### ########## ########## ########## ########## ##########
-    title = 'RFC 문서 목록[Total: 8179 (20171201)]'
-    content = get_rfc_list()
+    # title = 'RFC 문서 목록[Total: 8179 (20171201)]'
+    # content = get_rfc_list()
 
     # title = '시가총액 규모 순서대로 나열한 국내 IT 기업 목록 (2017년 09)'
     # content = get_korea_sw_corp_rank()
@@ -371,31 +248,16 @@ def main():
 
     # content = get_nextpert_blog()
     # title = '[Nexpert]님의 블로그 글 목록'
-    token = get_tistory_token()
-    tistory_post(token, title, content, '765385')  # coding
+    # tistory_post(token, title, content, '765385')  # coding
     # ######### ########## ########## ########## ########## ##########
-
-    # now = datetime.now()
-    # cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
-
-    # title = '[%s] 코엑스, 예술의 전당(공연, 전시)' % cur_time
-    # content = get_exhibition()
-
-    # title = '[%s] 전체 신간 리스트 - 국내도서 30권(알라딘)' % cur_time
-    # content = get_aladin_book()
-    # title = '[%s] 주목할 만한 신간 리스트 - 국내도서 20권(알라딘)' % cur_time
-    # content = get_aladin_book('ItemNewSpecial', 20)
-    # title = '[%s] 베스트셀러 - 30권(알라딘)' % cur_time
-    # content = get_aladin_book('Bestseller', 30)
-    # token = get_tistory_token()
 
     title = '[%s] 열린책들 세계문학 모음' % cur_time
     content = ''
     for i in range(1, 25):
         res = get_world_openbooks(i)
         content = '%s<br>%s' % (content, res)
+    tistory_post(token, title, content, '765395')  # ETC
     return
-    # tistory_post(token, title, content, '765395')  # ETC
     # ######### ########## ########## ########## ########## ##########
 
 
