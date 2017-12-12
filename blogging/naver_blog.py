@@ -367,6 +367,30 @@ def vic_market():
     return result
 
 
+def get_visit_korea():  # 대한민국 구석구석 행복여행
+    result = ''
+    base_url = 'http://korean.visitkorea.or.kr/kor/bz15/where/festival'
+    url = 'http://korean.visitkorea.or.kr/kor/bz15/where/festival/festival.jsp'
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for s in soup.find_all(match_soup_class(['item'])):
+        if s.h3 is None:
+            continue
+        result_url = '%s/%s' % (base_url, s.a['href'])
+        desc = repr(s.h3)[4: -6]
+        img = s.find('img')
+        thumbnail = img['src']
+        for info in s.find_all(match_soup_class(['info2'])):
+            for span in info.find_all('span', {'class': 'date'}):
+                result = '%s<br><strong><a href="%s" target="_blank"><font color="red">%s</font></a></strong><br>%s<br>' % (
+                         result, result_url, desc, span.text)
+                result = '%s<center><a href="%s" target="_blank"> <img border="0" src="%s" width="150" height="150"></a></center>' % (
+                         result, result_url, thumbnail)
+                # print(result_url, desc, span.text)
+                break
+    return result
+
+
 def main():
     now = datetime.now()
     cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
@@ -375,7 +399,6 @@ def main():
     if token is None:
         print('get_naver_token failed')
         return
-
 
     title = '[%s] 많이 클릭된 연예 뉴스 모음(Naver, Daum, Nate)' % cur_time
     content = get_entertainment(cur_time)
@@ -395,6 +418,10 @@ def main():
 
     # title = '[%s] 빅마켓 지점별 휴관일, 영업시간, 주소, 연락처 정보' % cur_time
     # content = vic_market()
+    # naver_post(token, title, content)
+
+    # title = '[%s] 국내 축제, 행사 일정 (대한민국 구석구석 행복여행)' % cur_time
+    # content = get_visit_korea()  # 대한민국 구석구석 행복여행
     # naver_post(token, title, content)
     return
 
