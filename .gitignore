@@ -94,3 +94,6 @@ scripts
 tags
 TODO
 tests
+
+*.text
+dump
