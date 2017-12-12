@@ -72,11 +72,9 @@ class UseDataKorea:  # www.data.go.kr
 
         items = soup.findAll('item')
         for item in items:
-
-            infos = re.split('<', item)
             try:
                 infos = re.split('<', item)
-            except:
+            except TypeError:
                 continue
             result = []
             for idx, info in enumerate(infos):
