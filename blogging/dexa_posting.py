@@ -8,6 +8,16 @@ from requests import get
 from selenium import webdriver
 from seleniumrequests import Chrome
 
+ADSENSE_MIDDLE = '''<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- insert middle -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-2477248594987452"
+     data-ad-slot="3727980969"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>'''
+
 
 def match_soup_class(target, mode='class'):
     def do_match(tag):
@@ -111,6 +121,7 @@ def hyundai_curture_center():
         result = '%s<a href="%s" target="_blank">%d. %s</a><br>' % (result, part_url, cnt, location)
         cnt += 1
     result = '%s</pre>' % result
+    result = '%s<br>%s<br>' % (result, ADSENSE_MIDDLE)
 
     for location, code in lcode.items():
         result = '%s<br><br><font color="red">[%s]</font><br>' % (result, location)
@@ -148,7 +159,9 @@ def lotte_curture_center():
         part_url = 'https://culture.lotteshopping.com/CLSS_list.do?taskID=L&pageNo=1&vpStrCd=&vpKisuNo=&vpClassCd=&vpTechNo=&pStrCd=%s&pLarGbn=&pMidGbn=&pClsFee=&pDayGbnAll=&pDayTime=&pStatus=&pKisuValue=C&pClsNm=&pClsNmTemp=&pTechNm=&pTechNmTemp=' % code
         result = '%s<a href="%s" target="_blank">%d. %s</a><br>' % (result, part_url, cnt, location)
         cnt += 1
+
     result = '%s</pre>' % result
+    result = '%s<br>%s<br>' % (result, ADSENSE_MIDDLE)
     for location, code in lcode.items():
         result = '%s<br><br><font color="red">[%s]</font><br>' % (result, location)
         url = 'https://culture.lotteshopping.com/CLSS_list.do?taskID=L&pageNo=1&vpStrCd=&vpKisuNo=&vpClassCd=&vpTechNo=&pStrCd=%s&pLarGbn=&pMidGbn=&pClsFee=&pDayGbnAll=&pDayTime=&pStatus=&pKisuValue=C&pClsNm=&pClsNmTemp=&pTechNm=&pTechNmTemp=' % code
