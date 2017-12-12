@@ -142,8 +142,12 @@ def get_daum_celeb():
             # print(thumbnail)
             title = l.text.strip().split('\n')
             # print(title[0], ' '.join(title[1:]))
-            temp = '<a href="%s" target="_blank"><strong>%s. %s</strong></a><br><center><a href="%s" target="_blank"> <img border="0" src="%s" width="150" height="150"></a></center><br>' % (
-                   href, title[0], ' '.join(title[1:]), href, thumbnail)
+            if title[0] > 3:
+                temp = '<a href="%s" target="_blank"><strong>%s. %s</strong></a><br><br>' % (
+                       href, title[0], ' '.join(title[1:]))
+            else:
+                temp = '<a href="%s" target="_blank"><strong>%s. %s</strong></a><br><center><a href="%s" target="_blank"> <img border="0" src="%s" width="150" height="150"></a></center><br>' % (
+                       href, title[0], ' '.join(title[1:]), href, thumbnail)
             result = '%s<br>%s' % (result, temp)
     return result
 
@@ -163,7 +167,7 @@ def get_nate_celeb(cur_time):
             temp = mlt.text.strip().replace('\t', '')
             title = temp.split('\n')
             # print(title, href, thumbnail)
-            temp = '<a href="%s" target="_blank"><strong>%s. %s</strong><br></a><br>%s<br><center><a href="%s" target="_blank"> <img border="0" src="%s" width="150" height="150"></a></center><br>' % (
+            temp = '<a href="%s" target="_blank"><strong>%s. %s</strong><br></a><br>%s<br><center><a href="%s" target="_blank"> <img border="0" src="%s" width="50" height="50"></a></center><br>' % (
                    href, cnt, title[0], ' '.join(title[1:]), href, thumbnail)
             result = '%s<br>%s' % (result, temp)
             cnt += 1
@@ -372,26 +376,26 @@ def main():
         print('get_naver_token failed')
         return
 
-    title = '[%s] 빅마켓 지점별 휴관일, 영업시간, 주소, 연락처 정보' % cur_time
-    content = vic_market()
-    naver_post(token, title, content)
-    return
 
     title = '[%s] 많이 클릭된 연예 뉴스 모음(Naver, Daum, Nate)' % cur_time
     content = get_entertainment(cur_time)
     naver_post(token, title, content)
 
-    #title = '[%s] 롯데백화점 각 지점별 문화센터 일정' % cur_time
-    #content = lotte_curture_center()
-    #naver_post(token, title, content)
-
-    #title = '[%s] 현대백화점 각 지점별 문화센터 추천강좌 일정' % cur_time
-    #content = hyundai_curture_center()
-    #naver_post(token, title, content)
-
     title = '[%s] 자동차 뉴스 모음(한겨례, 노컷뉴스, Nate)' % cur_time
     content = get_car(cur_time)
     naver_post(token, title, content)
+
+    # title = '[%s] 롯데백화점 각 지점별 문화센터 일정' % cur_time
+    # content = lotte_curture_center()
+    # naver_post(token, title, content)
+
+    # title = '[%s] 현대백화점 각 지점별 문화센터 추천강좌 일정' % cur_time
+    # content = hyundai_curture_center()
+    # naver_post(token, title, content)
+
+    # title = '[%s] 빅마켓 지점별 휴관일, 영업시간, 주소, 연락처 정보' % cur_time
+    # content = vic_market()
+    # naver_post(token, title, content)
     return
 
 
