@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 import os
+import json
 import re
+import sys
 
 from bs4 import BeautifulSoup
 from googletrans import Translator
 from selenium import webdriver
 from seleniumrequests import Chrome
+import urllib.request
 
 
 def match_soup_class(target, mode='class'):
@@ -33,6 +36,77 @@ def translate_text(t, article, src='en', dest='ko'):
     ko_text = t.translate(request_txt, dest='ko').text
     result.append(ko_text)
     return '<br>'.join(result)
+
+
+def naver_post(token, title, content):
+    header = "Bearer " + token  # Bearer 다음에 공백 추가
+    url = "https://openapi.naver.com/blog/writePost.json"
+    title = urllib.parse.quote(title)
+    contents = urllib.parse.quote(content)
+    data = "title=" + title + "&contents=" + contents
+    request = urllib.request.Request(url, data=data.encode("utf-8"))
+    request.add_header("Authorization", header)
+    response = urllib.request.urlopen(request)
+    rescode = response.getcode()
+    if rescode == 200:
+        response_body = response.read()
+        print(response_body.decode('utf-8'))
+    else:
+        print("Error Code:" + rescode)
+
+
+def get_naver_token():
+    chromedriver_path = os.environ.get('CHROMEDRIVER_PATH')
+    driver = webdriver.Chrome(chromedriver_path)
+    # driver = webdriver.PhantomJS()
+    driver.implicitly_wait(3)
+    driver.get('https://nid.naver.com/nidlogin.login')
+
+    nid = os.environ.get('NAVER_ID')
+    npw = os.environ.get('NAVER_PAW')
+    driver.find_element_by_name('id').send_keys(nid)
+
+    driver.find_element_by_name('pw').send_keys(npw)
+    driver.find_element_by_xpath('//*[@id="frmNIDLogin"]/fieldset/input').click()
+
+    client_id = os.environ.get('NAVER_BLOG_CLIENT_ID')
+    client_secret = os.environ.get('NAVER_BLOG_CLIENT_SECRET')
+    state = "REWERWERTATE"
+    redirect = os.environ.get('NAVER_BLOG_REDIRECT')
+    req_url = 'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=%s&redirect_uri=%s&state=%s' % (client_id, redirect, state)
+
+    driver.get(req_url)
+    ##########################
+    # XXX: 최초 1회 수행해서 동의 해야함
+    # driver.find_element_by_xpath('//*[@id="confirm_terms"]/a[2]').click()
+    ##########################
+    redirect_url = driver.current_url
+    temp = re.split('code=', redirect_url)
+    code = re.split('&state=', temp[1])[0]
+    driver.quit()
+    print(redirect_url)
+    print(code)
+
+    url = 'https://nid.naver.com/oauth2.0/token?'
+    data = 'grant_type=authorization_code' + '&client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=' + redirect + '&code=' + code + '&state=' + state
+
+    request = urllib.request.Request(url, data=data.encode("utf-8"))
+    request.add_header('X-Naver-Client-Id', client_id)
+    request.add_header('X-Naver-Client-Secret', client_secret)
+    response = urllib.request.urlopen(request)
+    rescode = response.getcode()
+    token = ''
+    if rescode == 200:
+        response_body = response.read()
+        js = json.loads(response_body.decode('utf-8'))
+        token = js['access_token']
+    else:
+        print("Error Code:" + rescode)
+
+    if len(token) == 0:
+        return None
+    print(token)
+    return token
 
 
 def tistory_post(token, title, content, category, blog_name='trab'):
@@ -173,7 +247,20 @@ if __name__ == '__main__':
     # content = korea_childcare_center()
     # tistory_post(token, title, content, '252369', 'makpum')
 
-    token = get_tistory_token()
+    # token = get_tistory_token()
+    # title = '[20171212] 기타 보육관련 웹사이트, 연락처 정보'
+    # content = korea_childcare_center_etc()
+    # tistory_post(token, title, content, '252369', 'makpum')
+
+    token = get_naver_token()
+    if token is None:
+        print('get_naver_token failed')
+        sys.exit(1)
+
+    title = '[20171212] 전국 육아종합지원센터 웹사이트, 연락처 정보'
+    content = korea_childcare_center()
+    naver_post(token, title, content)
+
     title = '[20171212] 기타 보육관련 웹사이트, 연락처 정보'
     content = korea_childcare_center_etc()
-    tistory_post(token, title, content, '252369', 'makpum')
+    naver_post(token, title, content)
