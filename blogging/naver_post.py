@@ -331,6 +331,38 @@ def lotte_curture_center():
     return result
 
 
+def vic_market():
+    result = '<br>'
+    base_url = 'http://company.lottemart.com'
+    url = 'http://company.lottemart.com/vc/info/branch.do?SITELOC=DK013'
+    # r = get(url, headers={'User-Agent': choice(USER_AGENTS)})
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for i1, vic in enumerate(soup.find_all(match_soup_class(['vicmarket_normal_box']))):
+        if i1 != 1:
+            continue
+        for i2, li in enumerate(vic.find_all('li')):
+            if i2 % 5 != 0:
+                continue
+            for img in li.find_all('img'):
+                thumbnail = '%s%s' % (base_url, img['src'])
+                break
+            button = str(li.button).split("'")
+            href = '%s%s' % (base_url, button[1])
+            result = '%s<strong><a href="%s" target="_blank">%s<font color="red"></font></a></strong><br>' % (
+                     result, href, li.h3.text)
+            # print(li.h3.text, thumbnail, href)
+            for ul in li.find_all('ul'):
+                for li2 in ul.find_all('li'):
+                    temp = li2.text.strip().replace('\t', '').replace('\r', '')
+                    temp_info = temp.split('\n')
+                    infos = [t for t in temp_info if len(t) != 0]
+                    result = '%s<br>%s: %s' % (result, infos[0], ' '.join(infos[1:]))
+                    # print(infos)
+            result = '%s<br><center><a href="%s" target="_blank"> <img border="0" src="%s" width="150" height="150"></a></center><br><br>' % (result, href, thumbnail)
+    return result
+
+
 def main():
     now = datetime.now()
     cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
@@ -340,17 +372,22 @@ def main():
         print('get_naver_token failed')
         return
 
+    title = '[%s] 빅마켓 지점별 휴관일, 영업시간, 주소, 연락처 정보' % cur_time
+    content = vic_market()
+    naver_post(token, title, content)
+    return
+
     title = '[%s] 많이 클릭된 연예 뉴스 모음(Naver, Daum, Nate)' % cur_time
     content = get_entertainment(cur_time)
     naver_post(token, title, content)
 
-    title = '[%s] 롯데백화점 각 지점별 문화센터 일정' % cur_time
-    content = lotte_curture_center()
-    naver_post(token, title, content)
+    #title = '[%s] 롯데백화점 각 지점별 문화센터 일정' % cur_time
+    #content = lotte_curture_center()
+    #naver_post(token, title, content)
 
-    title = '[%s] 현대백화점 각 지점별 문화센터 추천강좌 일정' % cur_time
-    content = hyundai_curture_center()
-    naver_post(token, title, content)
+    #title = '[%s] 현대백화점 각 지점별 문화센터 추천강좌 일정' % cur_time
+    #content = hyundai_curture_center()
+    #naver_post(token, title, content)
 
     title = '[%s] 자동차 뉴스 모음(한겨례, 노컷뉴스, Nate)' % cur_time
     content = get_car(cur_time)
