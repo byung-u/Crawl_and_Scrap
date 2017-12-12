@@ -354,7 +354,7 @@ def searching_and_tweet(bw):
     dg = UseDataKorea(bw)
 
     # 입찰공고
-    dg.get_tender_cha(bw)     # 문화재청
+    # dg.get_tender_cha(bw)     # 문화재청
     dg.get_tender_kdata(bw)   # 한국데이터진흥원
     dg.get_tender_kisa(bw)    # 한국인터넷진흥원
     dg.get_tender_molit(bw)   # 국토교통부
