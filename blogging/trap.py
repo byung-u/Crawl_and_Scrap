@@ -7,9 +7,18 @@ import re
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from googletrans import Translator
+from random import choice
 from requests import get
 from selenium import webdriver
 from seleniumrequests import Chrome
+
+USER_AGENTS = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:11.0) Gecko/20100101 Firefox/11.0',
+               'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100 101 Firefox/22.0',
+               'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0',
+               ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.5 (KHTML, like Gecko  ) '
+                'Chrome/19.0.1084.46 Safari/536.5'),
+               ('Mozilla/5.0 (Windows; Windows NT 6.1) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/  19.0.1084.46'
+                'Safari/536.5'), )
 
 
 def match_soup_class(target, mode='class'):
@@ -282,6 +291,36 @@ def reddit_popular():
     return result
 
 
+def wired_popular(token, cur_time):
+    t = Translator()
+    url = 'https://www.wired.com/'
+    r = get(url, headers={'User-Agent': choice(USER_AGENTS)})
+    soup = BeautifulSoup(r.text, 'html.parser')
+    sessions = soup.select('div > div > div > div > div > div > aside > div > div > div > ul > li > a')
+    for s in sessions:
+        article = []
+        post_title = ''
+        try:
+            href = s['href']
+            # print(href, s.h5.text)
+            ko_title = t.translate(s.h5.text, dest='ko').text
+            post_title = '[%s] %s(%s)' % (cur_time, ko_title, s.h5.text.strip())
+        except TypeError:
+            continue
+        a_r = get(href, headers={'User-Agent': choice(USER_AGENTS)})
+        a_soup = BeautifulSoup(a_r.text, 'html.parser')
+        for body in a_soup.find_all(match_soup_class(['article-body-component'])):
+            for body_p in body.find_all('p'):
+                if str(body_p).find('p class=') != -1:
+                    continue
+                article.append(body_p.text)
+        if len(article) == 0:
+            continue
+        content = translate_text(t, article)
+        tistory_post(token, post_title, content, '766972')
+    return
+
+
 def main():
     now = datetime.now()
     cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
@@ -305,6 +344,9 @@ def main():
     tistory_post(token, title, content, '766104')
 
     the_guardian(token, cur_time)
+
+    if now.day % 7 == 0 or now.day % 7 == 3:
+        wired_popular(token, cur_time)  # twice a week
 
 
 if __name__ == '__main__':
