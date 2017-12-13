@@ -142,7 +142,7 @@ def get_daum_celeb():
             # print(thumbnail)
             title = l.text.strip().split('\n')
             # print(title[0], ' '.join(title[1:]))
-            if title[0] > 3:
+            if int(title[0]) > 3:
                 temp = '<a href="%s" target="_blank"><strong>%s. %s</strong></a><br><br>' % (
                        href, title[0], ' '.join(title[1:]))
             else:
@@ -231,11 +231,11 @@ def get_car(cur_time):
     result = ''
 
     content = get_hani_car()
-    result = '%s<br>%s' % (result, content)
+    result = '%s<br><br><br>%s' % (result, content)
     content = get_nocut_car()
-    result = '%s<br>%s' % (result, content)
+    result = '%s<br><br><br>%s' % (result, content)
     content = get_nate_car()
-    result = '%s<br>%s' % (result, content)
+    result = '%s<br><br><br>%s' % (result, content)
 
     return result
 
