@@ -170,6 +170,7 @@ def get_tistory_token():
     print(redirect_url)
     temp = re.split('access_token=', redirect_url)
     token = re.split('&state=', temp[1])[0]
+    driver.quit()
     return token
 
 
@@ -342,6 +343,17 @@ def get_realestate_nate(cur_time):
     return result
 
 
+def get_realestate_donga():
+    result = '<font color="blue">[동아일보 부동산 뉴스]</font><br>'
+    url = 'http://news.donga.com/List/Economy/RE'
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for alist in soup.find_all(match_soup_class(['articleList'])):
+        title = alist.find('span', attrs={'class': 'tit'})
+        result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, alist.a['href'], title.text.strip())
+    return result
+
+
 def realestate_news1():
     daum_news = get_realestate_daum()
     # print('[DAUm]<br>', daum_news)
@@ -360,6 +372,8 @@ def realestate_news2(cur_time):
     result = ''
 
     content = get_realestate_hani()
+    result = '%s<br><br><br>%s' % (result, content)
+    content = get_realestate_donga()
     result = '%s<br><br><br>%s' % (result, content)
     content = get_realestate_nocut()
     result = '%s<br><br><br>%s' % (result, content)
@@ -702,7 +716,7 @@ def everyday(cur_time, token):
     content = realestate_news1()
     tistory_post(token, title, content, '765348')
 
-    title = '[%s] 부동산 뉴스 모음(한겨례, 노컷뉴스, Nate)' % cur_time
+    title = '[%s] 부동산 뉴스 모음(한겨례, 동아일보, 노컷뉴스, Nate)' % cur_time
     content = realestate_news2(cur_time)
     tistory_post(token, title, content, '765348')
 
