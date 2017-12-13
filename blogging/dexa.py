@@ -91,8 +91,6 @@ def translate_text(t, article, src='en', dest='ko'):
 #     costco()
 #     emart_traders()
 #
-# def department_store():
-#     popup_store()
 
 
 def hyundai_curture_center():
@@ -250,7 +248,6 @@ def main():
     content = hyundai_curture_center()
     tistory_post(token, title, content, '730606')
     # content = market()
-    # content = department_store()
     # content = mise_dust()
 
 
