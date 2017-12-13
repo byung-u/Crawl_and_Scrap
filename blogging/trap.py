@@ -177,7 +177,10 @@ def translate_text(t, article, src='en', dest='ko'):
             total_len = 0
 
     request_txt = '<br>'.join(text)
-    ko_text = t.translate(request_txt, dest='ko').text
+    try:
+        ko_text = t.translate(request_txt, dest='ko').text
+    except:
+        return None
     result.append(ko_text)
     return '<br>'.join(result)
 
@@ -259,7 +262,9 @@ def mainichi_daily_top20():
             result = translate_text(t, article, 'ja', 'ko')
             del article[:]
             # do not add <br> tag
-            if len(result) == 0:
+            if result is None:
+                content = '%s기사내용 번역불가<br>' % content
+            elif len(result) == 0:
                 content = '%s기사내용 숨겨짐(번역불가)<br>' % content
             else:
                 content = '%s%s<br><br>' % (content, result)
