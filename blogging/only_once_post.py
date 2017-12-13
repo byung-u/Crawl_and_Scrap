@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import json
 import os
 import re
-from bs4 import BeautifulSoup
-from requests import get
+import urllib.request
 
+from bs4 import BeautifulSoup
 from datetime import datetime
+from requests import get
 from selenium import webdriver
 from seleniumrequests import Chrome
 
@@ -15,6 +17,77 @@ def match_soup_class(target, mode='class'):
         classes = tag.get(mode, [])
         return all(c in classes for c in target)
     return do_match
+
+
+def naver_post(token, title, content):
+    header = "Bearer " + token  # Bearer 다음에 공백 추가
+    url = "https://openapi.naver.com/blog/writePost.json"
+    title = urllib.parse.quote(title)
+    contents = urllib.parse.quote(content)
+    data = "title=" + title + "&contents=" + contents
+    request = urllib.request.Request(url, data=data.encode("utf-8"))
+    request.add_header("Authorization", header)
+    response = urllib.request.urlopen(request)
+    rescode = response.getcode()
+    if rescode == 200:
+        response_body = response.read()
+        print(response_body.decode('utf-8'))
+    else:
+        print("Error Code:" + rescode)
+
+
+def get_naver_token():
+    chromedriver_path = os.environ.get('CHROMEDRIVER_PATH')
+    driver = webdriver.Chrome(chromedriver_path)
+    # driver = webdriver.PhantomJS()
+    driver.implicitly_wait(3)
+    driver.get('https://nid.naver.com/nidlogin.login')
+
+    nid = os.environ.get('NAVER_ID')
+    npw = os.environ.get('NAVER_PAW')
+    driver.find_element_by_name('id').send_keys(nid)
+
+    driver.find_element_by_name('pw').send_keys(npw)
+    driver.find_element_by_xpath('//*[@id="frmNIDLogin"]/fieldset/input').click()
+
+    client_id = os.environ.get('NAVER_BLOG_CLIENT_ID')
+    client_secret = os.environ.get('NAVER_BLOG_CLIENT_SECRET')
+    state = "REWERWERTATE"
+    redirect = os.environ.get('NAVER_BLOG_REDIRECT')
+    req_url = 'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=%s&redirect_uri=%s&state=%s' % (client_id, redirect, state)
+
+    driver.get(req_url)
+    ##########################
+    # XXX: 최초 1회 수행해서 동의 해야함
+    # driver.find_element_by_xpath('//*[@id="confirm_terms"]/a[2]').click()
+    ##########################
+    redirect_url = driver.current_url
+    temp = re.split('code=', redirect_url)
+    code = re.split('&state=', temp[1])[0]
+    driver.quit()
+    print(redirect_url)
+    print(code)
+
+    url = 'https://nid.naver.com/oauth2.0/token?'
+    data = 'grant_type=authorization_code' + '&client_id=' + client_id + '&client_secret=' + client_secret + '&redirect_uri=' + redirect + '&code=' + code + '&state=' + state
+
+    request = urllib.request.Request(url, data=data.encode("utf-8"))
+    request.add_header('X-Naver-Client-Id', client_id)
+    request.add_header('X-Naver-Client-Secret', client_secret)
+    response = urllib.request.urlopen(request)
+    rescode = response.getcode()
+    token = ''
+    if rescode == 200:
+        response_body = response.read()
+        js = json.loads(response_body.decode('utf-8'))
+        token = js['access_token']
+    else:
+        print("Error Code:" + rescode)
+
+    if len(token) == 0:
+        return None
+    print(token)
+    return token
 
 
 def _get_rfc_info(soup, rfc_num):
@@ -234,7 +307,7 @@ def main():
     # 765395 ETC
     now = datetime.now()
     cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
-    token = get_tistory_token()
+    # token = get_tistory_token()
 
     # ######### ########## ########## ########## ########## ##########
     # title = 'RFC 문서 목록[Total: 8179 (20171201)]'
@@ -251,12 +324,20 @@ def main():
     # tistory_post(token, title, content, '765385')  # coding
     # ######### ########## ########## ########## ########## ##########
 
-    title = '[%s] 열린책들 세계문학 모음' % cur_time
-    content = ''
-    for i in range(1, 25):
-        res = get_world_openbooks(i)
-        content = '%s<br>%s' % (content, res)
-    tistory_post(token, title, content, '765395')  # ETC
+    # title = '[%s] 열린책들 세계문학 모음' % cur_time
+    # content = ''
+    # for i in range(1, 25):
+        # res = get_world_openbooks(i)
+        # content = '%s<br>%s' % (content, res)
+    title = 'Project Euler 문제 목록'
+    content = get_project_euler_problems()
+
+    token = get_naver_token()
+    if token is None:
+        print('get_naver_token failed')
+        return
+    naver_post(token, title, content)
+    # tistory_post(token, title, content, '765395')  # ETC
     return
     # ######### ########## ########## ########## ########## ##########
 
