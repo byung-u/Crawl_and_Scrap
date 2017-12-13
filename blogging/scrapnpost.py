@@ -3,13 +3,33 @@ import json
 import os
 import praw
 import re
+import requests
 import urllib.request
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+from random import choice
 from requests import get, codes
 from selenium import webdriver
 from seleniumrequests import Chrome
+
+USER_AGENTS = ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10.7; rv:11.0) Gecko/20100101 Firefox/11.0',
+               'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:22.0) Gecko/20100 101 Firefox/22.0',
+               'Mozilla/5.0 (Windows NT 6.1; rv:11.0) Gecko/20100101 Firefox/11.0',
+               ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/536.5 (KHTML, like Gecko  ) '
+                'Chrome/19.0.1084.46 Safari/536.5'),
+               ('Mozilla/5.0 (Windows; Windows NT 6.1) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/  19.0.1084.46'
+                'Safari/536.5'), )
+
+ADSENSE_MIDDLE = '''<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- insert middle -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-2477248594987452"
+     data-ad-slot="3727980969"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>'''
 
 
 def match_soup_class(target, mode='class'):
@@ -683,6 +703,217 @@ def get_domestic_exhibition():
     return content
 
 
+def get_opinion_hani():
+    result = '<font color="blue">[한겨례 사설, 칼럼]</font>'
+    base_url = 'http://www.hani.co.kr'
+    url = 'http://www.hani.co.kr/arti/opinion/home01.html?_fr=mt0'
+    r = get(url)
+    soup = BeautifulSoup(r.content.decode('utf-8', 'replace'), 'html.parser')
+    for article in soup.find_all(match_soup_class(['article'])):
+        # print(article)
+        for li in article.find_all('li'):
+            li_href = '%s%s' % (base_url, li.a['href'])
+            li_text = li.text.strip().split('\n')
+            result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, li_href,  li_text[0])
+        href = '%s%s' % (base_url, article.a['href'])
+        article = article.text.strip().split('\n')
+        # print(href, article[0])
+        result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, href, article[0])
+    return result
+
+
+def get_opinion_donga():
+    result = '<font color="blue">[동아일보 사설, 칼럼]</font>'
+    url = 'http://news.donga.com/Column/'
+    r = get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    for alist in soup.find_all(match_soup_class(['articleList'])):
+        title = alist.find('span', attrs={'class': 'tit'})
+        result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, alist.a['href'], title.text.strip())
+    return result
+
+
+def get_opinion_mbn():
+    result = '<font color="blue">[매일경제 사설, 칼럼]</font>'
+    base_url = 'http://opinion.mk.co.kr/'
+    url = 'http://opinion.mk.co.kr/list.php?sc=30500003'
+    r = get(url)
+    soup = BeautifulSoup(r.content.decode('euc-kr', 'replace'), 'html.parser')
+    for f in soup.find_all(match_soup_class(['article_list'])):
+        for dt in f.find_all('dt'):
+            href = '%s%s' % (base_url, dt.a['href'])
+            # print(href, dt.text)
+            result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, href, dt.text)
+    return result
+
+
+def get_opinion_hankyung():
+    result = '<font color="blue">[한국경제 사설, 칼럼]</font>'
+    url = 'http://news.hankyung.com/opinion'
+    r = get(url)
+    soup = BeautifulSoup(r.content.decode('utf-8', 'replace'), 'html.parser')
+    for inner_list in soup.find_all(match_soup_class(['inner_list'])):
+        for li in inner_list.find_all('li'):
+            li_title = li.find('strong', attrs={'class': 'tit'})
+            if li_title is None:
+                break
+            result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, li.a['href'], li_title.text)
+
+        title = inner_list.find('strong', attrs={'class': 'tit'})
+        result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, inner_list.a['href'], title.text)
+    return result
+
+
+def get_opinion_chosun():
+    result = '<font color="blue">[조선일보 사설, 칼럼]</font>'
+    base_url = 'http://biz.chosun.com'
+    url = 'http://biz.chosun.com/svc/list_in/list.html?catid=1F&op_s'
+    r = get(url)
+    soup = BeautifulSoup(r.content.decode('utf-8', 'replace'), 'html.parser')
+    for f in soup.find_all(match_soup_class(['list_vt'])):
+        for li in f.find_all('li'):
+            dt = li.find('dt')
+            href = '%s%s' % (base_url, li.a['href'])
+            result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, href, dt.a.text)
+    return result
+
+
+def get_opinion_joins():
+    result = '<font color="blue">[중앙일보 사설, 칼럼]</font>'
+    base_url = 'http://news.joins.com'
+    url = 'http://news.joins.com/opinion?cloc=joongang|home|section1'
+    r = get(url)
+    soup = BeautifulSoup(r.content.decode('utf-8', 'replace'), 'html.parser')
+    for head in soup.find_all(match_soup_class(['opinion_home_headline'])):
+        for li in head.find_all('li'):
+            href = '%s%s' % (base_url, li.a['href'])
+            result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, href, li.a.text)
+            # print(li.a['href'], li.a.text)
+
+    for today in soup.find_all(match_soup_class(['opinion_home_today'])):
+        for li in today.find_all('li'):
+            href = '%s%s' % (base_url, li.a['href'])
+            title = li.find('strong', attrs={'class': 'mg'})
+            result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, href, title.text)
+            # print(li.a['href'], title.text)
+    return result
+
+
+def get_opinion_hankook():
+    result = '<font color="blue">[한국일보 사설, 칼럼]</font>'
+    base_url = 'http://www.hankookilbo.com'
+    url = 'http://www.hankookilbo.com/op.aspx'
+    r = get(url)
+    soup = BeautifulSoup(r.content.decode('utf-8', 'replace'), 'html.parser')
+    for col in soup.find_all(match_soup_class(['editorial_column'])):
+        for li in col.find_all('li'):
+            href = '%s%s' % (base_url, li.a['href'])
+            result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, href, li.a.text)
+    return result
+
+
+def get_opinion_gyunghyang():
+    result = '<font color="blue">[경향신문 사설, 칼럼]</font>'
+    url = 'http://news.khan.co.kr/kh_news/khan_art_list.html?code=990000'
+    r = get(url, headers={'User-Agent': choice(USER_AGENTS)})
+    soup = BeautifulSoup(r.content.decode('euc-kr', 'replace'), 'html.parser')
+    for news_list in soup.find_all(match_soup_class(['news_list'])):
+        for li in news_list.find_all('li'):
+            try:
+                title = li.a['title']
+                result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, li.a['href'], title.strip())
+                # print(li.a['href'], title)
+            except KeyError:
+                title = li.text.split('\n')
+                result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, li.a['href'], title[1].strip())
+                # print(li.a['href'], title[1])
+    return result
+
+
+def get_opinion_kookmin(cur_time):
+    result = '<font color="blue">[국민일보 사설]</font>'
+    base_url = 'http://news.kmib.co.kr/article'
+    url = 'http://news.kmib.co.kr/article/list.asp?sid1=opi&sid2=&sdate=%s' % cur_time
+    r = get(url, headers={'User-Agent': choice(USER_AGENTS)})
+    soup = BeautifulSoup(r.content.decode('euc-kr', 'replace'), 'html.parser')
+    for nws_list in soup.find_all(match_soup_class(['nws_list'])):
+        for dl in nws_list.find_all('dl'):
+            dt = dl.find('dt')
+            href = '%s/%s' % (base_url, dt.a['href'])
+            result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, href, dt.a.text)
+    return result
+
+
+def get_opinion_segye():
+    result = '<font color="blue">[세계일보 사설, 칼럼]</font>'
+    base_url = 'http://www.segye.com'
+    url = 'http://www.segye.com/opinion'
+    r = get(url, headers={'User-Agent': choice(USER_AGENTS)})
+    soup = BeautifulSoup(r.content.decode('utf-8', 'replace'), 'html.parser')
+    for title_1 in soup.find_all(match_soup_class(['title_1'])):
+        href = '%s%s' % (base_url, title_1.a['href'])
+        result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, href, title_1.a.text)
+    for title_2 in soup.find_all(match_soup_class(['title_2'])):
+        href = '%s%s' % (base_url, title_2.a['href'])
+        # print(href, title_2.a.text)
+        result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, href, title_2.a.text)
+    return result
+
+
+def get_opinion_moonhwa():
+    result = '<font color="blue">[문화일보 사설, 칼럼]</font>'
+    url = 'http://www.munhwa.com/news/section_list.html?sec=opinion&class=0'
+    r = get(url, headers={'User-Agent': choice(USER_AGENTS)})
+    soup = BeautifulSoup(r.content.decode('euc-kr', 'replace'), 'html.parser')
+    for d14b_333 in soup.find_all(match_soup_class(['d14b_333'])):
+        result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, d14b_333['href'], d14b_333.text)
+    return result
+
+
+def opinion_news(cur_time):
+    result = '언론사 목록<br><strong> 경향신문, 국민일보, 동아일보, 매일경제, 문화일보, 세계신문, 중앙일보, 조선일보, 한겨례, 한국경제, 한국일보</strong><br><br>'
+
+    content = get_opinion_gyunghyang()  # 경향신문
+    result = '%s<br><br><br>%s' % (result, content)
+
+    content = get_opinion_kookmin(cur_time)  # 국민일보
+    result = '%s<br><br><br>%s' % (result, content)
+
+    content = get_opinion_donga()  # 동아일보
+    result = '%s<br><br><br>%s' % (result, content)
+
+    content = get_opinion_mbn()  # 매일경제
+    result = '%s<br><br><br>%s' % (result, content)
+
+    # add advertise
+    result = '%s<br><br>%s<br><br>' % (result, ADSENSE_MIDDLE)
+
+    content = get_opinion_moonhwa()  # 문화일보
+    result = '%s<br><br><br>%s' % (result, content)
+
+    content = get_opinion_segye()  # 세계신문
+    result = '%s<br><br><br>%s' % (result, content)
+
+    content = get_opinion_joins()  # 중앙일보
+    result = '%s<br><br><br>%s' % (result, content)
+
+    content = get_opinion_chosun()  # 조선일보
+    result = '%s<br><br><br>%s' % (result, content)
+
+    # add advertise
+    result = '%s<br><br>%s<br><br>' % (result, ADSENSE_MIDDLE)
+
+    content = get_opinion_hani()  # 한겨례
+    result = '%s<br><br><br>%s' % (result, content)
+
+    content = get_opinion_hankyung()  # 한국경제
+    result = '%s<br><br><br>%s' % (result, content)
+
+    content = get_opinion_hankook()  # 한국일보
+    result = '%s<br><br><br>%s' % (result, content)
+
+    return result
+
 def once_a_4days(now, cur_time, token):
     # every 4 days
     if now.day % 4 == 1:
@@ -740,6 +971,12 @@ def everyday(cur_time, token):
 def main():
     now = datetime.now()
     cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
+
+    token = get_tistory_token()
+    title = '[%s] 국내 주요언론사 사설, 칼럼 (ㄱ,ㄴ순)' % cur_time
+    content = opinion_news(cur_time)
+    tistory_post(token, title, content, '767067')  # 사설, 칼럼
+    return
 
     token = get_tistory_token()
 
