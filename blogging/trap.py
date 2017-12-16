@@ -171,7 +171,10 @@ def translate_text(t, article, src='en', dest='ko'):
         text.append(line)
         if total_len > 4000:
             request_txt = '<br>'.join(text)
-            ko_text = t.translate(request_txt, src=src, dest=dest).text
+            try:
+                ko_text = t.translate(request_txt, src=src, dest=dest).text
+            except:
+                return None
             result.append(ko_text)
             del text[:]
             total_len = 0
@@ -306,7 +309,7 @@ def wired_popular(token, cur_time):
         article = []
         post_title = ''
         try:
-            href = s['href']
+            href = '%s%s' % (url, s['href'])
             # print(href, s.h5.text)
             ko_title = t.translate(s.h5.text, dest='ko').text
             post_title = '[%s] %s(%s)' % (cur_time, ko_title, s.h5.text.strip())
