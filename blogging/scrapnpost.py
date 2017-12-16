@@ -3,7 +3,6 @@ import json
 import os
 import praw
 import re
-import requests
 import urllib.request
 
 from bs4 import BeautifulSoup
@@ -838,6 +837,9 @@ def get_opinion_kookmin(cur_time):
     soup = BeautifulSoup(r.content.decode('euc-kr', 'replace'), 'html.parser')
     for nws_list in soup.find_all(match_soup_class(['nws_list'])):
         for dl in nws_list.find_all('dl'):
+            if dl.text == '등록된 기사가 없습니다.':
+                result = '%s<br>현재 %s<br>' % (result, dl.text)
+                return result
             dt = dl.find('dt')
             href = '%s/%s' % (base_url, dt.a['href'])
             result = '%s<br><a href="%s" target="_blank">%s</a>' % (result, href, dt.a.text)
@@ -886,7 +888,7 @@ def opinion_news(cur_time):
     result = '%s<br><br><br>%s' % (result, content)
 
     # add advertise
-    result = '%s<br><br>%s<br><br>' % (result, ADSENSE_MIDDLE)
+    # result = '%s<br><br>%s<br><br>' % (result, ADSENSE_MIDDLE)
 
     content = get_opinion_moonhwa()  # 문화일보
     result = '%s<br><br><br>%s' % (result, content)
@@ -901,7 +903,7 @@ def opinion_news(cur_time):
     result = '%s<br><br><br>%s' % (result, content)
 
     # add advertise
-    result = '%s<br><br>%s<br><br>' % (result, ADSENSE_MIDDLE)
+    # result = '%s<br><br>%s<br><br>' % (result, ADSENSE_MIDDLE)
 
     content = get_opinion_hani()  # 한겨례
     result = '%s<br><br><br>%s' % (result, content)
@@ -913,6 +915,7 @@ def opinion_news(cur_time):
     result = '%s<br><br><br>%s' % (result, content)
 
     return result
+
 
 def once_a_4days(now, cur_time, token):
     # every 4 days
@@ -942,7 +945,7 @@ def once_a_4days(now, cur_time, token):
         tistory_post(token, title, content, '765395')
 
 
-def everyday(cur_time, token):
+def weekday(cur_time, token):
     title = '[%s] 부동산 뉴스 모음(Daum, 매일경제, 한국경제, Naver)' % cur_time
     content = realestate_news1()
     tistory_post(token, title, content, '765348')
@@ -967,21 +970,38 @@ def everyday(cur_time, token):
     title = '[%s] Hacker News (Ranking 1~30)' % cur_time
     tistory_post(token, title, content, '765668')  # IT news
 
+    content = opinion_news(cur_time)
+    title = '[%s] 국내 주요언론사 사설, 칼럼 (ㄱ,ㄴ순)' % cur_time
+    tistory_post(token, title, content, '767067')  # 사설, 칼럼
+
+
+def weekend(cur_time, token):
+
+    content = get_reddit('korea')
+    title = '[%s] Reddit에 올라온 한국 관련 소식' % cur_time
+    tistory_post(token, title, content, '765357')  # economy
+
+    content = get_reddit()
+    title = '[%s] Reddit (Programming & Python)' % cur_time
+    tistory_post(token, title, content, '765668')  # IT news
+
+    content = get_hacker_news()
+    title = '[%s] Hacker News (Ranking 1~30)' % cur_time
+    tistory_post(token, title, content, '765668')  # IT news
+
 
 def main():
     now = datetime.now()
     cur_time = '%4d%02d%02d' % (now.year, now.month, now.day)
-
-    token = get_tistory_token()
-    title = '[%s] 국내 주요언론사 사설, 칼럼 (ㄱ,ㄴ순)' % cur_time
-    content = opinion_news(cur_time)
-    tistory_post(token, title, content, '767067')  # 사설, 칼럼
-    return
+    week_num = datetime.today().weekday()
 
     token = get_tistory_token()
 
-    once_a_4days(now, cur_time, token)
-    everyday(cur_time, token)
+    # once_a_4days(now, cur_time, token)
+    if week_num < 5:
+        weekday(cur_time, token)
+    else:
+        weekend(cur_time, token)
 
     # content = get_kdi_research()
     # title = '[%s] KDI 한국개발연구원 연구주제별 보고서' % cur_time
