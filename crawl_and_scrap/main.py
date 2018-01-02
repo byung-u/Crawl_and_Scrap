@@ -68,11 +68,11 @@ class BW:  # Brute Web crawler
         self.daum_app_key = os.environ.get('DAUM_APP_KEY')
 
         self.chromedriver_path = os.environ.get('CHROMEDRIVER_PATH')
-        self.google_id = os.environ.get('GOOGOLE_ID')
-        self.google_p = os.environ.get('GOOGOLE_PW')
-        self.gmail_from_addr = os.environ.get('GOOGOLE_FROM_ADDR')
-        self.gmail_to_addr = os.environ.get('GOOGOLE_TO_ADDR')
-        self.google_url_api_key = os.environ.get('GOOGOLE_URL_API_KEY')
+        self.google_id = os.environ.get('GOOGLE_ID')
+        self.google_p = os.environ.get('GOOGLE_PW')
+        self.gmail_from_addr = os.environ.get('GOOGLE_FROM_ADDR')
+        self.gmail_to_addr = os.environ.get('GOOGLE_TO_ADDR')
+        self.google_url_api_key = os.environ.get('GOOGLE_URL_API_KEY')
 
         self.apt_rent_url = os.environ.get('DATA_APT_RENT_URL')
         self.apt_trade_url = os.environ.get('DATA_APT_TRADE_URL')
