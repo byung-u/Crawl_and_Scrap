@@ -175,7 +175,10 @@ class BW:  # Brute Web crawler
         params = {'key': self.google_url_api_key}
         r = post(post_url, data=json.dumps(payload), headers=headers, params=params)
         js = json.loads(r.text)
-        return js['id']
+        try:
+            return js['id']
+        except KeyError:
+            return url
 
     def post_tweet_list(self, msg, subject=None):
         if type(msg) is not list:
