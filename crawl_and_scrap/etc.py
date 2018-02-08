@@ -26,8 +26,8 @@ class ETC:
             return False
 
     def get_wishket(self, bw):
-        # driver = webdriver.Chrome(bw.chromedriver_path)
-        driver = webdriver.PhantomJS()
+        driver = webdriver.Chrome(bw.chromedriver_path)
+        # driver = webdriver.PhantomJS()
         driver.implicitly_wait(3)
 
         url = 'https://www.wishket.com/project/'
@@ -41,7 +41,9 @@ class ETC:
                     title = div.text
                     try:
                         link = 'https://www.wishket.com/%s' % div.a['href']
-                    except:
+                    except KeyError:
+                        pass
+                    except TypeError:
                         pass
                 if i % 10 == 2:
                     if bw.is_already_sent('ETC', link):
@@ -52,12 +54,42 @@ class ETC:
                     info = div.text.split(' ')
                     result = '%s\n%s\n%s\n%s\n\n#wishket' % (title, info[1], info[3], short_url)
                     bw.post_tweet(result, 'Wishket')
+        driver.quit()
 
+    def get_wadiz(self, bw):
+        driver = webdriver.Chrome(bw.chromedriver_path)
+        # driver = webdriver.PhantomJS()
+        driver.implicitly_wait(3)
+        url = 'https://www.wadiz.kr/web/winvest/main'
+        driver.get(url)
+        html = driver.page_source
+        soup = BeautifulSoup(html, 'html.parser')
+        session = soup.select('li > a')
+        for idx, s in enumerate(session):
+            if s.h4 is None:
+                continue
+            days = s.find('span', attrs={'class': 'days'})
+            if days.text == '성공':
+                left_days = '청약 마감'
+            else:
+                left_days = days.text
+
+            amount = s.find('span', attrs={'class': 'amount'})
+            link = 'https://www.wadiz.kr%s' % s['href']
+            if bw.is_already_sent('ETC', link):
+                continue
+            short_url = bw.shortener_url(link)
+            if short_url is None:
+                short_url = link
+            result = '%s\n%s\n%s\n%s\n%s\n\n#wadiz' % (
+                     s.h4.text, s.h5.text, amount.text, left_days,
+                     short_url)
+            bw.post_tweet(result, 'Wadiz')
         driver.quit()
 
     def get_onoffmix(self, bw):
-        # driver = webdriver.Chrome(bw.chromedriver_path)
-        driver = webdriver.PhantomJS()
+        driver = webdriver.Chrome(bw.chromedriver_path)
+        # driver = webdriver.PhantomJS()
         driver.implicitly_wait(3)
 
         # 'https://onoffmix.com/event?c=86' 강연
@@ -89,8 +121,8 @@ class ETC:
         driver.quit()
 
     def get_sacticket(self, bw):  # 예술의 전당
-        # driver = webdriver.Chrome(bw.chromedriver_path)
-        driver = webdriver.PhantomJS()
+        driver = webdriver.Chrome(bw.chromedriver_path)
+        # driver = webdriver.PhantomJS()
         driver.implicitly_wait(3)
 
         url = 'https://www.sacticket.co.kr/SacHome/ticket/reservation'
@@ -131,7 +163,9 @@ class ETC:
                         result_msg = '%s\n%s' % (result_msg, cp.text)
                     result_msg = '%s\n%s' % (result_msg, short_url)
                     bw.post_tweet(result_msg, 'sacticket')
-                except:
+                except KeyError:
+                    continue
+                except TypeError:
                     continue
         driver.quit()
 

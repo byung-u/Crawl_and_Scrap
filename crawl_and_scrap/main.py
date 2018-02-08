@@ -331,13 +331,13 @@ def searching_and_tweet(bw):
 
     g = UseGithub(bw)
     g.get_repo(bw, lang='python', min_star=3, past=1)
-    g.get_repo(bw, lang=None, min_star=3, past=7)  # all languages
-    g.get_repo(bw, lang='javascript', min_star=50, past=1)
+    # g.get_repo(bw, lang=None, min_star=3, past=7)  # all languages
+    # g.get_repo(bw, lang='javascript', min_star=50, past=1)
 
     E = ETC(bw)
 
     E.get_wishket(bw)
-    E.get_sacticket(bw)
+    # E.get_sacticket(bw)
 
     # E.search_stackoverflow(bw, "activity", "python")
     # E.search_stackoverflow(bw, "activity", "javascript")
@@ -349,33 +349,34 @@ def searching_and_tweet(bw):
     # E.get_raspberripy_news(bw)
 
     # Exhibition
-    E.get_onoffmix(bw)
-    E.get_coex_exhibition(bw)
-    E.get_national_museum_exhibition(bw)
+    E.get_wadiz(bw)
+    # E.get_onoffmix(bw)
+    # E.get_coex_exhibition(bw)
+    # E.get_national_museum_exhibition(bw)
 
     # ETC
-    dg = UseDataKorea(bw)
+    # dg = UseDataKorea(bw)
 
     # 입찰공고
     # dg.get_tender_cha(bw)     # 문화재청
-    dg.get_tender_kdata(bw)   # 한국데이터진흥원
-    dg.get_tender_kisa(bw)    # 한국인터넷진흥원
-    dg.get_tender_molit(bw)   # 국토교통부
-    dg.get_tender_nia(bw)     # 한국정보화진흥원
-    dg.get_tender_nst(bw)     # 국가과학기술연구회 소관 25개 정부출연연구기관
-    dg.get_tender_tta(bw)     # 한국정보통신기술협회
+    # dg.get_tender_kdata(bw)   # 한국데이터진흥원
+    # dg.get_tender_kisa(bw)    # 한국인터넷진흥원
+    # dg.get_tender_molit(bw)   # 국토교통부
+    # dg.get_tender_nia(bw)     # 한국정보화진흥원
+    # dg.get_tender_nst(bw)     # 국가과학기술연구회 소관 25개 정부출연연구기관
+    # dg.get_tender_tta(bw)     # 한국정보통신기술협회
 
     # 자료, 보고서
-    dg.get_kdi_research(bw)   # KDI 한국개발연구원
+    # dg.get_kdi_research(bw)   # KDI 한국개발연구원
 
     # 공지사항
-    dg.get_noti_mss(bw)       # 중소벤처기업부
-    dg.get_recruit_nst(bw)    # 국가과학기술연구회 소관 25개 정부출연연구기관
+    # dg.get_noti_mss(bw)       # 중소벤처기업부
+    # dg.get_recruit_nst(bw)    # 국가과학기술연구회 소관 25개 정부출연연구기관
 
-    dg.get_ftc_news(bw)       # 공정거래위원회
-    dg.get_visit_korea(bw)    # 대한민국 구석구석 행복여행
+    # dg.get_ftc_news(bw)       # 공정거래위원회
+    # dg.get_visit_korea(bw)    # 대한민국 구석구석 행복여행
     # ETC
-    dg.realstate_trade(bw)
+    # dg.realstate_trade(bw)
     # dg.didimdol_interesting(bw)
 
     # 보도자료, 해명자료
