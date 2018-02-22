@@ -347,6 +347,7 @@ def searching_and_tweet(bw):
     E.get_rfc_random_title(bw)
     # E.get_rfc_draft_list(bw)
     # E.get_raspberripy_news(bw)
+    E.national_treasure_select(bw)
 
     # Exhibition
     E.get_wadiz(bw)
