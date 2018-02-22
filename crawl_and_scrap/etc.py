@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import os
+import sqlite3
 
 from bs4 import BeautifulSoup
 from requests import get
@@ -502,3 +504,63 @@ class ETC:
 
             rb_news = '%s\n%s\n#lifehacker' % (rb_title, short_url)
             bw.post_tweet(rb_news, 'Raspberri py news')
+
+    def national_treasure_post(self, bw, content, url):
+        short_url = bw.shortener_url(url)
+        if short_url is None:
+            short_url = url
+
+        nt = '%s\n%s' % (content, short_url)
+        bw.post_tweet(nt, 'National Treasures')
+
+    def national_treasure_select_k(self, bw, c):
+        r = randrange(1, 421)   # 국보
+        sr = "SELECT * FROM national_treasure WHERE t_type='국보' AND t_idx='%d'" % r
+        c.execute(sr)
+        res = c.fetchone()
+        if res is None:
+            c.execute("SELECT * FROM national_treasure WHERE t_type='국보' AND t_idx LIKE ?", ('%' + r + '%', ))
+            res = c.fetchall()
+            for r in res:
+                self.national_treasure_post(bw, r[1], r[3])
+        else:
+            self.national_treasure_post(bw, res[1], res[3])
+
+    def national_treasure_select_b(self, bw, c):
+        r = randrange(1, 2387)  # 보물
+        sr = "SELECT * FROM national_treasure WHERE t_type='보물' AND t_idx='%d'" % r
+        c.execute(sr)
+        res = c.fetchone()
+        if res is None:
+            c.execute("SELECT * FROM national_treasure WHERE t_type='보물' AND t_idx LIKE ?", ('%' + r + '%', ))
+            res = c.fetchall()
+            for r in res:
+                self.national_treasure_post(bw, r[1], r[3])
+        else:
+            self.national_treasure_post(bw, res[1], res[3])
+
+    def national_treasure_select_c(self, bw, c):
+        r = randrange(1, 571)   # 천연기념물
+        sr = "SELECT * FROM national_treasure WHERE t_type='보물' AND t_idx='%d'" % r
+        c.execute(sr)
+        res = c.fetchone()
+        if res is None:
+            c.execute("SELECT * FROM national_treasure WHERE t_type='보물' AND t_idx LIKE ?", ('%' + r + '%',))
+            res = c.fetchall()
+            for r in res:
+                self.national_treasure_post(bw, r[1], r[3])
+        else:
+            self.national_treasure_post(bw, res[1], res[3])
+
+    def national_treasure_select(self, bw):
+        if not (os.path.isfile('$HOME/national_treasure.db')):
+            bw.logger.error('No database')
+            return
+
+        conn = sqlite3.connect('national_treasure.db')
+        c = conn.cursor()
+
+        self.national_treasure_select_k(bw, c)
+        self.national_treasure_select_b(bw, c)
+        self.national_treasure_select_c(bw, c)
+        conn.close()
